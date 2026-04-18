@@ -85,19 +85,10 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
     controls.autoRotateSpeed = 0.28;
     controls.enableZoom = false;
     controls.enablePan = false;
-    controls.enableRotate = true;
-    controls.rotateSpeed = 0.5;
+    controls.enableRotate = false;
+    controls.minDistance = 300;
+    controls.maxDistance = 300;
     globeRef.current.pointOfView({ lat: 18, lng: -32, altitude: 0.72 }, 0);
-
-    // Lock zoom distance after POV is set
-    requestAnimationFrame(() => {
-      if (!globeRef.current) return;
-      const camera = globeRef.current.camera();
-      const dist = camera.position.length();
-      const ctrl = globeRef.current.controls();
-      ctrl.minDistance = dist;
-      ctrl.maxDistance = dist;
-    });
   }, [globeSize]);
 
   // Also reset on mount (handles back-navigation)
@@ -107,19 +98,10 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
       const controls = globeRef.current.controls();
       controls.enableZoom = false;
       controls.enablePan = false;
-      controls.enableRotate = true;
-      controls.rotateSpeed = 0.5;
+      controls.enableRotate = false;
+      controls.minDistance = 300;
+      controls.maxDistance = 300;
       globeRef.current.pointOfView({ lat: 18, lng: -32, altitude: 0.72 }, 0);
-
-      // Lock zoom distance
-      requestAnimationFrame(() => {
-        if (!globeRef.current) return;
-        const camera = globeRef.current.camera();
-        const dist = camera.position.length();
-        const ctrl = globeRef.current.controls();
-        ctrl.minDistance = dist;
-        ctrl.maxDistance = dist;
-      });
     }, 100);
     return () => clearTimeout(timer);
   }, []);
