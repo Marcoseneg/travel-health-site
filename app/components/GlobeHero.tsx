@@ -85,7 +85,8 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
     controls.autoRotateSpeed = 0.28;
     controls.enableZoom = false;
     controls.enablePan = false;
-    controls.enableRotate = false;
+    controls.enableRotate = true;
+    controls.rotateSpeed = 0.5;
     controls.minDistance = 300;
     controls.maxDistance = 300;
     globeRef.current.pointOfView({ lat: 18, lng: -32, altitude: 0.72 }, 0);
@@ -98,7 +99,8 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
       const controls = globeRef.current.controls();
       controls.enableZoom = false;
       controls.enablePan = false;
-      controls.enableRotate = false;
+      controls.enableRotate = true;
+      controls.rotateSpeed = 0.5;
       controls.minDistance = 300;
       controls.maxDistance = 300;
       globeRef.current.pointOfView({ lat: 18, lng: -32, altitude: 0.72 }, 0);
