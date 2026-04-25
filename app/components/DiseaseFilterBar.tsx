@@ -77,7 +77,7 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
                 cursor: "pointer",
                 border: "none",
                 background: isActive ? btn.bgActive : "transparent",
-                color: isActive ? btn.colorActive : "#64748b",
+                color: isActive ? btn.colorActive : "#94a3b8",
                 fontFamily: "inherit",
                 transition: "all 0.2s",
                 display: "flex",
@@ -89,7 +89,7 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
               {btn.dotActive && (
                 <span
                   style={{
-                    width: "6px",
+                    width: "16px",
                     height: "6px",
                     borderRadius: "50%",
                     background: isActive ? btn.dotActive : "#475569",
@@ -120,19 +120,20 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "5px",
-                fontSize: "11px",
-                color: "#94a3b8",
+                gap: "6px",
+                fontSize: "12px",
+                color: "#cbd5e1",
+                fontWeight: 500,
               }}
             >
               <span
                 style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "2px",
+                  width: "10px",
+                  height: "10px",
+                  borderRadius: "3px",
                   background: item.color,
                   display: "inline-block",
-                  border: "1px solid rgba(255,255,255,0.06)",
+                  border: "1px solid rgba(255,255,255,0.1)",
                   flexShrink: 0,
                 }}
               />

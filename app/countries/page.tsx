@@ -10,6 +10,7 @@ import {
 import { malariaRiskByCountry } from "../lib/malariaData";
 import { dengueRiskByCountry } from "../lib/dengueData";
 import { yellowFeverByCountry } from "../lib/yellowFeverData";
+import { countries as healthData } from "../../data/countries";
 
 // ── Group countries by continent ────────────────────────────────────────────
 function getCountriesByContinent() {
@@ -38,16 +39,36 @@ function getCountryRisks(label: string): RiskDot[] {
   const dengue = dengueRiskByCountry[label];
   const yf = yellowFeverByCountry[label];
 
-  if (malaria === "high") dots.push({ color: "#ef4444", label: "Malaria" });
-  else if (malaria === "moderate") dots.push({ color: "#f59e0b", label: "Malaria" });
+  // Malaria — values used in malariaData.ts: "high" | "present" | "limited" | "none"
+  if (malaria === "high") dots.push({ color: "#ef4444", label: "Malaria (high)" });
+  else if (malaria === "present") dots.push({ color: "#f59e0b", label: "Malaria (present)" });
+  else if (malaria === "limited") dots.push({ color: "#fcd34d", label: "Malaria (limited)" });
 
-  if (dengue === "high") dots.push({ color: "#f97316", label: "Dengue" });
-  else if (dengue === "moderate") dots.push({ color: "#fb923c", label: "Dengue" });
+  // Dengue — values used in dengueData.ts: "high" | "moderate" | "low" | "none"
+  if (dengue === "high") dots.push({ color: "#f97316", label: "Dengue (high)" });
+  else if (dengue === "moderate") dots.push({ color: "#fb923c", label: "Dengue (moderate)" });
 
-  if (yf === "required") dots.push({ color: "#eab308", label: "Yellow fever" });
-  else if (yf === "recommended") dots.push({ color: "#facc15", label: "Yellow fever" });
+  // Yellow fever — values: "required" | "recommended" | "generally-not" | "none"
+  if (yf === "required") dots.push({ color: "#eab308", label: "Yellow fever (required)" });
+  else if (yf === "recommended") dots.push({ color: "#facc15", label: "Yellow fever (recommended)" });
 
   return dots;
+}
+
+// ── Detect whether a country has the full CDC-aligned brief ─────────────────
+// Used to show a small status indicator on each country row so you can see
+// at a glance which countries have been built out vs which still show the
+// "Detailed brief coming soon" fallback.
+function hasFullBrief(slug: string): boolean {
+  const h = healthData[slug];
+  if (!h) return false;
+  // A country counts as "full" if it has either rich vaccines OR per-disease
+  // detail OR country alerts — i.e. anything beyond the bare core fields.
+  return !!(
+    h.vaccinesDetail?.length ||
+    h.diseases ||
+    h.countryAlerts?.length
+  );
 }
 
 // ── Continent icons ─────────────────────────────────────────────────────────
@@ -304,11 +325,12 @@ export default function CountriesPage() {
                   {slugs.map((slug) => {
                     const c = SUPPORTED_COUNTRIES[slug];
                     const risks = getCountryRisks(c.label);
+                    const fullBrief = hasFullBrief(slug);
 
                     return (
                       <Link
                         key={slug}
-                        href={`/itinerary?countries=${slug}`}
+                        href={`/country/${slug}`}
                         style={{
                           display: "flex",
                           alignItems: "center",
@@ -339,15 +361,40 @@ export default function CountriesPage() {
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div
                             style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "8px",
                               fontSize: "14px",
                               fontWeight: 600,
                               letterSpacing: "-0.01em",
-                              whiteSpace: "nowrap",
-                              overflow: "hidden",
-                              textOverflow: "ellipsis",
                             }}
                           >
-                            {c.label}
+                            <span
+                              style={{
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                              }}
+                            >
+                              {c.label}
+                            </span>
+                            {/* Full-brief indicator: small cyan dot when this
+                                country has rich CDC-aligned content. Tooltip
+                                explains it on hover. */}
+                            {fullBrief && (
+                              <span
+                                title="Full clinical brief available"
+                                aria-label="Full clinical brief available"
+                                style={{
+                                  width: "6px",
+                                  height: "6px",
+                                  borderRadius: "50%",
+                                  background: "#38bdf8",
+                                  boxShadow: "0 0 6px rgba(56,189,248,0.6)",
+                                  flexShrink: 0,
+                                }}
+                              />
+                            )}
                           </div>
                           <div style={{ fontSize: "12px", color: "#64748b", marginTop: "1px" }}>
                             {c.region}

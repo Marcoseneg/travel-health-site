@@ -32,11 +32,20 @@ function buildSearchItems(): SearchItem[] {
 const SEARCH_ITEMS = buildSearchItems();
 
 const NAV_LINKS = [
+  { label: "Home", href: "/" },
   { label: "Countries", href: "/countries" },
   { label: "Diseases", href: "/diseases" },
   { label: "Outbreaks", href: "/outbreaks" },
   { label: "Guides", href: "/guides" },
   { label: "About", href: "/about" },
+];
+
+// Placeholder language set — wire up to a real i18n provider later
+const LANGUAGES = [
+  { code: "EN", label: "English" },
+  { code: "DE", label: "Deutsch" },
+  { code: "FR", label: "Français" },
+  { code: "ES", label: "Español" },
 ];
 
 export default function SiteHeader() {
@@ -45,7 +54,10 @@ export default function SiteHeader() {
   const [focused, setFocused] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
+  const [activeLang, setActiveLang] = useState("EN");
   const inputRef = useRef<HTMLInputElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -72,9 +84,21 @@ export default function SiteHeader() {
     return () => document.removeEventListener("keydown", handler);
   }, []);
 
+  // Close language dropdown on outside click
+  useEffect(() => {
+    if (!langOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [langOpen]);
+
   const handleSelect = (item: SearchItem) => {
     if (item.type === "country") {
-      router.push(`/itinerary?countries=${item.slug}`);
+      router.push(`/country/${item.slug}`);
     } else {
       router.push(`/diseases/${item.slug}`);
     }
@@ -116,34 +140,34 @@ export default function SiteHeader() {
         style={{
           maxWidth: "1320px",
           margin: "0 auto",
-          height: "60px",
+          height: "72px",
           display: "flex",
           alignItems: "center",
           gap: "20px",
-          padding: "0 24px",
+          padding: "0 28px",
         }}
       >
-        {/* Logo */}
+        {/* ── Logo ─────────────────────────────────────────────────── */}
         <a
           href="/"
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "10px",
+            gap: "11px",
             textDecoration: "none",
             flexShrink: 0,
           }}
         >
           <div
             style={{
-              width: "30px",
-              height: "30px",
-              borderRadius: "8px",
+              width: "34px",
+              height: "34px",
+              borderRadius: "9px",
               background: "linear-gradient(135deg, var(--accent), var(--accent-dark))",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "13px",
+              fontSize: "15px",
               boxShadow: "0 4px 16px rgba(56,189,248,0.3)",
             }}
           >
@@ -152,7 +176,7 @@ export default function SiteHeader() {
           <span
             style={{
               fontWeight: 800,
-              fontSize: "17px",
+              fontSize: "18px",
               letterSpacing: "-0.03em",
               color: "var(--foreground)",
             }}
@@ -161,215 +185,228 @@ export default function SiteHeader() {
           </span>
         </a>
 
-        {/* Search */}
+        {/* ── Divider between logo and search ──────────────────────── */}
+        <div
+          aria-hidden="true"
+          className="hidden-mobile"
+          style={{
+            width: "1px",
+            height: "24px",
+            background: "rgba(255, 255, 255, 0.1)",
+            flexShrink: 0,
+            marginLeft: "6px",
+            marginRight: "6px",
+          }}
+        />
+
+        {/* ── Search (smaller, more compact) ───────────────────────── */}
         <div
           style={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "center",
-            minWidth: 0,
+            position: "relative",
+            width: "100%",
+            maxWidth: "360px",
+            flexShrink: 1,
           }}
         >
-          <div style={{ position: "relative", width: "100%", maxWidth: "480px" }}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                borderRadius: "14px",
-                padding: "0 16px",
-                height: "40px",
-                background: focused
-                  ? "rgba(255,255,255,0.08)"
-                  : "rgba(255,255,255,0.04)",
-                border: `1px solid ${
-                  focused ? "rgba(56,189,248,0.4)" : "rgba(255,255,255,0.07)"
-                }`,
-                transition: "all 0.25s ease",
-              }}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+              borderRadius: "12px",
+              padding: "0 14px",
+              height: "40px",
+              background: focused
+                ? "rgba(255,255,255,0.08)"
+                : "rgba(255,255,255,0.04)",
+              border: `1px solid ${
+                focused ? "rgba(56,189,248,0.4)" : "rgba(255,255,255,0.07)"
+              }`,
+              transition: "all 0.25s ease",
+            }}
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={
+                focused
+                  ? "rgba(125,211,252,0.95)"
+                  : "rgba(148,163,184,0.7)"
+              }
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              style={{ flexShrink: 0 }}
+              aria-hidden="true"
             >
-              <svg
-                width="15"
-                height="15"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke={
-                  focused
-                    ? "rgba(125,211,252,0.95)"
-                    : "rgba(148,163,184,0.7)"
-                }
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                style={{ flexShrink: 0 }}
-                aria-hidden="true"
-              >
-                <circle cx="10.5" cy="10.5" r="7.5" />
-                <path d="m21 21-5-5" />
-              </svg>
-              <input
-                ref={inputRef}
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onFocus={() => setFocused(true)}
-                onBlur={() => setTimeout(() => setFocused(false), 180)}
-                onKeyDown={handleKeyDown}
-                placeholder="Search countries, diseases, vaccines…"
-                aria-label="Search countries and diseases"
-                role="combobox"
-                aria-expanded={focused && !!query.trim()}
-                aria-autocomplete="list"
+              <circle cx="10.5" cy="10.5" r="7.5" />
+              <path d="m21 21-5-5" />
+            </svg>
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setTimeout(() => setFocused(false), 180)}
+              onKeyDown={handleKeyDown}
+              placeholder="Search countries, diseases, vaccines…"
+              aria-label="Search countries and diseases"
+              role="combobox"
+              aria-expanded={focused && !!query.trim()}
+              aria-autocomplete="list"
+              style={{
+                background: "transparent",
+                border: "none",
+                outline: "none",
+                color: "#e2e8f0",
+                width: "100%",
+                fontSize: "14px",
+                fontFamily: "inherit",
+                letterSpacing: "-0.01em",
+              }}
+            />
+            {!focused && !query && (
+              <kbd
                 style={{
-                  background: "transparent",
-                  border: "none",
-                  outline: "none",
-                  color: "#e2e8f0",
-                  width: "100%",
-                  fontSize: "14px",
+                  fontSize: "10.5px",
+                  color: "var(--text-dim)",
+                  background: "rgba(255,255,255,0.05)",
+                  borderRadius: "4px",
+                  padding: "2px 6px",
                   fontFamily: "inherit",
-                  letterSpacing: "-0.01em",
-                }}
-              />
-              {!focused && !query && (
-                <kbd
-                  style={{
-                    fontSize: "11px",
-                    color: "var(--text-dim)",
-                    background: "rgba(255,255,255,0.05)",
-                    borderRadius: "5px",
-                    padding: "2px 7px",
-                    fontFamily: "inherit",
-                    border: "1px solid var(--border)",
-                    flexShrink: 0,
-                  }}
-                >
-                  /
-                </kbd>
-              )}
-            </div>
-
-            {/* Dropdown */}
-            {focused && query.trim() && (
-              <div
-                role="listbox"
-                style={{
-                  position: "absolute",
-                  top: "calc(100% + 8px)",
-                  left: 0,
-                  right: 0,
-                  zIndex: 2000,
-                  background: "rgba(10, 18, 36, 0.98)",
                   border: "1px solid var(--border)",
-                  borderRadius: "14px",
-                  boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
-                  backdropFilter: "blur(20px)",
-                  overflow: "hidden",
+                  flexShrink: 0,
                 }}
               >
-                {results.length > 0 ? (
-                  results.map((item, i) => (
-                    <button
-                      key={`${item.type}-${item.slug}`}
-                      role="option"
-                      aria-selected={i === activeIdx}
-                      onMouseDown={(e) => e.preventDefault()}
-                      onClick={() => handleSelect(item)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "12px",
-                        width: "100%",
-                        padding: "12px 18px",
-                        border: "none",
-                        background:
-                          i === activeIdx
-                            ? "rgba(255,255,255,0.06)"
-                            : "transparent",
-                        color: "#e2e8f0",
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        fontSize: "14px",
-                        textAlign: "left",
-                        transition: "background 0.1s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.background =
-                          "rgba(255,255,255,0.05)";
-                        setActiveIdx(i);
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.background = "transparent";
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: "18px",
-                          width: "26px",
-                          textAlign: "center",
-                        }}
-                      >
-                        {item.icon}
-                      </span>
-                      <div style={{ flex: 1 }}>
-                        <div style={{ fontWeight: 600, fontSize: "14px" }}>
-                          {item.label}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "12px",
-                            color: "var(--text-dim)",
-                            marginTop: "2px",
-                          }}
-                        >
-                          {item.sub}
-                        </div>
-                      </div>
-                      <span
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: 600,
-                          letterSpacing: "0.06em",
-                          textTransform: "uppercase",
-                          color:
-                            item.type === "country"
-                              ? "#7dd3fc"
-                              : "var(--text-muted)",
-                          background:
-                            item.type === "country"
-                              ? "var(--accent-glow)"
-                              : "rgba(255,255,255,0.05)",
-                          padding: "4px 10px",
-                          borderRadius: "6px",
-                        }}
-                      >
-                        {item.type === "country" ? "View advisory" : "Learn more"}
-                      </span>
-                    </button>
-                  ))
-                ) : (
-                  <div
-                    style={{
-                      padding: "18px",
-                      color: "var(--text-dim)",
-                      fontSize: "14px",
-                      textAlign: "center",
-                    }}
-                  >
-                    No results found
-                  </div>
-                )}
-              </div>
+                /
+              </kbd>
             )}
           </div>
+
+          {/* Dropdown (widens beyond input so results are readable) */}
+          {focused && query.trim() && (
+            <div
+              role="listbox"
+              style={{
+                position: "absolute",
+                top: "calc(100% + 8px)",
+                left: 0,
+                zIndex: 2000,
+                minWidth: "380px",
+                background: "rgba(10, 18, 36, 0.98)",
+                border: "1px solid var(--border)",
+                borderRadius: "14px",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
+                backdropFilter: "blur(20px)",
+                overflow: "hidden",
+              }}
+            >
+              {results.length > 0 ? (
+                results.map((item, i) => (
+                  <button
+                    key={`${item.type}-${item.slug}`}
+                    role="option"
+                    aria-selected={i === activeIdx}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => handleSelect(item)}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "12px",
+                      width: "100%",
+                      padding: "12px 18px",
+                      border: "none",
+                      background:
+                        i === activeIdx
+                          ? "rgba(255,255,255,0.06)"
+                          : "transparent",
+                      color: "#e2e8f0",
+                      cursor: "pointer",
+                      fontFamily: "inherit",
+                      fontSize: "14px",
+                      textAlign: "left",
+                      transition: "background 0.1s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background =
+                        "rgba(255,255,255,0.05)";
+                      setActiveIdx(i);
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontSize: "18px",
+                        width: "26px",
+                        textAlign: "center",
+                      }}
+                    >
+                      {item.icon}
+                    </span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 600, fontSize: "14px" }}>
+                        {item.label}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "12px",
+                          color: "var(--text-dim)",
+                          marginTop: "2px",
+                        }}
+                      >
+                        {item.sub}
+                      </div>
+                    </div>
+                    <span
+                      style={{
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        color:
+                          item.type === "country"
+                            ? "#7dd3fc"
+                            : "var(--text-muted)",
+                        background:
+                          item.type === "country"
+                            ? "var(--accent-glow)"
+                            : "rgba(255,255,255,0.05)",
+                        padding: "4px 10px",
+                        borderRadius: "6px",
+                      }}
+                    >
+                      {item.type === "country" ? "Open brief" : "Learn more"}
+                    </span>
+                  </button>
+                ))
+              ) : (
+                <div
+                  style={{
+                    padding: "18px",
+                    color: "var(--text-dim)",
+                    fontSize: "14px",
+                    textAlign: "center",
+                  }}
+                >
+                  No results found
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
-        {/* Nav links — desktop */}
+        {/* ── Nav links (desktop) ──────────────────────────────────── */}
         <nav
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "4px",
+            gap: "2px",
             flexShrink: 0,
+            marginLeft: "auto",
           }}
           className="hidden-mobile"
         >
@@ -379,10 +416,10 @@ export default function SiteHeader() {
               href={item.href}
               className="nav-link"
               style={{
-                padding: "7px 14px",
+                padding: "8px 14px",
                 fontSize: "14px",
-                fontWeight: 500,
-                color: "var(--text-muted)",
+                fontWeight: 600,
+                color: "#cbd5e1",
                 textDecoration: "none",
                 borderRadius: "8px",
                 whiteSpace: "nowrap",
@@ -394,7 +431,204 @@ export default function SiteHeader() {
           ))}
         </nav>
 
-        {/* Mobile hamburger (visible < 768px via CSS) */}
+        {/* ── Divider between nav and language selector ────────────── */}
+        <div
+          aria-hidden="true"
+          className="hidden-mobile"
+          style={{
+            width: "1px",
+            height: "24px",
+            background: "rgba(255, 255, 255, 0.1)",
+            flexShrink: 0,
+            marginLeft: "6px",
+            marginRight: "6px",
+          }}
+        />
+
+        {/* ── Language selector (far right) ────────────────────────── */}
+        <div
+          ref={langRef}
+          style={{ position: "relative", flexShrink: 0 }}
+          className="hidden-mobile"
+        >
+          <button
+            onClick={() => setLangOpen((v) => !v)}
+            aria-label="Select language"
+            aria-expanded={langOpen}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "7px",
+              padding: "0 12px",
+              height: "40px",
+              borderRadius: "10px",
+              background: langOpen
+                ? "rgba(255,255,255,0.06)"
+                : "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              color: "#cbd5e1",
+              fontFamily: "inherit",
+              fontSize: "13px",
+              fontWeight: 600,
+              letterSpacing: "0.02em",
+              cursor: "pointer",
+              transition: "all 0.15s ease",
+            }}
+            onMouseEnter={(e) => {
+              if (!langOpen) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!langOpen) {
+                e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+              }
+            }}
+          >
+            {/* Globe icon */}
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+              style={{ opacity: 0.75 }}
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+            </svg>
+            {activeLang}
+            <svg
+              width="11"
+              height="11"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              style={{
+                opacity: 0.6,
+                transform: langOpen ? "rotate(180deg)" : "none",
+                transition: "transform 0.2s ease",
+              }}
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </button>
+
+          {langOpen && (
+            <div
+              role="listbox"
+              style={{
+                position: "absolute",
+                top: "calc(100% + 8px)",
+                right: 0,
+                zIndex: 2000,
+                minWidth: "180px",
+                background: "rgba(10, 18, 36, 0.98)",
+                border: "1px solid var(--border)",
+                borderRadius: "12px",
+                boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
+                backdropFilter: "blur(20px)",
+                overflow: "hidden",
+                padding: "4px",
+              }}
+            >
+              {LANGUAGES.map((lang) => {
+                const isActive = lang.code === activeLang;
+                return (
+                  <button
+                    key={lang.code}
+                    role="option"
+                    aria-selected={isActive}
+                    onClick={() => {
+                      setActiveLang(lang.code);
+                      setLangOpen(false);
+                    }}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      width: "100%",
+                      padding: "10px 12px",
+                      border: "none",
+                      borderRadius: "8px",
+                      background: isActive
+                        ? "rgba(56,189,248,0.1)"
+                        : "transparent",
+                      color: isActive ? "#7dd3fc" : "#cbd5e1",
+                      fontFamily: "inherit",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      textAlign: "left",
+                      cursor: "pointer",
+                      transition: "background 0.1s",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background =
+                          "rgba(255,255,255,0.05)";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.background = "transparent";
+                      }
+                    }}
+                  >
+                    <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          fontWeight: 700,
+                          letterSpacing: "0.05em",
+                          color: isActive ? "#7dd3fc" : "#64748b",
+                          minWidth: "20px",
+                        }}
+                      >
+                        {lang.code}
+                      </span>
+                      {lang.label}
+                    </span>
+                    {isActive && (
+                      <svg
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    )}
+                  </button>
+                );
+              })}
+              <div
+                style={{
+                  marginTop: "4px",
+                  padding: "8px 12px",
+                  borderTop: "1px solid rgba(255,255,255,0.06)",
+                  fontSize: "11px",
+                  color: "#475569",
+                  lineHeight: 1.4,
+                }}
+              >
+                Translation coming soon — currently English only
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Mobile hamburger (visible below breakpoint via CSS) */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
@@ -406,6 +640,7 @@ export default function SiteHeader() {
             color: "var(--text-muted)",
             cursor: "pointer",
             padding: "8px",
+            marginLeft: "auto",
           }}
         >
           <svg
@@ -440,7 +675,7 @@ export default function SiteHeader() {
           style={{
             display: "none",
             flexDirection: "column",
-            padding: "8px 24px 16px",
+            padding: "8px 28px 16px",
             borderTop: "1px solid var(--border)",
           }}
         >
@@ -461,12 +696,52 @@ export default function SiteHeader() {
               {item.label}
             </a>
           ))}
+          {/* Language options in mobile menu */}
+          <div
+            style={{
+              display: "flex",
+              gap: "6px",
+              flexWrap: "wrap",
+              paddingTop: "12px",
+            }}
+          >
+            {LANGUAGES.map((lang) => {
+              const isActive = lang.code === activeLang;
+              return (
+                <button
+                  key={lang.code}
+                  onClick={() => {
+                    setActiveLang(lang.code);
+                    setMobileOpen(false);
+                  }}
+                  style={{
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    letterSpacing: "0.04em",
+                    border: `1px solid ${
+                      isActive ? "rgba(56,189,248,0.3)" : "rgba(255,255,255,0.08)"
+                    }`,
+                    background: isActive
+                      ? "rgba(56,189,248,0.1)"
+                      : "rgba(255,255,255,0.03)",
+                    color: isActive ? "#7dd3fc" : "#94a3b8",
+                    fontFamily: "inherit",
+                    cursor: "pointer",
+                  }}
+                >
+                  {lang.code}
+                </button>
+              );
+            })}
+          </div>
         </nav>
       )}
 
       {/* Responsive breakpoint styles */}
       <style jsx>{`
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
           .hidden-mobile {
             display: none !important;
           }

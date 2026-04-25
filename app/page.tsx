@@ -38,145 +38,60 @@ export default function Home() {
     router.push(`/itinerary?countries=${selectedCountries.join(",")}`);
   };
 
+  const hasDestinations = selectedCountries.length > 0;
+
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────────────── */}
-      <section
-        style={{
-          position: "relative",
-          overflow: "hidden",
-          background: "var(--background)",
-        }}
-      >
-        {/* Starfield */}
-        <div
-          style={{
-            position: "absolute",
-            inset: 0,
-            backgroundImage: `
-              radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.35) 0%, transparent 100%),
-              radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.25) 0%, transparent 100%),
-              radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.2) 0%, transparent 100%),
-              radial-gradient(1.5px 1.5px at 70% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
-              radial-gradient(0.5px 0.5px at 50% 40%, rgba(255,255,255,0.15) 0%, transparent 100%),
-              radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.25) 0%, transparent 100%),
-              radial-gradient(0.5px 0.5px at 90% 80%, rgba(255,255,255,0.2) 0%, transparent 100%),
-              radial-gradient(1px 1px at 60% 90%, rgba(255,255,255,0.3) 0%, transparent 100%),
-              radial-gradient(1.5px 1.5px at 25% 35%, rgba(255,255,255,0.45) 0%, transparent 100%),
-              radial-gradient(0.5px 0.5px at 45% 55%, rgba(255,255,255,0.15) 0%, transparent 100%)
-            `,
-            pointerEvents: "none",
-          }}
-        />
-        {/* Radial accent glow */}
-        <div
-          style={{
-            position: "absolute",
-            top: "-20%",
-            right: "-15%",
-            width: "70%",
-            height: "140%",
-            background:
-              "radial-gradient(circle at 50% 40%, rgba(56,189,248,0.05) 0%, transparent 55%)",
-            pointerEvents: "none",
-          }}
-        />
+      <section className="hero-shell">
+        <div className="hero-container">
+          <div className="hero-panel">
+            {/* Decorative layers */}
+            <div className="hero-stars" aria-hidden />
+            <div className="hero-aurora hero-aurora-right" aria-hidden />
+            <div className="hero-aurora hero-aurora-left" aria-hidden />
 
-        <div
-          style={{
-            maxWidth: "1320px",
-            margin: "0 auto",
-            padding: "28px 24px 0",
-            position: "relative",
-            zIndex: 1,
-          }}
-        >
+            <div className="hero-grid">
+              {/* ── Left column: copy + search card ─────────────────── */}
+              <div className="hero-copy animate-fade-up">
+                <div className="hero-badge">
+                  <span className="hero-badge-dot" />
+                  Physician-curated travel medicine
+                </div>
 
-          <div className="hero-grid">
-            {/* Left column */}
-            <div
-              className="animate-fade-up"
-              style={{ maxWidth: "580px", position: "relative", zIndex: 2 }}
-            >
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "7px 16px",
-                  marginBottom: "24px",
-                  borderRadius: "999px",
-                  background: "rgba(255,255,255,0.03)",
-                  border: "1px solid var(--border)",
-                  color: "var(--text-dim)",
-                  fontSize: "12px",
-                  fontWeight: 600,
-                  letterSpacing: "0.03em",
-                }}
-              >
-                <span
-                  style={{
-                    width: "5px",
-                    height: "5px",
-                    borderRadius: "50%",
-                    background: "var(--accent)",
-                    display: "inline-block",
-                  }}
-                />
-                Physician-curated travel medicine
-              </div>
+                <h1 className="hero-title">
+                  Travel safe.
+                  <br />
+                  <span>Travel informed.</span>
+                </h1>
 
-              <h1
-                style={{
-                  fontSize: "clamp(44px, 5vw, 72px)",
-                  fontWeight: 800,
-                  lineHeight: 0.95,
-                  letterSpacing: "-0.05em",
-                  margin: 0,
-                  marginBottom: "24px",
-                }}
-              >
-                Travel safe.
-                <br />
-                <span style={{ color: "var(--accent)" }}>Travel informed.</span>
-              </h1>
+                <p className="hero-description">
+                  Evidence-based vaccine recommendations, malaria prophylaxis and
+                  outbreak alerts — tailored to your itinerary.
+                </p>
 
-              <p
-                className="animate-fade-up-1"
-                style={{
-                  fontSize: "16px",
-                  color: "var(--text-muted)",
-                  lineHeight: 1.7,
-                  marginBottom: "32px",
-                  maxWidth: "480px",
-                }}
-              >
-                Evidence-based vaccine recommendations, malaria prophylaxis,
-                outbreak alerts, and destination-specific prevention — tailored
-                to your itinerary.
-              </p>
+                {/* ── Search card ──────────────────────────────────── */}
+                <div className="hero-card">
+                  <div className="hero-card-top">
+                    <div>
+                      <p className="hero-card-label">Build your trip</p>
+                      <p className="hero-card-subtitle">
+                        Add one or more destinations to generate a personalized
+                        health brief.
+                      </p>
+                    </div>
+                    <span
+                      className={`hero-card-status ${
+                        hasDestinations ? "is-active" : ""
+                      }`}
+                    >
+                      {hasDestinations
+                        ? `${selectedCountries.length} selected`
+                        : "Ready"}
+                    </span>
+                  </div>
 
-              <div className="animate-fade-up-2">
-                <DestinationSearch
-                  selectedCountries={selectedCountries}
-                  onAddCountry={addCountry}
-                />
-              </div>
-
-              {/* Selected chips + go button */}
-              <div
-                className="animate-fade-up-3"
-                style={{ marginTop: "20px", minHeight: "56px" }}
-              >
-                {selectedCountries.length > 0 ? (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      flexWrap: "wrap",
-                      gap: "8px",
-                    }}
-                  >
+                  <div className="hero-chip-area">
                     {selectedCountries.map((slug) => (
                       <CountryChip
                         key={slug}
@@ -184,40 +99,33 @@ export default function Home() {
                         onRemove={removeCountry}
                       />
                     ))}
+                    {!hasDestinations && (
+                      <span className="hero-chip-placeholder">
+                        No destinations selected yet
+                      </span>
+                    )}
+                  </div>
+
+                  <DestinationSearch
+                    selectedCountries={selectedCountries}
+                    onAddCountry={addCountry}
+                  />
+
+                  <p className="hero-helper">
+                    Press <kbd className="hero-kbd">/</kbd> to search &middot;
+                    Free, no account needed
+                  </p>
+
+                  {hasDestinations && (
                     <button
+                      className="hero-go-btn"
                       onClick={goToItinerary}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "6px",
-                        borderRadius: "999px",
-                        padding: "10px 22px 10px 18px",
-                        background: "linear-gradient(135deg, #0ea5e9, #38bdf8)",
-                        color: "#020617",
-                        border: "none",
-                        fontSize: "13px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        fontFamily: "inherit",
-                        letterSpacing: "-0.01em",
-                        boxShadow: "0 6px 24px rgba(56,189,248,0.25)",
-                        transition: "transform 0.15s, box-shadow 0.15s",
-                      }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.transform = "translateY(-1px)";
-                        e.currentTarget.style.boxShadow =
-                          "0 8px 32px rgba(56,189,248,0.35)";
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.transform = "translateY(0)";
-                        e.currentTarget.style.boxShadow =
-                          "0 6px 24px rgba(56,189,248,0.25)";
-                      }}
+                      aria-label="Get health brief"
                     >
-                      Get health brief
+                      <span className="hero-go-btn-label">GO</span>
                       <svg
-                        width="14"
-                        height="14"
+                        width="22"
+                        height="22"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -228,82 +136,38 @@ export default function Home() {
                         <path d="M5 12h14M12 5l7 7-7 7" />
                       </svg>
                     </button>
-                  </div>
-                ) : (
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "var(--text-dim)",
-                      margin: 0,
-                    }}
-                  >
-                    Or explore visually — click countries on the globe, or
-                    browse popular routes below
-                  </p>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
 
-            {/* Right column — Globe */}
-            <div
-              className="animate-fade-up-3"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "flex-end",
-                minWidth: 0,
-                position: "relative",
-              }}
-            >
-              <GlobeHero
-                selectedCountries={selectedCountries}
-                onToggleCountry={toggleCountry}
-              />
+              {/* ── Right column: globe ─────────────────────────────── */}
+              <div className="hero-visual animate-fade-up-3">
+                <div className="hero-globe-wrap">
+                  <GlobeHero
+                    selectedCountries={selectedCountries}
+                    onToggleCountry={toggleCountry}
+                  />
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Stats bar */}
-          <div
-            className="animate-fade-up-4"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "48px",
-              flexWrap: "wrap",
-              marginTop: "48px",
-              padding: "28px 0",
-              borderTop: "1px solid var(--border)",
-              borderBottom: "1px solid var(--border)",
-            }}
-          >
-            {[
-              { value: "95+", label: "Destinations" },
-              { value: "9", label: "Diseases covered" },
-              { value: "CDC", label: "Source aligned" },
-              { value: "Free", label: "Always" },
-            ].map((stat) => (
-              <div key={stat.label} style={{ textAlign: "center" }}>
-                <div
-                  style={{
-                    fontSize: "28px",
-                    fontWeight: 800,
-                    letterSpacing: "-0.04em",
-                  }}
-                >
-                  {stat.value}
-                </div>
-                <div
-                  style={{
-                    fontSize: "12px",
-                    color: "var(--text-dim)",
-                    marginTop: "2px",
-                    fontWeight: 500,
-                  }}
-                >
-                  {stat.label}
-                </div>
-              </div>
-            ))}
+      {/* ── Stats strip (proof row) ───────────────────────────────────── */}
+      <section className="stats-strip">
+        <div className="stats-strip-inner">
+          <div className="stats-strip-item">
+            <span className="stats-strip-num">95+</span>
+            <span className="stats-strip-label">Destinations covered</span>
+          </div>
+          <div className="stats-strip-item">
+            <span className="stats-strip-num">9</span>
+            <span className="stats-strip-label">Diseases tracked</span>
+          </div>
+          <div className="stats-strip-item">
+            <span className="stats-strip-num">CDC</span>
+            <span className="stats-strip-label">Aligned guidance</span>
           </div>
         </div>
       </section>
@@ -322,33 +186,6 @@ export default function Home() {
       <TrustBanner />
 
       <SiteFooter />
-
-      {/* ── Responsive hero grid ──────────────────────────────────────── */}
-      <style jsx>{`
-        .hero-grid {
-          display: grid;
-          grid-template-columns: minmax(0, 580px) minmax(0, 1fr);
-          align-items: center;
-          column-gap: 32px;
-          min-height: calc(100vh - 160px);
-        }
-        @media (max-width: 1024px) {
-          .hero-grid {
-            grid-template-columns: 1fr;
-            min-height: auto;
-            padding-top: 24px;
-          }
-          .hero-grid > div:last-child {
-            justify-content: center !important;
-            margin-top: 32px;
-          }
-        }
-        @media (max-width: 640px) {
-          .hero-grid > div:last-child {
-            display: none !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
