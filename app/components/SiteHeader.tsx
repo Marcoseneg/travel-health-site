@@ -45,7 +45,7 @@ const LANGUAGES = [
   { code: "EN", label: "English" },
   { code: "DE", label: "Deutsch" },
   { code: "FR", label: "Français" },
-  { code: "ES", label: "Español" },
+  { code: "IT", label: "Italiano" },
 ];
 
 export default function SiteHeader() {

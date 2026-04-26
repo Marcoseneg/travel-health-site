@@ -134,7 +134,7 @@ export default async function CountryPage({ params }: Props) {
           </div>
         )}
 
-        {/* ── Risk summary row ────────────────────────────────────── */}
+        {/* ── Risk summary row — each card LINKS to disease page ──────── */}
         <div
           style={{
             display: "grid",
@@ -143,10 +143,10 @@ export default async function CountryPage({ params }: Props) {
             marginBottom: "48px",
           }}
         >
-          <RiskCard name="Malaria" badge={malaria} />
-          <RiskCard name="Dengue" badge={dengue} />
-          <RiskCard name="Yellow fever" badge={yf} />
-          <RiskCard name="Chikungunya" badge={chik} />
+          <RiskCard name="Malaria" diseaseSlug="malaria" badge={malaria} />
+          <RiskCard name="Dengue" diseaseSlug="dengue" badge={dengue} />
+          <RiskCard name="Yellow fever" diseaseSlug="yellow-fever" badge={yf} />
+          <RiskCard name="Chikungunya" diseaseSlug="chikungunya" badge={chik} />
         </div>
 
         {hasDetailed ? (
@@ -163,38 +163,18 @@ export default async function CountryPage({ params }: Props) {
             >
               {hasRichVaccines ? (
                 <>
-                  <VaccineColumnRich
-                    heading="For all travelers"
-                    items={allTravelerVaccines}
-                    accent="#38bdf8"
-                  />
-                  <VaccineColumnRich
-                    heading="For specific travelers"
-                    items={specificTravelerVaccines}
-                    accent="rgba(148,163,184,0.7)"
-                    muted
-                  />
+                  <VaccineColumnRich heading="For all travelers" items={allTravelerVaccines} accent="#38bdf8" />
+                  <VaccineColumnRich heading="For specific travelers" items={specificTravelerVaccines} accent="rgba(148,163,184,0.7)" muted />
                 </>
               ) : (
                 <>
-                  <VaccineColumnSimple
-                    heading="Recommended"
-                    items={health!.vaccinesRecommended}
-                    accent="#38bdf8"
-                  />
-                  <VaccineColumnSimple
-                    heading="Consider based on region & activities"
-                    items={health!.vaccinesConsider}
-                    accent="rgba(148,163,184,0.7)"
-                    muted
-                  />
+                  <VaccineColumnSimple heading="Recommended" items={health!.vaccinesRecommended} accent="#38bdf8" />
+                  <VaccineColumnSimple heading="Consider based on region & activities" items={health!.vaccinesConsider} accent="rgba(148,163,184,0.7)" muted />
                 </>
               )}
             </div>
 
-            {/* ── Diseases (only render those with data) ────────────────
-                One per row, full-width, text-left + map-right when
-                a map is available. The grid wraps on narrow viewports.   */}
+            {/* ── Disease cards (titles are now LINKS to disease pages) ─── */}
             {hasDiseases && (
               <>
                 <SectionTitle title="Disease-specific guidance" />
@@ -207,36 +187,16 @@ export default async function CountryPage({ params }: Props) {
                   }}
                 >
                   {health!.diseases!.malaria && (
-                    <DiseaseCard
-                      title="Malaria"
-                      slug="malaria"
-                      badge={malaria}
-                      summary={health!.diseases!.malaria}
-                    />
+                    <DiseaseCard title="Malaria" slug="malaria" badge={malaria} summary={health!.diseases!.malaria} />
                   )}
                   {health!.diseases!.yellowFever && (
-                    <DiseaseCard
-                      title="Yellow fever"
-                      slug="yellow-fever"
-                      badge={yf}
-                      summary={health!.diseases!.yellowFever}
-                    />
+                    <DiseaseCard title="Yellow fever" slug="yellow-fever" badge={yf} summary={health!.diseases!.yellowFever} />
                   )}
                   {health!.diseases!.dengue && (
-                    <DiseaseCard
-                      title="Dengue"
-                      slug="dengue"
-                      badge={dengue}
-                      summary={health!.diseases!.dengue}
-                    />
+                    <DiseaseCard title="Dengue" slug="dengue" badge={dengue} summary={health!.diseases!.dengue} />
                   )}
                   {health!.diseases!.chikungunya && (
-                    <DiseaseCard
-                      title="Chikungunya"
-                      slug="chikungunya"
-                      badge={chik}
-                      summary={health!.diseases!.chikungunya}
-                    />
+                    <DiseaseCard title="Chikungunya" slug="chikungunya" badge={chik} summary={health!.diseases!.chikungunya} />
                   )}
                 </div>
               </>
@@ -366,23 +326,54 @@ function SectionTitle({ title }: { title: string }) {
   );
 }
 
-function RiskCard({ name, badge }: { name: string; badge: RiskBadge }) {
+// ── Risk card now wraps in a Link to the disease page ──────────────────────
+function RiskCard({
+  name,
+  diseaseSlug,
+  badge,
+}: {
+  name: string;
+  diseaseSlug: string;
+  badge: RiskBadge;
+}) {
   return (
-    <div
+    <Link
+      href={`/diseases/${diseaseSlug}`}
       style={{
+        display: "block",
         borderRadius: "14px",
         border: `1px solid ${badge.border}`,
         background: badge.background,
         padding: "14px 16px",
+        textDecoration: "none",
+        color: "inherit",
+        transition: "transform 0.15s, box-shadow 0.15s",
       }}
     >
-      <p style={{ fontSize: "11px", fontWeight: 700, color: "#94a3b8", letterSpacing: "0.06em", textTransform: "uppercase", margin: "0 0 6px" }}>
+      <p
+        style={{
+          fontSize: "11px",
+          fontWeight: 700,
+          color: "#94a3b8",
+          letterSpacing: "0.06em",
+          textTransform: "uppercase",
+          margin: "0 0 6px",
+        }}
+      >
         {name}
       </p>
-      <p style={{ fontSize: "15px", fontWeight: 700, color: badge.color, margin: 0, letterSpacing: "-0.01em" }}>
+      <p
+        style={{
+          fontSize: "15px",
+          fontWeight: 700,
+          color: badge.color,
+          margin: 0,
+          letterSpacing: "-0.01em",
+        }}
+      >
         {badge.label}
       </p>
-    </div>
+    </Link>
   );
 }
 
@@ -466,10 +457,7 @@ function VaccineColumnRich({ heading, items, accent, muted }: { heading: string;
               <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: v.note ? "4px" : 0 }}>
                 <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: accent, flexShrink: 0 }} />
                 {v.slug ? (
-                  <Link
-                    href={`/diseases/${v.slug}`}
-                    style={{ fontSize: "14.5px", fontWeight: 700, color: muted ? "#cbd5e1" : "#e2e8f0", textDecoration: "none", letterSpacing: "-0.01em" }}
-                  >
+                  <Link href={`/diseases/${v.slug}`} style={{ fontSize: "14.5px", fontWeight: 700, color: muted ? "#cbd5e1" : "#e2e8f0", textDecoration: "none", letterSpacing: "-0.01em" }}>
                     {v.name}
                   </Link>
                 ) : (
@@ -493,6 +481,7 @@ function VaccineColumnRich({ heading, items, accent, muted }: { heading: string;
   );
 }
 
+// ── Disease card with title NOW WRAPPED IN A LINK ─────────────────────────
 function DiseaseCard({
   title,
   slug,
@@ -504,17 +493,10 @@ function DiseaseCard({
   badge: RiskBadge;
   summary: DiseaseSummary;
 }) {
-  // localMapImageUrl is preferred over cdcMapImageUrl.
   const mapSrc = summary.localMapImageUrl || summary.cdcMapImageUrl;
   const hasMap = !!mapSrc;
   const hasKeyFacts = !!summary.keyFacts?.length;
-
-  // When the card has a map but NO key facts, the text column ends up much
-  // shorter than the map column → big empty void on the left. Vertically
-  // center the text in that case to balance the card. When facts ARE present,
-  // top-align so prose flows naturally into the facts table.
-  const textColumnJustify =
-    hasMap && !hasKeyFacts ? "center" : "flex-start";
+  const textColumnJustify = hasMap && !hasKeyFacts ? "center" : "flex-start";
 
   return (
     <div
@@ -525,7 +507,7 @@ function DiseaseCard({
         padding: "22px 24px",
       }}
     >
-      {/* Header row: title + risk badge */}
+      {/* Header row: title + risk badge — title is now a LINK */}
       <div
         style={{
           display: "flex",
@@ -535,9 +517,38 @@ function DiseaseCard({
           marginBottom: "14px",
         }}
       >
-        <h3 style={{ fontSize: "16px", fontWeight: 700, margin: 0, letterSpacing: "-0.02em", color: "#f8fafc" }}>
-          {title}
-        </h3>
+        <Link
+          href={`/diseases/${slug}`}
+          style={{
+            fontSize: "16px",
+            fontWeight: 700,
+            margin: 0,
+            letterSpacing: "-0.02em",
+            color: "#f8fafc",
+            textDecoration: "none",
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          <h3 style={{ margin: 0, fontSize: "inherit", fontWeight: "inherit", letterSpacing: "inherit", color: "inherit" }}>
+            {title}
+          </h3>
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#475569"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            style={{ marginTop: "2px" }}
+            aria-hidden="true"
+          >
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </Link>
         <span
           style={{
             fontSize: "10.5px",
@@ -555,7 +566,7 @@ function DiseaseCard({
         </span>
       </div>
 
-      {/* Body row: text on left, map on right (stacks below on narrow widths). */}
+      {/* Body row: text on left, map on right */}
       <div
         style={{
           display: "flex",
@@ -564,8 +575,6 @@ function DiseaseCard({
           alignItems: "stretch",
         }}
       >
-        {/* Text column — fills remaining space. Vertical alignment depends on
-            whether the card has a key-facts block (top-align) or not (center). */}
         <div
           style={{
             flex: "1 1 280px",
@@ -633,10 +642,6 @@ function DiseaseCard({
           </div>
         </div>
 
-        {/* Map column — fixed width, stacks below text on narrow viewports
-            because of flex-wrap on the parent. The CdcMapImage component
-            quietly removes itself if the image fails to load, leaving the
-            text column at full width. */}
         {hasMap && (
           <div
             style={{
@@ -657,9 +662,6 @@ function DiseaseCard({
   );
 }
 
-// ── Key facts: small labeled-row block inside disease cards ─────────────────
-// Renders as a compact two-column "label · value" table. Stays understated
-// so prose remains the lead element; this is at-a-glance reference data.
 function KeyFactsBlock({ facts }: { facts: KeyFact[] }) {
   return (
     <dl
@@ -690,14 +692,7 @@ function KeyFactsBlock({ facts }: { facts: KeyFact[] }) {
           >
             {f.label}
           </dt>
-          <dd
-            style={{
-              margin: 0,
-              fontSize: "13px",
-              color: "#e2e8f0",
-              lineHeight: 1.5,
-            }}
-          >
+          <dd style={{ margin: 0, fontSize: "13px", color: "#e2e8f0", lineHeight: 1.5 }}>
             {f.value}
           </dd>
         </div>
