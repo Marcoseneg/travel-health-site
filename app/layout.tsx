@@ -1,5 +1,7 @@
 import "./globals.css";
 import SiteHeader from "./components/SiteHeader";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export const metadata = {
   title: "TravelMed — Physician-Built Travel Health",
@@ -23,6 +25,8 @@ export default function RootLayout({
       >
         <SiteHeader />
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
