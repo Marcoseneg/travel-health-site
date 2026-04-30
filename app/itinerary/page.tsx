@@ -4,11 +4,12 @@ import {
   SUPPORTED_COUNTRIES,
   type CountrySlug,
 } from "../lib/travelData";
-import { countries as healthData, type CountryInfo } from "../../data/countries";
+import { countries as healthData, type CountryInfo, type DiseaseSummary } from "../../data/countries";
 import { malariaRiskByCountry } from "../lib/malariaData";
 import { yellowFeverByCountry } from "../lib/yellowFeverData";
 import { dengueRiskByCountry } from "../lib/dengueData";
 import { chikungunyaRiskByCountry } from "../lib/chikungunyaData";
+import CdcMapImage from "../components/CdcMapImage";
 
 type Props = {
   searchParams: Promise<{ countries?: string }>;
@@ -172,6 +173,51 @@ export default async function ItineraryPage({ searchParams }: Props) {
 
   const missingData = enriched.filter((c) => !c.health);
 
+  // ── Combined disease aggregation ───────────────────────────────────────────
+  // For each disease type, gather all per-country DiseaseSummary entries.
+  // Used to render a single card per disease with side-by-side maps for each
+  // country that has that disease. Only diseases with at least one country
+  // contributing detail data are rendered.
+  type DiseaseKey = "malaria" | "yellowFever" | "dengue" | "chikungunya";
+  type DiseaseCountryEntry = {
+    slug: string;
+    label: string;
+    flag: string;
+    badge: RiskBadge;
+    summary: DiseaseSummary;
+  };
+
+  const collectDisease = (
+    key: DiseaseKey,
+    riskLookup: Record<string, string>,
+  ): DiseaseCountryEntry[] => {
+    return enriched
+      .map((c) => {
+        const summary = c.health?.diseases?.[key];
+        if (!summary) return null;
+        return {
+          slug: c.slug,
+          label: c.label,
+          flag: c.flag,
+          badge: badge(riskLookup[c.label]),
+          summary,
+        };
+      })
+      .filter((x): x is DiseaseCountryEntry => x !== null)
+      .sort((a, b) => b.badge.weight - a.badge.weight);
+  };
+
+  const combinedMalaria = collectDisease("malaria", malariaRiskByCountry);
+  const combinedYF = collectDisease("yellowFever", yellowFeverByCountry);
+  const combinedDengue = collectDisease("dengue", dengueRiskByCountry);
+  const combinedChik = collectDisease("chikungunya", chikungunyaRiskByCountry);
+
+  const hasAnyDiseaseDetail =
+    combinedMalaria.length > 0 ||
+    combinedYF.length > 0 ||
+    combinedDengue.length > 0 ||
+    combinedChik.length > 0;
+
   return (
     <main style={pageBg}>
       <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "32px 24px 80px" }}>
@@ -288,46 +334,92 @@ export default async function ItineraryPage({ searchParams }: Props) {
           </p>
         </Section>
 
-        {/* ── Malaria per country ─────────────────────────────────── */}
-        <Section title="Malaria">
-          {malariaBreakdown.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {malariaBreakdown.map((c) => (
-                <PerCountryRow
-                  key={c.slug}
-                  flag={c.flag}
-                  label={c.label}
-                  badge={c.b}
-                  prose={c.health ? malariaProse(c.health.malariaRisk) : "Risk indicator only — detailed guidance coming soon."}
+        {/* ── Disease-specific guidance ────────────────────────────
+            Combined cards: one per disease, with side-by-side maps for
+            every country in this itinerary that has detail data.
+            Falls back to the simpler text breakdown when no detail
+            data exists for any country. ──────────────────────────── */}
+        {hasAnyDiseaseDetail ? (
+          <Section title="Disease-specific guidance">
+            <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              {combinedMalaria.length > 0 && (
+                <CombinedDiseaseCard
+                  title="Malaria"
+                  diseaseSlug="malaria"
+                  entries={combinedMalaria}
+                  totalCountries={enriched.length}
                 />
-              ))}
+              )}
+              {combinedYF.length > 0 && (
+                <CombinedDiseaseCard
+                  title="Yellow fever"
+                  diseaseSlug="yellow-fever"
+                  entries={combinedYF}
+                  totalCountries={enriched.length}
+                />
+              )}
+              {combinedDengue.length > 0 && (
+                <CombinedDiseaseCard
+                  title="Dengue"
+                  diseaseSlug="dengue"
+                  entries={combinedDengue}
+                  totalCountries={enriched.length}
+                />
+              )}
+              {combinedChik.length > 0 && (
+                <CombinedDiseaseCard
+                  title="Chikungunya"
+                  diseaseSlug="chikungunya"
+                  entries={combinedChik}
+                  totalCountries={enriched.length}
+                />
+              )}
             </div>
-          ) : (
-            <p style={proseStyle}>No significant malaria risk identified across this itinerary.</p>
-          )}
-        </Section>
+          </Section>
+        ) : (
+          // Fallback: when none of the selected countries has detailed
+          // disease data yet, show the lightweight per-country text rows.
+          <>
+            <Section title="Malaria">
+              {malariaBreakdown.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {malariaBreakdown.map((c) => (
+                    <PerCountryRow
+                      key={c.slug}
+                      flag={c.flag}
+                      label={c.label}
+                      badge={c.b}
+                      prose={c.health ? malariaProse(c.health.malariaRisk) : "Risk indicator only — detailed guidance coming soon."}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p style={proseStyle}>No significant malaria risk identified across this itinerary.</p>
+              )}
+            </Section>
 
-        {/* ── Yellow fever per country ────────────────────────────── */}
-        <Section title="Yellow fever">
-          {yfBreakdown.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-              {yfBreakdown.map((c) => (
-                <PerCountryRow
-                  key={c.slug}
-                  flag={c.flag}
-                  label={c.label}
-                  badge={c.b}
-                  prose={c.health ? yellowFeverProse(c.health.yellowFever) : "Risk indicator only — detailed guidance coming soon."}
-                />
-              ))}
-              <p style={{ ...footnoteStyle, margin: "4px 0 0" }}>
-                Entry requirements may also depend on transit and prior stay in endemic areas.
-              </p>
-            </div>
-          ) : (
-            <p style={proseStyle}>No yellow fever vaccination requirement apparent for this itinerary.</p>
-          )}
-        </Section>
+            <Section title="Yellow fever">
+              {yfBreakdown.length > 0 ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {yfBreakdown.map((c) => (
+                    <PerCountryRow
+                      key={c.slug}
+                      flag={c.flag}
+                      label={c.label}
+                      badge={c.b}
+                      prose={c.health ? yellowFeverProse(c.health.yellowFever) : "Risk indicator only — detailed guidance coming soon."}
+                    />
+                  ))}
+                  <p style={{ ...footnoteStyle, margin: "4px 0 0" }}>
+                    Entry requirements may also depend on transit and prior stay in endemic areas.
+                  </p>
+                </div>
+              ) : (
+                <p style={proseStyle}>No yellow fever vaccination requirement apparent for this itinerary.</p>
+              )}
+            </Section>
+          </>
+        )}
 
         {/* ── Food/Water + Mosquito (aggregate, apply broadly) ────── */}
         <div
@@ -759,6 +851,214 @@ function PerCountryRow({
       >
         {badge.label}
       </span>
+    </div>
+  );
+}
+
+// ── Combined disease card for the multi-country itinerary view ──────────────
+// Shows ONE card per disease, with a small per-country panel inside the body.
+// Each per-country panel has: flag, country name, risk badge, brief prose,
+// and an embedded CDC map (with click-to-zoom). Falls back gracefully when
+// some countries have no map URL set.
+type DiseaseCountryEntry = {
+  slug: string;
+  label: string;
+  flag: string;
+  badge: RiskBadge;
+  summary: DiseaseSummary;
+};
+
+function CombinedDiseaseCard({
+  title,
+  diseaseSlug,
+  entries,
+  totalCountries,
+}: {
+  title: string;
+  diseaseSlug: string;
+  entries: DiseaseCountryEntry[];
+  totalCountries: number;
+}) {
+  // Pick the most severe badge across all entries to show in the header
+  const peakBadge = entries
+    .map((e) => e.badge)
+    .reduce((a, b) => (b.weight > a.weight ? b : a), entries[0].badge);
+
+  return (
+    <div
+      style={{
+        borderRadius: "14px",
+        border: "1px solid rgba(255,255,255,0.05)",
+        background: "rgba(255,255,255,0.015)",
+        padding: "20px 22px",
+      }}
+    >
+      {/* Header: linkable disease title + count chip + peak risk badge */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "12px",
+          flexWrap: "wrap",
+          marginBottom: "16px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          <Link
+            href={`/diseases/${diseaseSlug}`}
+            style={{
+              fontSize: "16px",
+              fontWeight: 700,
+              color: "#f8fafc",
+              letterSpacing: "-0.02em",
+              textDecoration: "none",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            {title}
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#475569"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Link>
+          <span
+            style={{
+              fontSize: "11px",
+              fontWeight: 600,
+              padding: "3px 10px",
+              borderRadius: "999px",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.06)",
+              color: "#94a3b8",
+              letterSpacing: "0.02em",
+            }}
+          >
+            {entries.length} of {totalCountries} {totalCountries === 1 ? "destination" : "destinations"}
+          </span>
+        </div>
+        <span
+          style={{
+            fontSize: "10.5px",
+            fontWeight: 700,
+            letterSpacing: "0.06em",
+            padding: "3px 10px",
+            borderRadius: "999px",
+            color: peakBadge.color,
+            background: peakBadge.background,
+            border: `1px solid ${peakBadge.border}`,
+            textTransform: "uppercase",
+          }}
+        >
+          {peakBadge.label}
+        </span>
+      </div>
+
+      {/* Per-country panels — flex-wrap so they sit side by side on wide
+          screens and stack on narrow ones. */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "14px",
+        }}
+      >
+        {entries.map((e) => {
+          const mapSrc = e.summary.localMapImageUrl || e.summary.cdcMapImageUrl;
+          return (
+            <div
+              key={e.slug}
+              style={{
+                flex: "1 1 280px",
+                minWidth: "240px",
+                maxWidth: "360px",
+                borderRadius: "12px",
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.04)",
+                padding: "14px 16px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              {/* Country header: flag + name + per-country badge */}
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "8px",
+                }}
+              >
+                <Link
+                  href={`/country/${e.slug}`}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    color: "#f1f5f9",
+                    textDecoration: "none",
+                    minWidth: 0,
+                  }}
+                >
+                  <span style={{ fontSize: "18px", lineHeight: 1 }}>{e.flag}</span>
+                  <span style={{ fontSize: "13.5px", fontWeight: 600, letterSpacing: "-0.01em" }}>
+                    {e.label}
+                  </span>
+                </Link>
+                <span
+                  style={{
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    letterSpacing: "0.04em",
+                    padding: "2px 7px",
+                    borderRadius: "999px",
+                    color: e.badge.color,
+                    background: e.badge.background,
+                    border: `1px solid ${e.badge.border}`,
+                    textTransform: "uppercase",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {e.badge.label}
+                </span>
+              </div>
+
+              {/* Risk summary prose - kept short */}
+              <p
+                style={{
+                  fontSize: "12.5px",
+                  color: "#cbd5e1",
+                  lineHeight: 1.55,
+                  margin: 0,
+                }}
+              >
+                {e.summary.riskSummary}
+              </p>
+
+              {/* Embedded map (if available - fails silently if URL broken) */}
+              {mapSrc && (
+                <CdcMapImage
+                  src={mapSrc}
+                  alt={`${title} risk map for ${e.label}`}
+                  caption={e.summary.mapCaption}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

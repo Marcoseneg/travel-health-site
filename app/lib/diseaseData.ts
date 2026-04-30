@@ -63,35 +63,66 @@ export const diseases: Record<string, DiseaseInfo> = {
     vaccineAvailable: false,
     riskLevel: "high",
   },
+
+
+  // ── Dengue ─────────────────────────────────────────────────────────────
+  // Sources: SMW Eperon et al. 2024 (CC BY 4.0), WHO 2024 position paper,
+  // CDC Dengue resources (US Govt — public domain).
   dengue: {
-    label: "Dengue Fever",
+    label: "Dengue",
     icon: "🦟",
-    category: "Mosquito-borne virus",
-    transmission: "Transmitted by Aedes aegypti and Aedes albopictus mosquitoes, which bite primarily during the day.",
-    prevention: "Mosquito avoidance (repellent, protective clothing, screens). Dengvaxia vaccine available in some countries for previously infected individuals.",
+    category: "Mosquito-borne viral",
+
+    transmission:
+      "Spread by Aedes mosquitoes that bite during the day. Common in tropical and subtropical cities, peaking in the rainy season.",
+
+    prevention:
+      "Prevent daytime mosquito bites. Vaccination is recommended only for travelers with a prior dengue infection going to high-transmission regions.",
+
     preventionDetails: [
       {
+        type: "behavior",
+        title: "Daytime mosquito protection",
+        detail:
+          "Aedes mosquitoes bite during the day, especially morning and late afternoon. Use DEET (20–50%) or picaridin (20%) on exposed skin, wear long sleeves and trousers, and consider permethrin-treated clothing in high-risk areas.",
+      },
+      {
         type: "vaccine",
-        title: "Dengvaxia (limited use)",
-        detail: "Only for individuals aged 9–45 with prior confirmed dengue infection. Not recommended for dengue-naive travelers. Available in select endemic countries. Requires proof of previous infection.",
+        title: "Qdenga® — only for those previously infected",
+        detail:
+          "The dengue vaccine is recommended only for travelers ≥6 years with a documented previous dengue infection AND travel to a region with high ongoing transmission. Two doses, 3 months apart. Not recommended for first-time travelers, as protection is uneven across serotypes. The older vaccine, Dengvaxia®, is no longer used.",
       },
       {
-        type: "behavior",
-        title: "Daytime mosquito avoidance",
-        detail: "Aedes mosquitoes bite primarily during the day, especially early morning and late afternoon. Use DEET or Picaridin repellent during daytime. Wear protective clothing. Use screens and air conditioning where available.",
-      },
-      {
-        type: "behavior",
-        title: "Eliminate breeding sites",
-        detail: "Aedes breed in small containers of standing water. Empty flower pots, water containers, and other receptacles near your accommodation if possible.",
+        type: "post-exposure",
+        title: "Fever after travel — what to do",
+        detail:
+          "Any fever during or within weeks after travel should be checked by a doctor. Avoid aspirin and ibuprofen until dengue is ruled out — they can worsen bleeding risk. Use paracetamol for fever and pain.",
       },
     ],
-    symptoms: "High fever, severe headache, pain behind the eyes, joint/muscle pain, rash, mild bleeding. Severe dengue can cause hemorrhage and shock.",
-    treatment: "No specific antiviral treatment. Supportive care with hydration and pain management (avoid aspirin/NSAIDs). Hospitalization for severe cases.",
-    regions: "Tropical and subtropical regions worldwide, especially Southeast Asia, Latin America, the Caribbean, and the Pacific Islands.",
+
+    symptoms:
+      "High fever, severe headache, muscle and joint pain, nausea, sometimes a rash. Most infections cause no symptoms at all. Severe complications are rare in travelers but more likely after a second infection.",
+
+    treatment:
+      "No specific treatment. Rest, fluids, and paracetamol for symptoms. Avoid aspirin and NSAIDs. See a doctor for any fever during or after travel.",
+
+    regions:
+      "Tropical and subtropical regions worldwide — especially South and Southeast Asia, Latin America, and the Caribbean. Cases now also appear in southern Europe and the southern United States.",
+
     vaccineAvailable: true,
-    riskLevel: "high",
+    riskLevel: "moderate",
   },
+
+
+
+
+
+
+
+
+
+
+
   chikungunya: {
     label: "Chikungunya",
     icon: "🦟",
