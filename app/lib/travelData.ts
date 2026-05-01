@@ -14,6 +14,7 @@ export const SUPPORTED_COUNTRIES = {
   "dr-congo": { label: "Dem. Rep. Congo", lat: -4.04, lng: 21.76, flag: "🇨🇩", region: "Central Africa", continent: "Africa" },
   "cote-divoire": { label: "Côte d'Ivoire", lat: 7.54, lng: -5.55, flag: "🇨🇮", region: "West Africa", continent: "Africa" },
   djibouti: { label: "Djibouti", lat: 11.83, lng: 42.59, flag: "🇩🇯", region: "East Africa", continent: "Africa" },
+  egypt: { label: "Egypt", lat: 26.82, lng: 30.80, flag: "🇪🇬", region: "North Africa", continent: "Africa" },
   "equatorial-guinea": { label: "Eq. Guinea", lat: 1.65, lng: 10.27, flag: "🇬🇶", region: "Central Africa", continent: "Africa" },
   eritrea: { label: "Eritrea", lat: 15.18, lng: 39.78, flag: "🇪🇷", region: "East Africa", continent: "Africa" },
   ethiopia: { label: "Ethiopia", lat: 9.15, lng: 40.49, flag: "🇪🇹", region: "East Africa", continent: "Africa" },
@@ -90,6 +91,9 @@ export const SUPPORTED_COUNTRIES = {
   peru: { label: "Peru", lat: -9.19, lng: -75.02, flag: "🇵🇪", region: "South America", continent: "South America" },
   suriname: { label: "Suriname", lat: 3.92, lng: -56.03, flag: "🇸🇷", region: "South America", continent: "South America" },
   venezuela: { label: "Venezuela", lat: 6.42, lng: -66.59, flag: "🇻🇪", region: "South America", continent: "South America" },
+
+  // ── Europe ──
+  albania: { label: "Albania", lat: 41.15, lng: 20.17, flag: "🇦🇱", region: "Southeast Europe", continent: "Europe" },
 
   // ── Oceania ──
   "papua-new-guinea": { label: "Papua New Guinea", lat: -6.31, lng: 143.96, flag: "🇵🇬", region: "Melanesia", continent: "Oceania" },
