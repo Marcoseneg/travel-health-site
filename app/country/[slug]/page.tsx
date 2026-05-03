@@ -14,6 +14,35 @@ import { yellowFeverByCountry } from "../../lib/yellowFeverData";
 import { dengueRiskByCountry } from "../../lib/dengueData";
 import { chikungunyaRiskByCountry } from "../../lib/chikungunyaData";
 import CdcMapImage from "../../components/CdcMapImage";
+import { getAlertsForCountry } from "../../lib/countryAlerts";
+import type { OutbreakAlert } from "../../lib/outbreakSources";
+
+// ── Helper: pull disease keywords from manual country alerts ───────────────
+// Used to suppress live outbreak feed alerts that duplicate a manually
+// authored country banner. Extracts every word from the manual alert
+// titles that's not a common stopword AND is at least 4 characters long.
+// "Active polio circulation" → ["polio", "circulation"]. The live filter
+// then drops feed alerts with any of these words in their title.
+const ALERT_STOPWORDS = new Set([
+  "active", "alert", "current", "global", "latest", "new",
+  "ongoing", "recent", "update", "warning", "notice", "outbreak",
+]);
+
+function extractDiseaseKeywords(
+  alerts: { title: string }[] | undefined
+): string[] {
+  if (!alerts || alerts.length === 0) return [];
+  const words = new Set<string>();
+  for (const a of alerts) {
+    const tokens = a.title.toLowerCase().match(/\b[a-zà-ÿ]{4,}\b/gi) || [];
+    for (const t of tokens) {
+      if (!ALERT_STOPWORDS.has(t.toLowerCase())) {
+        words.add(t.toLowerCase());
+      }
+    }
+  }
+  return Array.from(words);
+}
 
 // ── Risk badge presentation ─────────────────────────────────────────────────
 type RiskBadge = {
@@ -76,6 +105,14 @@ export default async function CountryPage({ params }: Props) {
   const hasDiseases = !!health?.diseases;
   const hasAlerts = !!health?.countryAlerts?.length;
 
+  // Fetch live outbreak alerts that mention this country (top 3, newest first).
+  // To avoid duplicating manually-authored country alerts, extract significant
+  // disease keywords from any existing manual countryAlerts and pass them as
+  // excludes — e.g. an "Active polio circulation" manual banner suppresses
+  // live alerts with "polio" in their title.
+  const manualKeywords = extractDiseaseKeywords(health?.countryAlerts ?? []);
+  const outbreakAlerts = await getAlertsForCountry(slug, 3, manualKeywords);
+
   const allTravelerVaccines =
     health?.vaccinesDetail?.filter((v) => v.audience === "all") ?? [];
   const specificTravelerVaccines =
@@ -125,12 +162,18 @@ export default async function CountryPage({ params }: Props) {
           </div>
         </div>
 
-        {/* ── Country alerts ────────────────────────────────────────── */}
-        {hasAlerts && (
+        {/* ── Alerts zone — manual + live, all above the risk row ──────── */}
+        {(hasAlerts || outbreakAlerts.length > 0) && (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px" }}>
-            {health!.countryAlerts!.map((alert, i) => (
-              <CountryAlertBanner key={i} alert={alert} />
-            ))}
+            {/* Manual curated alerts first (yellow warning style) */}
+            {hasAlerts &&
+              health!.countryAlerts!.map((alert, i) => (
+                <CountryAlertBanner key={`manual-${i}`} alert={alert} />
+              ))}
+            {/* Then live RSS-fed alerts (cyan informational style) */}
+            {outbreakAlerts.length > 0 && (
+              <RecentAlerts alerts={outbreakAlerts} />
+            )}
           </div>
         )}
 
@@ -153,26 +196,18 @@ export default async function CountryPage({ params }: Props) {
           <>
             {/* ── Vaccines ─────────────────────────────────────────── */}
             <SectionTitle title="Vaccines" />
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-                gap: "20px",
-                marginBottom: "48px",
-              }}
-            >
-              {hasRichVaccines ? (
-                <>
-                  <VaccineColumnRich heading="For all travelers" items={allTravelerVaccines} accent="#38bdf8" />
-                  <VaccineColumnRich heading="For specific travelers" items={specificTravelerVaccines} accent="rgba(148,163,184,0.7)" muted />
-                </>
-              ) : (
-                <>
-                  <VaccineColumnSimple heading="Recommended" items={health!.vaccinesRecommended} accent="#38bdf8" />
-                  <VaccineColumnSimple heading="Consider based on region & activities" items={health!.vaccinesConsider} accent="rgba(148,163,184,0.7)" muted />
-                </>
-              )}
-            </div>
+            {hasRichVaccines ? (
+              <VaccineTable
+                allTravelers={allTravelerVaccines}
+                specificTravelers={specificTravelerVaccines}
+              />
+            ) : (
+              <SimpleVaccineTable
+                recommended={health!.vaccinesRecommended}
+                consider={health!.vaccinesConsider}
+              />
+            )}
+            <div style={{ marginBottom: "48px" }} />
 
             {/* ── Disease cards (titles are now LINKS to disease pages) ─── */}
             {hasDiseases && (
@@ -377,6 +412,145 @@ function RiskCard({
   );
 }
 
+// ── Recent outbreak alerts (live, country-tagged) ──────────────────────────
+// Shows up to 3 of the most recent outbreak alerts that mention this
+// country, pulled from the same RSS aggregation that powers /outbreaks.
+// Style matches the manual countryAlerts banner — cyan informational style.
+function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "14px" }}>
+        <p
+          style={{
+            fontSize: "11px",
+            fontWeight: 700,
+            color: "#94a3b8",
+            letterSpacing: "0.1em",
+            textTransform: "uppercase",
+            margin: 0,
+          }}
+        >
+          Recent alerts
+        </p>
+        <Link
+          href="/outbreaks"
+          style={{
+            fontSize: "12.5px",
+            color: "#7dd3fc",
+            textDecoration: "none",
+          }}
+        >
+          All alerts →
+        </Link>
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        {alerts.map((alert) => {
+          // Live alert source label for the inline footer line
+          const sourceLabels: Record<string, string> = {
+            "ecdc-epi": "ECDC Epidemiological Updates",
+            "cdc-travel": "CDC Travel Health Notices",
+            "who-don": "WHO Disease Outbreak News",
+          };
+          const sourceLabel = sourceLabels[alert.sourceId] || "Source";
+          const date = new Date(alert.publishedAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+
+          // Cyan/informational tone — distinct from the yellow used for
+          // both risk severity (Moderate/High) and curated manual alerts.
+          // Live alerts are auto-fetched updates, not severity signals or
+          // hand-picked warnings, so they get their own visual lane.
+          const tone = {
+            color: "#7dd3fc",
+            bg: "rgba(56,189,248,0.04)",
+            border: "rgba(56,189,248,0.18)",
+          };
+
+          return (
+            <div
+              key={alert.id}
+              style={{
+                borderRadius: "12px",
+                border: `1px solid ${tone.border}`,
+                background: tone.bg,
+                padding: "14px 18px",
+                display: "flex",
+                gap: "14px",
+                alignItems: "flex-start",
+              }}
+            >
+              {/* Info icon — informational tone (lowercase i in circle).
+                  Distinct from the ⚠ used in the manual warning banner. */}
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke={tone.color}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+                style={{ flexShrink: 0, marginTop: "2px" }}
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="16" x2="12" y2="12" />
+                <line x1="12" y1="8" x2="12.01" y2="8" />
+              </svg>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <a
+                  href={alert.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    fontSize: "13.5px",
+                    fontWeight: 700,
+                    color: tone.color,
+                    textDecoration: "none",
+                    display: "inline-flex",
+                    alignItems: "baseline",
+                    gap: "4px",
+                  }}
+                >
+                  {alert.title}
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    aria-hidden
+                    style={{ flexShrink: 0, marginLeft: "2px" }}
+                  >
+                    <path d="M7 17L17 7M9 7h8v8" />
+                  </svg>
+                </a>
+
+                {alert.summary && (
+                  <p style={{ fontSize: "13px", color: "#cbd5e1", margin: "4px 0 6px", lineHeight: 1.6 }}>
+                    {alert.summary}
+                  </p>
+                )}
+
+                <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+                  {sourceLabel} · {date}
+                </p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function CountryAlertBanner({ alert }: { alert: CountryAlert }) {
   const tone =
     alert.level === "warning"
@@ -422,64 +596,411 @@ function CountryAlertBanner({ alert }: { alert: CountryAlert }) {
   );
 }
 
-function VaccineColumnSimple({ heading, items, accent, muted }: { heading: string; items: string[]; accent: string; muted?: boolean }) {
+// ── CDC-style vaccine table ─────────────────────────────────────────────────
+// One full-width grid with three columns:
+//   Vaccine name | Recommendation | External resource
+// Flat (no audience grouping) — the recommendation text itself communicates
+// "for all" vs "for some travelers." Mirrors CDC's pattern.
+function VaccineTable({
+  allTravelers,
+  specificTravelers,
+}: {
+  allTravelers: VaccineEntry[];
+  specificTravelers: VaccineEntry[];
+}) {
+  // Merge both audiences into a single flat list. The "audience" distinction
+  // is preserved only as a styling hint (specific-traveler rows render slightly
+  // muted). Sort: routine vaccines pinned to the top (matches CDC convention),
+  // everything else alphabetically.
+  const merged: { entry: VaccineEntry; muted: boolean }[] = [
+    ...allTravelers.map((e) => ({ entry: e, muted: false })),
+    ...specificTravelers.map((e) => ({ entry: e, muted: true })),
+  ];
+  merged.sort((a, b) => sortVaccines(a.entry.name, b.entry.name));
+
+  if (merged.length === 0) {
+    return (
+      <div style={tableShellStyle}>
+        <TableHeader />
+        <div style={{ padding: "20px 22px", fontSize: "13px", color: "#64748b" }}>
+          No specific vaccine recommendations.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", padding: "24px 26px" }}>
-      <p style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 16px" }}>
-        {heading}
-      </p>
-      {items.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "10px" }}>
-          {items.map((v) => (
-            <li key={v} style={{ display: "flex", alignItems: "center", gap: "10px", fontSize: "14.5px", color: muted ? "#cbd5e1" : "#e2e8f0" }}>
-              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: accent, flexShrink: 0 }} />
-              {v}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>None specifically indicated.</p>
-      )}
+    <div style={tableShellStyle}>
+      <TableHeader />
+      {merged.map(({ entry, muted }, i) => {
+        const isLast = i === merged.length - 1;
+        const isRoutineBoundary = !isLast && isRoutineRow(entry.name);
+        return (
+          <VaccineRow
+            key={`${entry.name}-${i}`}
+            entry={entry}
+            isLast={isLast}
+            isRoutineBoundary={isRoutineBoundary}
+            muted={muted}
+          />
+        );
+      })}
     </div>
   );
 }
 
-function VaccineColumnRich({ heading, items, accent, muted }: { heading: string; items: VaccineEntry[]; accent: string; muted?: boolean }) {
+// Fallback table when only the simple string lists exist (no rich detail).
+// Same structure as VaccineTable, just with stub entries.
+function SimpleVaccineTable({
+  recommended,
+  consider,
+}: {
+  recommended: string[];
+  consider: string[];
+}) {
+  const merged: { entry: VaccineEntry; muted: boolean }[] = [
+    ...recommended.map((name) => ({ entry: { name, audience: "all" as const }, muted: false })),
+    ...consider.map((name) => ({ entry: { name, audience: "specific" as const }, muted: true })),
+  ];
+  merged.sort((a, b) => sortVaccines(a.entry.name, b.entry.name));
+
+  if (merged.length === 0) {
+    return (
+      <div style={tableShellStyle}>
+        <TableHeader />
+        <div style={{ padding: "20px 22px", fontSize: "13px", color: "#64748b" }}>
+          No specific vaccine recommendations.
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", padding: "24px 26px" }}>
-      <p style={{ fontSize: "11px", fontWeight: 700, color: "#64748b", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 18px" }}>
-        {heading}
-      </p>
-      {items.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
-          {items.map((v, i) => (
-            <li key={`${v.name}-${i}`}>
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: v.note ? "4px" : 0 }}>
-                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: accent, flexShrink: 0 }} />
-                {v.slug ? (
-                  <Link href={`/diseases/${v.slug}`} style={{ fontSize: "14.5px", fontWeight: 700, color: muted ? "#cbd5e1" : "#e2e8f0", textDecoration: "none", letterSpacing: "-0.01em" }}>
-                    {v.name}
-                  </Link>
-                ) : (
-                  <span style={{ fontSize: "14.5px", fontWeight: 700, color: muted ? "#cbd5e1" : "#e2e8f0", letterSpacing: "-0.01em" }}>
-                    {v.name}
-                  </span>
-                )}
-              </div>
-              {v.note && (
-                <p style={{ fontSize: "13px", color: "#94a3b8", margin: "0 0 0 16px", lineHeight: 1.55 }}>
-                  {v.note}
-                </p>
-              )}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>None specifically indicated.</p>
-      )}
+    <div style={tableShellStyle}>
+      <TableHeader />
+      {merged.map(({ entry, muted }, i) => {
+        const isLast = i === merged.length - 1;
+        const isRoutineBoundary = !isLast && isRoutineRow(entry.name);
+        return (
+          <VaccineRow
+            key={`${entry.name}-${i}`}
+            entry={entry}
+            isLast={isLast}
+            isRoutineBoundary={isRoutineBoundary}
+            muted={muted}
+          />
+        );
+      })}
     </div>
   );
 }
+
+// Sort comparator: pin "Routine vaccines" first (CDC convention), then alpha.
+function sortVaccines(a: string, b: string): number {
+  const aRoutine = a.toLowerCase().startsWith("routine");
+  const bRoutine = b.toLowerCase().startsWith("routine");
+  if (aRoutine && !bRoutine) return -1;
+  if (bRoutine && !aRoutine) return 1;
+  return a.localeCompare(b);
+}
+
+// ── Shared table shell + header ────────────────────────────────────────────
+// Dark slate panel that's just slightly lighter than the page background
+// (calm contrast jump). Light text on dark card — matches site visual family.
+const tableShellStyle: React.CSSProperties = {
+  borderRadius: "12px",
+  border: "1px solid rgba(255,255,255,0.06)",
+  background: "rgba(255,255,255,0.02)",
+  overflow: "hidden",
+};
+
+function TableHeader() {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
+        padding: "13px 22px",
+        background: "rgba(255,255,255,0.025)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        gap: "20px",
+      }}
+    >
+      <span style={tableHeaderStyle}>Vaccine</span>
+      <span style={tableHeaderStyle}>Recommendation</span>
+      <span style={tableHeaderStyle}>Reference</span>
+    </div>
+  );
+}
+
+// ── External resource lookup (verified URLs) ───────────────────────────────
+// One canonical external authority per vaccine. Sources verified against
+// CDC Yellow Book 2024 and BAG (admin.ch). No invented URLs.
+type ExternalResource = { label: string; url: string };
+
+const EXTERNAL_RESOURCES: Record<string, ExternalResource> = {
+  // Routine vaccines: Swiss schedule is the right primary reference for our
+  // Swiss-traveler audience.
+  "routine vaccines": {
+    label: "BAG Impfplan",
+    url: "https://www.bag.admin.ch/de/schweizerischer-impfplan",
+  },
+  "measles (mmr)": {
+    label: "BAG Impfplan",
+    url: "https://www.bag.admin.ch/de/schweizerischer-impfplan",
+  },
+  "tdap": {
+    label: "BAG Impfplan",
+    url: "https://www.bag.admin.ch/de/schweizerischer-impfplan",
+  },
+  // Travel-specific vaccines → CDC Yellow Book chapter
+  "hepatitis a": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/hepatitis-a",
+  },
+  "hepatitis b": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/hepatitis-b",
+  },
+  "yellow fever": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/yellow-fever",
+  },
+  "typhoid": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/typhoid-and-paratyphoid-fever",
+  },
+  "rabies": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/rabies",
+  },
+  "cholera": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/cholera",
+  },
+  "polio": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/poliomyelitis",
+  },
+  "polio (booster)": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/poliomyelitis",
+  },
+  "meningococcal": {
+    label: "CDC Yellow Book",
+    url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/meningococcal-disease",
+  },
+};
+
+// Match by case-insensitive prefix or substring; supports labels like
+// "Yellow fever (entry)" → "yellow fever".
+function lookupResource(name: string): ExternalResource | null {
+  const lc = name.toLowerCase();
+  for (const key of Object.keys(EXTERNAL_RESOURCES)) {
+    if (lc === key || lc.startsWith(key) || lc.includes(key)) {
+      return EXTERNAL_RESOURCES[key];
+    }
+  }
+  return null;
+}
+
+// Routine vaccines included in the Swiss BAG schedule. Each one links
+// to its own /diseases/[slug] page when one exists. Mirrors CDC's
+// expanded "Routine vaccines" row pattern.
+const ROUTINE_VACCINE_LIST: { name: string; slug?: string }[] = [
+  { name: "Chickenpox (Varicella)", slug: "varicella" },
+  { name: "Diphtheria-Tetanus-Pertussis (DTaP, Tdap)", slug: "dtap" },
+  { name: "Influenza (flu)", slug: "influenza" },
+  { name: "Measles-Mumps-Rubella (MMR)", slug: "measles" },
+  { name: "Polio", slug: "polio" },
+  { name: "COVID-19", slug: "covid-19" },
+];
+
+function isRoutineRow(name: string): boolean {
+  return name.toLowerCase().startsWith("routine");
+}
+
+function VaccineRow({
+  entry,
+  isLast,
+  isRoutineBoundary,
+  muted,
+}: {
+  entry: VaccineEntry;
+  isLast?: boolean;
+  isRoutineBoundary?: boolean;
+  muted?: boolean;
+}) {
+  const isRoutine = isRoutineRow(entry.name);
+  const note =
+    entry.note ||
+    "Consult a travel medicine specialist for individual recommendations.";
+  const resource = lookupResource(entry.name);
+
+  // Border treatment:
+  //  - Last row in table: no border
+  //  - Routine row when followed by other vaccines: thicker, slightly more
+  //    visible line + extra bottom padding (subtle "tier" hint, no label)
+  //  - Otherwise: standard subtle divider
+  const rowBorderBottom = isLast
+    ? "none"
+    : isRoutineBoundary
+      ? "1.5px solid rgba(255,255,255,0.1)"
+      : "1px solid rgba(255,255,255,0.05)";
+  const paddingBottom = isRoutineBoundary ? "20px" : "14px";
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
+        gap: "20px",
+        padding: `14px 22px ${paddingBottom}`,
+        borderBottom: rowBorderBottom,
+        alignItems: isRoutine ? "flex-start" : "baseline",
+      }}
+    >
+      {/* Column 1 — Vaccine name. Linked → cyan (brand accent); plain → light slate. */}
+      <div style={{ minWidth: 0, paddingTop: isRoutine ? "2px" : 0 }}>
+        {entry.slug ? (
+          <Link
+            href={`/diseases/${entry.slug}`}
+            style={{
+              fontSize: "14.5px",
+              fontWeight: 600,
+              color: "#7dd3fc",
+              textDecoration: "underline",
+              textDecorationColor: "rgba(125, 211, 252, 0.3)",
+              textUnderlineOffset: "3px",
+              letterSpacing: "-0.005em",
+            }}
+          >
+            {entry.name}
+          </Link>
+        ) : (
+          <span
+            style={{
+              fontSize: "14.5px",
+              fontWeight: 600,
+              color: muted ? "#94a3b8" : "#e2e8f0",
+              letterSpacing: "-0.005em",
+            }}
+          >
+            {entry.name}
+          </span>
+        )}
+      </div>
+
+      {/* Column 2 — Recommendation prose. Routine vaccines get a CDC-style
+          intro line + bulleted list of included vaccines (each clickable). */}
+      <div>
+        {isRoutine ? (
+          <>
+            <p
+              style={{
+                fontSize: "13.5px",
+                color: "#cbd5e1",
+                lineHeight: 1.6,
+                margin: "0 0 8px",
+              }}
+            >
+              Make sure you are up-to-date on all routine vaccines before every
+              trip — per the Swiss BAG schedule. These include:
+            </p>
+            <ul
+              style={{
+                listStyle: "disc",
+                paddingLeft: "20px",
+                margin: 0,
+                fontSize: "13.5px",
+                lineHeight: 1.7,
+                color: "#cbd5e1",
+              }}
+            >
+              {ROUTINE_VACCINE_LIST.map((v) => (
+                <li key={v.name} style={{ marginBottom: "2px" }}>
+                  {v.slug ? (
+                    <Link
+                      href={`/diseases/${v.slug}`}
+                      style={{
+                        color: "#7dd3fc",
+                        textDecoration: "underline",
+                        textDecorationColor: "rgba(125, 211, 252, 0.3)",
+                        textUnderlineOffset: "3px",
+                      }}
+                    >
+                      {v.name}
+                    </Link>
+                  ) : (
+                    <span>{v.name}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p
+            style={{
+              fontSize: "13.5px",
+              color: muted ? "#94a3b8" : "#cbd5e1",
+              lineHeight: 1.6,
+              margin: 0,
+            }}
+          >
+            {note}
+          </p>
+        )}
+      </div>
+
+      {/* Column 3 — External authoritative reference */}
+      <div style={{ minWidth: 0 }}>
+        {resource ? (
+          <a
+            href={resource.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontSize: "12.5px",
+              color: "#38bdf8",
+              textDecoration: "underline",
+              textDecorationColor: "rgba(56, 189, 248, 0.3)",
+              textUnderlineOffset: "3px",
+              fontWeight: 500,
+              display: "inline-flex",
+              alignItems: "baseline",
+              gap: "4px",
+            }}
+          >
+            {resource.label}
+            <svg
+              width="9"
+              height="9"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M7 17L17 7M9 7h8v8" />
+            </svg>
+          </a>
+        ) : (
+          <span style={{ fontSize: "12.5px", color: "#64748b" }}>—</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const tableHeaderStyle: React.CSSProperties = {
+  fontSize: "10.5px",
+  fontWeight: 600,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: "#94a3b8",
+};
 
 // ── Disease card with title NOW WRAPPED IN A LINK ─────────────────────────
 function DiseaseCard({
