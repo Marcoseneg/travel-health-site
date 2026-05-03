@@ -117,30 +117,116 @@ export default async function ItineraryPage({ searchParams }: Props) {
     );
   }
 
-  // ── Vaccine attribution (which countries recommend each vaccine) ─────────
-  const recommendedMap: Record<string, string[]> = {};
-  const considerMap: Record<string, string[]> = {};
+  // ── Vaccine attribution + rich note aggregation ─────────────────────────
+  // Each vaccine now collects: which countries recommend it AND each
+  // country's specific note (when the country has a vaccinesDetail entry).
+  // Falls back to a generic note for countries with only the simple list.
+  type VaccineCountryNote = {
+    slug: string;
+    label: string;
+    flag: string;
+    note: string;
+    diseaseSlug?: string; // for "About →" link, taken from vaccinesDetail
+  };
+  type VaccineAggregate = {
+    name: string;
+    diseaseSlug?: string; // for column-1 link to /diseases page
+    countries: VaccineCountryNote[];
+  };
+
+  const recommendedAgg: Record<string, VaccineAggregate> = {};
+  const considerAgg: Record<string, VaccineAggregate> = {};
+
+  const fallbackNote = (audience: "all" | "specific") =>
+    audience === "all"
+      ? "Recommended for travelers to this destination."
+      : "Consider per individual risk and stay duration.";
 
   enriched.forEach((c) => {
-    c.health?.vaccinesRecommended.forEach((v) => {
-      if (!recommendedMap[v]) recommendedMap[v] = [];
-      recommendedMap[v].push(c.slug);
+    if (!c.health) return;
+
+    // Build a quick lookup from vaccinesDetail for this country
+    const detailByName: Record<string, { note?: string; slug?: string }> = {};
+    c.health.vaccinesDetail?.forEach((d) => {
+      detailByName[d.name] = { note: d.note, slug: d.slug };
     });
-    c.health?.vaccinesConsider.forEach((v) => {
-      if (!considerMap[v]) considerMap[v] = [];
-      considerMap[v].push(c.slug);
+
+    c.health.vaccinesRecommended.forEach((v) => {
+      const detail = detailByName[v];
+      if (!recommendedAgg[v]) {
+        recommendedAgg[v] = { name: v, diseaseSlug: detail?.slug, countries: [] };
+      }
+      // Set diseaseSlug from any country that has it (first wins)
+      if (!recommendedAgg[v].diseaseSlug && detail?.slug) {
+        recommendedAgg[v].diseaseSlug = detail.slug;
+      }
+      recommendedAgg[v].countries.push({
+        slug: c.slug,
+        label: c.label,
+        flag: c.flag,
+        note: detail?.note || fallbackNote("all"),
+        diseaseSlug: detail?.slug,
+      });
+    });
+
+    c.health.vaccinesConsider.forEach((v) => {
+      const detail = detailByName[v];
+      if (!considerAgg[v]) {
+        considerAgg[v] = { name: v, diseaseSlug: detail?.slug, countries: [] };
+      }
+      if (!considerAgg[v].diseaseSlug && detail?.slug) {
+        considerAgg[v].diseaseSlug = detail.slug;
+      }
+      considerAgg[v].countries.push({
+        slug: c.slug,
+        label: c.label,
+        flag: c.flag,
+        note: detail?.note || fallbackNote("specific"),
+        diseaseSlug: detail?.slug,
+      });
     });
   });
 
   // If a vaccine is recommended somewhere, remove it from "consider" list
-  Object.keys(recommendedMap).forEach((v) => delete considerMap[v]);
+  Object.keys(recommendedAgg).forEach((v) => delete considerAgg[v]);
 
-  // Sort by breadth of applicability, then alphabetically
-  const recommendedList = Object.entries(recommendedMap).sort(
-    (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])
-  );
-  const considerList = Object.entries(considerMap).sort(
-    (a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0])
+  // ── Vaccine classification ──────────────────────────────────────────────
+  const isRoutineEntry = (vaccineName: string): boolean => {
+    const lc = vaccineName.toLowerCase();
+    return (
+      lc.includes("routine") ||
+      lc.includes("mmr") ||
+      lc.includes("measles") ||
+      lc.includes("tdap") ||
+      lc.includes("dtap") ||
+      lc.includes("diphtheria") ||
+      lc.includes("varicella") ||
+      lc.includes("chickenpox") ||
+      lc === "polio" ||
+      lc.includes("influenza") ||
+      lc.includes("flu (") ||
+      lc.includes("covid")
+    );
+  };
+
+  // Aggregate routine entries into one virtual row (any country triggers it)
+  const routineCountriesSet = new Set<string>();
+  const tripSpecificList: VaccineAggregate[] = [];
+
+  Object.values(recommendedAgg).forEach((agg) => {
+    if (isRoutineEntry(agg.name)) {
+      agg.countries.forEach((c) => routineCountriesSet.add(c.slug));
+    } else {
+      tripSpecificList.push(agg);
+    }
+  });
+
+  const hasRoutine = routineCountriesSet.size > 0;
+
+  // Sort: alphabetical (matches CDC convention)
+  tripSpecificList.sort((a, b) => a.name.localeCompare(b.name));
+  const considerList: VaccineAggregate[] = Object.values(considerAgg).sort(
+    (a, b) => a.name.localeCompare(b.name)
   );
 
   // ── Per-country disease breakdowns (for malaria + YF sections) ───────────
@@ -311,27 +397,17 @@ export default async function ItineraryPage({ searchParams }: Props) {
 
         {/* ── Vaccines ────────────────────────────────────────────── */}
         <Section title="Vaccines">
-          <VaccineGroup
-            heading="Recommended"
-            items={recommendedList}
-            enriched={enriched}
-            dotColor="#38bdf8"
-            emptyText="No shared vaccine recommendations for this trip."
-          />
-          {considerList.length > 0 && (
-            <div style={{ marginTop: "28px", paddingTop: "24px", borderTop: "1px solid rgba(255,255,255,0.05)" }}>
-              <VaccineGroup
-                heading="Consider based on region & activities"
-                items={considerList}
-                enriched={enriched}
-                dotColor="rgba(148,163,184,0.6)"
-                muted
-              />
-            </div>
+          {hasRoutine || tripSpecificList.length > 0 || considerList.length > 0 ? (
+            <ItineraryVaccineTable
+              hasRoutine={hasRoutine}
+              recommended={tripSpecificList}
+              consider={considerList}
+            />
+          ) : (
+            <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>
+              No vaccine recommendations identified for this itinerary.
+            </p>
           )}
-          <p style={footnoteStyle}>
-            Ensure routine immunizations (MMR, Tdap, influenza, COVID-19) are up to date before departure.
-          </p>
         </Section>
 
         {/* ── Disease-specific guidance ────────────────────────────
@@ -715,95 +791,343 @@ type Enriched = {
   health: CountryInfo | undefined;
 };
 
-function VaccineGroup({
-  heading,
-  items,
-  enriched,
-  dotColor,
-  muted,
-  emptyText,
+// ── Itinerary vaccine table ─────────────────────────────────────────────────
+// Slate reference card on dark page (matches country page style).
+// Three columns: Vaccine | Recommendation (per-country, merged when notes
+// match) | Reference (canonical external source).
+// Routine vaccines pinned first with subtle separator before the rest.
+
+const ROUTINE_VACCINE_LIST: { name: string; slug?: string }[] = [
+  { name: "Chickenpox (Varicella)", slug: "varicella" },
+  { name: "Diphtheria-Tetanus-Pertussis (DTaP, Tdap)", slug: "dtap" },
+  { name: "Influenza (flu)", slug: "influenza" },
+  { name: "Measles-Mumps-Rubella (MMR)", slug: "measles" },
+  { name: "Polio", slug: "polio" },
+  { name: "COVID-19", slug: "covid-19" },
+];
+
+type ExternalResource = { label: string; url: string };
+
+const EXTERNAL_RESOURCES: Record<string, ExternalResource> = {
+  "routine vaccines": { label: "BAG Impfplan", url: "https://www.bag.admin.ch/de/schweizerischer-impfplan" },
+  "measles (mmr)":    { label: "BAG Impfplan", url: "https://www.bag.admin.ch/de/schweizerischer-impfplan" },
+  "tdap":             { label: "BAG Impfplan", url: "https://www.bag.admin.ch/de/schweizerischer-impfplan" },
+  "hepatitis a":      { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/hepatitis-a" },
+  "hepatitis b":      { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/hepatitis-b" },
+  "yellow fever":     { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/yellow-fever" },
+  "typhoid":          { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/typhoid-and-paratyphoid-fever" },
+  "rabies":           { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/rabies" },
+  "cholera":          { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/cholera" },
+  "polio":            { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/poliomyelitis" },
+  "polio (booster)":  { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/poliomyelitis" },
+  "meningococcal":    { label: "CDC Yellow Book", url: "https://wwwnc.cdc.gov/travel/yellowbook/2024/infections-diseases/meningococcal-disease" },
+};
+
+function lookupItineraryResource(name: string): ExternalResource | null {
+  const lc = name.toLowerCase();
+  for (const key of Object.keys(EXTERNAL_RESOURCES)) {
+    if (lc === key || lc.startsWith(key) || lc.includes(key)) {
+      return EXTERNAL_RESOURCES[key];
+    }
+  }
+  return null;
+}
+
+const itineraryTableShellStyle: React.CSSProperties = {
+  borderRadius: "12px",
+  border: "1px solid rgba(255,255,255,0.06)",
+  background: "rgba(255,255,255,0.02)",
+  overflow: "hidden",
+};
+
+const itineraryTableHeaderStyle: React.CSSProperties = {
+  fontSize: "10.5px",
+  fontWeight: 600,
+  letterSpacing: "0.08em",
+  textTransform: "uppercase",
+  color: "#94a3b8",
+};
+
+type AggregatedVaccine = {
+  name: string;
+  diseaseSlug?: string;
+  countries: { slug: string; label: string; flag: string; note: string; diseaseSlug?: string }[];
+};
+
+function ItineraryVaccineTable({
+  hasRoutine,
+  recommended,
+  consider,
 }: {
-  heading: string;
-  items: [string, string[]][];
-  enriched: Enriched[];
-  dotColor: string;
-  muted?: boolean;
-  emptyText?: string;
+  hasRoutine: boolean;
+  recommended: AggregatedVaccine[];
+  consider: AggregatedVaccine[];
 }) {
-  const metaBySlug = Object.fromEntries(enriched.map((c) => [c.slug, c])) as Record<string, Enriched>;
+  // Build the unified row list. Routine first (synthetic row), then alpha
+  // recommended, then alpha consider.
+  type Row =
+    | { kind: "routine" }
+    | { kind: "vaccine"; vaccine: AggregatedVaccine; muted: boolean };
+
+  const rows: Row[] = [];
+  if (hasRoutine) rows.push({ kind: "routine" });
+  recommended.forEach((v) => rows.push({ kind: "vaccine", vaccine: v, muted: false }));
+  consider.forEach((v) => rows.push({ kind: "vaccine", vaccine: v, muted: true }));
 
   return (
-    <div>
-      <p
-        style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#64748b",
-          letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          margin: "0 0 14px",
-        }}
-      >
-        {heading}
-      </p>
-      {items.length > 0 ? (
-        <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "12px" }}>
-          {items.map(([vaccine, slugs]) => (
-            <li
-              key={vaccine}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "14px",
-                flexWrap: "wrap",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: "180px" }}>
-                <span
-                  style={{
-                    width: "6px",
-                    height: "6px",
-                    borderRadius: "50%",
-                    background: dotColor,
-                    flexShrink: 0,
-                  }}
-                />
-                <span style={{ fontSize: "14.5px", color: muted ? "#cbd5e1" : "#e2e8f0", fontWeight: 500 }}>
-                  {vaccine}
-                </span>
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", flex: 1 }}>
-                {slugs.map((slug) => {
-                  const m = metaBySlug[slug];
-                  if (!m) return null;
-                  return (
-                    <span
-                      key={slug}
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "5px",
-                        padding: "3px 10px 3px 8px",
-                        borderRadius: "999px",
-                        background: "rgba(255,255,255,0.04)",
-                        border: "1px solid rgba(255,255,255,0.06)",
-                        fontSize: "12px",
-                        color: "#cbd5e1",
-                      }}
-                    >
-                      <span style={{ fontSize: "13px", lineHeight: 1 }}>{m.flag}</span>
-                      {m.label}
-                    </span>
-                  );
-                })}
-              </div>
+    <div style={itineraryTableShellStyle}>
+      <ItineraryTableHeader />
+      {rows.map((row, i) => {
+        const isLast = i === rows.length - 1;
+        const isRoutineBoundary = !isLast && row.kind === "routine";
+        if (row.kind === "routine") {
+          return (
+            <ItineraryRoutineRow
+              key="routine"
+              isLast={isLast}
+              isRoutineBoundary={isRoutineBoundary}
+            />
+          );
+        }
+        return (
+          <ItineraryVaccineRow
+            key={`${row.vaccine.name}-${i}`}
+            vaccine={row.vaccine}
+            muted={row.muted}
+            isLast={isLast}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function ItineraryTableHeader() {
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
+        padding: "13px 22px",
+        background: "rgba(255,255,255,0.025)",
+        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        gap: "20px",
+      }}
+    >
+      <span style={itineraryTableHeaderStyle}>Vaccine</span>
+      <span style={itineraryTableHeaderStyle}>Recommendation</span>
+      <span style={itineraryTableHeaderStyle}>Reference</span>
+    </div>
+  );
+}
+
+function ItineraryRoutineRow({
+  isLast,
+  isRoutineBoundary,
+}: {
+  isLast: boolean;
+  isRoutineBoundary: boolean;
+}) {
+  const resource = lookupItineraryResource("routine vaccines");
+  const rowBorderBottom = isLast
+    ? "none"
+    : isRoutineBoundary
+      ? "1.5px solid rgba(255,255,255,0.1)"
+      : "1px solid rgba(255,255,255,0.05)";
+  const paddingBottom = isRoutineBoundary ? "20px" : "14px";
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
+        gap: "20px",
+        padding: `14px 22px ${paddingBottom}`,
+        borderBottom: rowBorderBottom,
+        alignItems: "flex-start",
+      }}
+    >
+      <div style={{ minWidth: 0, paddingTop: "2px" }}>
+        <span style={{ fontSize: "14.5px", fontWeight: 600, color: "#e2e8f0", letterSpacing: "-0.005em" }}>
+          Routine vaccines
+        </span>
+      </div>
+      <div>
+        <p style={{ fontSize: "13.5px", color: "#cbd5e1", lineHeight: 1.6, margin: "0 0 8px" }}>
+          Make sure you are up-to-date on all routine vaccines before every trip
+          — per the Swiss BAG schedule. These include:
+        </p>
+        <ul style={{ listStyle: "disc", paddingLeft: "20px", margin: 0, fontSize: "13.5px", lineHeight: 1.7, color: "#cbd5e1" }}>
+          {ROUTINE_VACCINE_LIST.map((v) => (
+            <li key={v.name} style={{ marginBottom: "2px" }}>
+              {v.slug ? (
+                <Link href={`/diseases/${v.slug}`} style={routineLinkStyle}>
+                  {v.name}
+                </Link>
+              ) : (
+                <span>{v.name}</span>
+              )}
             </li>
           ))}
         </ul>
-      ) : (
-        <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>{emptyText ?? "None."}</p>
-      )}
+      </div>
+      <div style={{ minWidth: 0 }}>
+        {resource && (
+          <a href={resource.url} target="_blank" rel="noopener noreferrer" style={refLinkStyle}>
+            {resource.label}
+            <ExternalArrow />
+          </a>
+        )}
+      </div>
     </div>
+  );
+}
+
+function ItineraryVaccineRow({
+  vaccine,
+  muted,
+  isLast,
+}: {
+  vaccine: AggregatedVaccine;
+  muted: boolean;
+  isLast: boolean;
+}) {
+  const resource = lookupItineraryResource(vaccine.name);
+
+  // Group identical notes together so the same sentence isn't shown twice
+  // when both countries got the same fallback or matching detail.
+  const groups: { note: string; flags: { slug: string; label: string; flag: string }[] }[] = [];
+  vaccine.countries.forEach((c) => {
+    const existing = groups.find((g) => g.note === c.note);
+    if (existing) {
+      existing.flags.push({ slug: c.slug, label: c.label, flag: c.flag });
+    } else {
+      groups.push({ note: c.note, flags: [{ slug: c.slug, label: c.label, flag: c.flag }] });
+    }
+  });
+
+  return (
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
+        gap: "20px",
+        padding: "14px 22px",
+        borderBottom: isLast ? "none" : "1px solid rgba(255,255,255,0.05)",
+        alignItems: "baseline",
+      }}
+    >
+      {/* Column 1 — Vaccine name. Linked to /diseases/[slug] when known. */}
+      <div style={{ minWidth: 0 }}>
+        {vaccine.diseaseSlug ? (
+          <Link href={`/diseases/${vaccine.diseaseSlug}`} style={vaccineNameLinkStyle}>
+            {vaccine.name}
+          </Link>
+        ) : (
+          <span
+            style={{
+              fontSize: "14.5px",
+              fontWeight: 600,
+              color: muted ? "#94a3b8" : "#e2e8f0",
+              letterSpacing: "-0.005em",
+            }}
+          >
+            {vaccine.name}
+          </span>
+        )}
+      </div>
+
+      {/* Column 2 — One paragraph per group of countries with matching notes.
+          Country flags appear inline at the end of each paragraph. */}
+      <div>
+        {groups.map((g, gi) => (
+          <p
+            key={gi}
+            style={{
+              fontSize: "13.5px",
+              color: muted ? "#94a3b8" : "#cbd5e1",
+              lineHeight: 1.6,
+              margin: gi === 0 ? "0" : "8px 0 0",
+            }}
+          >
+            {g.note}
+            {g.flags.length > 0 && (
+              <span style={{ marginLeft: "8px", display: "inline-flex", gap: "4px", verticalAlign: "baseline" }}>
+                {g.flags.map((f) => (
+                  <span
+                    key={f.slug}
+                    title={f.label}
+                    aria-label={`Applies to ${f.label}`}
+                    style={{ fontSize: "14px", lineHeight: 1, cursor: "help" }}
+                  >
+                    {f.flag}
+                  </span>
+                ))}
+              </span>
+            )}
+          </p>
+        ))}
+      </div>
+
+      {/* Column 3 — External reference */}
+      <div style={{ minWidth: 0 }}>
+        {resource ? (
+          <a href={resource.url} target="_blank" rel="noopener noreferrer" style={refLinkStyle}>
+            {resource.label}
+            <ExternalArrow />
+          </a>
+        ) : (
+          <span style={{ fontSize: "12.5px", color: "#64748b" }}>—</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+const vaccineNameLinkStyle: React.CSSProperties = {
+  fontSize: "14.5px",
+  fontWeight: 600,
+  color: "#7dd3fc",
+  textDecoration: "underline",
+  textDecorationColor: "rgba(125, 211, 252, 0.3)",
+  textUnderlineOffset: "3px",
+  letterSpacing: "-0.005em",
+};
+
+const routineLinkStyle: React.CSSProperties = {
+  color: "#7dd3fc",
+  textDecoration: "underline",
+  textDecorationColor: "rgba(125, 211, 252, 0.3)",
+  textUnderlineOffset: "3px",
+};
+
+const refLinkStyle: React.CSSProperties = {
+  fontSize: "12.5px",
+  color: "#38bdf8",
+  textDecoration: "underline",
+  textDecorationColor: "rgba(56, 189, 248, 0.3)",
+  textUnderlineOffset: "3px",
+  fontWeight: 500,
+  display: "inline-flex",
+  alignItems: "baseline",
+  gap: "4px",
+};
+
+function ExternalArrow() {
+  return (
+    <svg
+      width="9"
+      height="9"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M7 17L17 7M9 7h8v8" />
+    </svg>
   );
 }
 

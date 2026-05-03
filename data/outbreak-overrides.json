@@ -1,0 +1,3 @@
+{
+  "_doc": "Manual country-tag overrides for outbreak alerts. Keyed by alert.id. Each entry can have: 'replace' (full override, ignores auto-detection), 'add' (extra slugs added to auto-detected), 'remove' (slugs to drop from auto-detected). Most alerts won't need an entry here; only override when auto-tagging gets it wrong. Example: { 'cdc-yf-venezuela': { 'add': ['colombia'] } }"
+}

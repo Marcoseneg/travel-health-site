@@ -1,0 +1,66 @@
+[
+  {
+    "id": "cdc-meningococcal-drc",
+    "sourceId": "cdc-travel",
+    "title": "Meningococcal Disease in the Democratic Republic of the Congo",
+    "url": "https://wwwnc.cdc.gov/travel/notices/level1/meningococcal-disease-democratic-republic-congo",
+    "publishedAt": "2026-03-24T00:00:00Z",
+    "summary": "There is an outbreak of meningococcal disease in the Mangembo Health Zone of Kongo Central Province. The best way to protect yourself is to get meningococcal vaccination."
+  },
+  {
+    "id": "cdc-yf-venezuela",
+    "sourceId": "cdc-travel",
+    "title": "Yellow Fever in Venezuela",
+    "url": "https://wwwnc.cdc.gov/travel/notices/level1/yellow-fever-venezuela",
+    "publishedAt": "2026-03-16T00:00:00Z",
+    "summary": "An increased number of cases of yellow fever have been reported throughout Venezuela."
+  },
+  {
+    "id": "cdc-chikungunya-mayotte",
+    "sourceId": "cdc-travel",
+    "title": "Chikungunya in Mayotte",
+    "url": "https://wwwnc.cdc.gov/travel/notices/level1/chikungunya-mayotte",
+    "publishedAt": "2026-03-10T00:00:00Z",
+    "summary": "There is an outbreak of chikungunya in Mayotte. You can protect yourself by preventing mosquito bites."
+  },
+  {
+    "id": "who-don-mers-2026",
+    "sourceId": "who-don",
+    "title": "Middle East respiratory syndrome coronavirus – Global update",
+    "url": "https://www.who.int/emergencies/disease-outbreak-news/item/2025-DON591",
+    "publishedAt": "2025-12-21T00:00:00Z",
+    "summary": "Since the beginning of 2025, 19 cases of MERS-CoV including four deaths have been reported globally. 17 from Saudi Arabia, two travel-associated cases from France."
+  },
+  {
+    "id": "cdc-rabies-morocco",
+    "sourceId": "cdc-travel",
+    "title": "Rabies in Morocco",
+    "url": "https://wwwnc.cdc.gov/travel/notices/level1/rabies-morocco",
+    "publishedAt": "2025-12-23T00:00:00Z",
+    "summary": "A case of rabies has been reported in a traveler from Morocco. Travelers potentially exposed to rabies should immediately seek medical care."
+  },
+  {
+    "id": "cdc-rmsf-mexico",
+    "sourceId": "cdc-travel",
+    "title": "Rocky Mountain Spotted Fever in Mexico",
+    "url": "https://wwwnc.cdc.gov/travel/notices/level1/rmsf-mexico",
+    "publishedAt": "2025-12-23T00:00:00Z",
+    "summary": "Illness and death due to RMSF have been reported in northern Mexico along the U.S. border, particularly in Baja California, Sonora, Chihuahua, Coahuila, and Nuevo León."
+  },
+  {
+    "id": "cdc-rvf-mauritania-senegal",
+    "sourceId": "cdc-travel",
+    "title": "Rift Valley Fever in Mauritania and Senegal",
+    "url": "https://wwwnc.cdc.gov/travel/notices/level1/rift-valley-fever",
+    "publishedAt": "2025-12-11T00:00:00Z",
+    "summary": "There are outbreaks of Rift Valley fever (RVF) in Mauritania and Senegal."
+  },
+  {
+    "id": "ecdc-wnv-update",
+    "sourceId": "ecdc-epi",
+    "title": "West Nile virus infection – ECDC Update",
+    "url": "https://www.ecdc.europa.eu/en/publications-data/communicable-disease-threats-report-week-49-2025",
+    "publishedAt": "2025-12-05T00:00:00Z",
+    "summary": "Since the beginning of 2025, 14 European countries have reported human cases of West Nile virus infection: Albania, Bulgaria, Croatia, France, Germany, Greece, Hungary, Italy, Kosovo, North Macedonia, Romania, Serbia, Slovakia, and Spain."
+  }
+]
