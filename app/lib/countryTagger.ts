@@ -1,29 +1,37 @@
 // app/lib/countryTagger.ts
 //
 // Detects which countries an outbreak alert refers to, by scanning its
-// title + summary for country names and aliases.
+// title + summary (+ optional internal body text) for country names and
+// aliases.
 //
 // Design choices:
 //
-//   1. Title hits rank higher than summary hits — an alert that names the
+//   1. Title hits rank higher than body hits — an alert that names the
 //      country in its title is more likely to be ABOUT that country than
 //      one that just lists it among many. The country page side uses this
 //      ordering to surface the most relevant alerts first.
 //
 //   2. No hard cap on countries per alert. A "Global Dengue" alert that
-//      lists 50 countries in its summary will tag all 50; downstream
-//      country pages cap their own display (e.g. 3 most recent), and rank
-//      title hits above summary hits, so noise doesn't flood the UI.
+//      lists 50 countries in its body will tag all 50; downstream country
+//      pages cap their own display (e.g. 3 most recent), and rank title
+//      hits above body hits, so noise doesn't flood the UI.
 //
-//   3. Aliases per country handled via a static map. Most countries match
+//   3. The body-text scan combines `summary` (the displayed excerpt) with
+//      `_tagText` (an optional longer body string set by the WHO parser).
+//      WHO multi-country DONs typically name affected countries deeper in
+//      the article than the 280-char display summary captures, so the
+//      tagger needs the extra text to find them. _tagText is stripped
+//      from the alert before serialization in fetchAllOutbreaks.
+//
+//   4. Aliases per country handled via a static map. Most countries match
 //      on their canonical label alone; only a handful need aliases (DRC,
 //      Côte d'Ivoire, etc.).
 //
-//   4. Word-boundary regex matching to avoid "Mali" matching inside
+//   5. Word-boundary regex matching to avoid "Mali" matching inside
 //      "Somalia" or "Niger" matching inside "Nigeria". Single-word country
 //      names (Mali, Niger, Chad) are especially prone to this.
 //
-//   5. Override file (data/outbreak-overrides.json) lets you manually add
+//   6. Override file (data/outbreak-overrides.json) lets you manually add
 //      or remove tags per alert ID. Mostly empty by default.
 
 import { SUPPORTED_COUNTRIES } from "@/app/lib/travelData";
@@ -80,25 +88,30 @@ export function tagCountries(alert: {
   id: string;
   title: string;
   summary?: string;
+  _tagText?: string; // optional longer body text (WHO entries set this)
 }): string[] {
   // Manual overrides take full precedence
   const ov = (overrides as Record<string, { add?: string[]; remove?: string[]; replace?: string[] }>)[alert.id];
   if (ov?.replace) return ov.replace;
 
+  // Build the body haystack from summary + _tagText. Either may be
+  // undefined; concatenation is safe with empty fallbacks.
+  const body = `${alert.summary ?? ""} ${alert._tagText ?? ""}`.trim();
+
   const titleHits: string[] = [];
-  const summaryHits: string[] = [];
+  const bodyHits: string[] = [];
 
   for (const entry of COUNTRY_INDEX) {
     const inTitle = entry.patterns.some((p) => p.test(alert.title));
-    const inSummary = !inTitle && alert.summary
-      ? entry.patterns.some((p) => p.test(alert.summary!))
+    const inBody = !inTitle && body
+      ? entry.patterns.some((p) => p.test(body))
       : false;
     if (inTitle) titleHits.push(entry.slug);
-    else if (inSummary) summaryHits.push(entry.slug);
+    else if (inBody) bodyHits.push(entry.slug);
   }
 
-  // Title hits always come first; summary hits fill remaining slots.
-  let result = [...titleHits, ...summaryHits];
+  // Title hits always come first; body hits fill remaining slots.
+  let result = [...titleHits, ...bodyHits];
 
   // Apply add/remove from override file
   if (ov?.add) {

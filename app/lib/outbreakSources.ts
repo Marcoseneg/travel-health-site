@@ -57,12 +57,19 @@ export const OUTBREAK_SOURCES: OutbreakSource[] = [
 ];
 
 // The shape of an aggregated alert after parsing all sources.
+//
+// Note on `_tagText`: an internal field carrying additional body text used
+// ONLY for country-name detection by the country tagger. It is NOT for UI
+// display — `fetchAllOutbreaks` strips it from every alert before returning.
+// We use it so multi-country alerts whose country names appear deeper in
+// the article body (past the 280-char summary cutoff) still get tagged.
 export type OutbreakAlert = {
   id: string;          // stable ID built from source + URL hash
   sourceId: string;    // links to OUTBREAK_SOURCES[].id
   title: string;
   url: string;         // link to original source page
   publishedAt: string; // ISO date string
-  summary?: string;    // brief excerpt from feed description (plain text)
+  summary?: string;    // brief excerpt from feed description (plain text, ~280 chars)
   countries?: string[]; // detected country slugs, ranked (title hits first)
+  _tagText?: string;   // internal: extra body text for country tagger, stripped before return
 };

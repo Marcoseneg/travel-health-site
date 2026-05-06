@@ -17,10 +17,17 @@
 //      returned an empty page and the previous HTML scraper silently
 //      yielded zero items. The JSON API gives us clean structured data.
 //
-//   4. Caps per source — each source contributes at most 15 most recent
+//   4. Country tagging gets extra context for WHO entries. WHO DONs often
+//      describe multi-country events where the country names only appear
+//      deep in the article body. The WHO parser populates a `_tagText`
+//      field with the first ~1500 chars of the body, which the tagger
+//      scans alongside title/summary. The field is stripped from the alert
+//      before returning so it never reaches the client.
+//
+//   5. Caps per source — each source contributes at most 15 most recent
 //      alerts to keep the aggregated list manageable.
 //
-//   5. Network timeouts — each feed has a 7 second budget. Slow feeds get
+//   6. Network timeouts — each feed has a 7 second budget. Slow feeds get
 //      dropped rather than blocking the whole page render.
 
 import {
@@ -32,6 +39,8 @@ import { tagCountries } from "@/app/lib/countryTagger";
 
 const PER_SOURCE_LIMIT = 15;
 const FETCH_TIMEOUT_MS = 7000;
+const SUMMARY_MAX_CHARS = 280;
+const TAG_TEXT_MAX_CHARS = 1500; // extra body text passed only to the tagger
 
 // ── Public API ────────────────────────────────────────────────────────────
 export async function fetchAllOutbreaks(): Promise<OutbreakAlert[]> {
@@ -48,11 +57,14 @@ export async function fetchAllOutbreaks(): Promise<OutbreakAlert[]> {
     }
   });
 
-  // Tag every alert with detected country slugs
-  return all.map((alert) => ({
-    ...alert,
-    countries: tagCountries(alert),
-  }));
+  // Tag every alert with detected country slugs, then strip the internal
+  // _tagText field so it never gets serialized to the client.
+  return all.map((alert) => {
+    const countries = tagCountries(alert);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { _tagText, ...rest } = alert;
+    return { ...rest, countries };
+  });
 }
 
 // ── Per-source fetch ──────────────────────────────────────────────────────
@@ -129,7 +141,7 @@ function parseRssOrAtom(xml: string, src: OutbreakSource): OutbreakAlert[] {
       title: cleanText(title),
       url: url.trim(),
       publishedAt,
-      summary: desc ? truncate(stripHtml(desc), 280) : undefined,
+      summary: desc ? truncate(stripHtml(desc), SUMMARY_MAX_CHARS) : undefined,
     });
 
     if (items.length >= PER_SOURCE_LIMIT) break;
@@ -147,7 +159,8 @@ function parseRssOrAtom(xml: string, src: OutbreakSource): OutbreakAlert[] {
 //   Title                   → title
 //   ItemDefaultUrl          → url (relative path; we prepend who.int origin)
 //   PublicationDateAndTime  → publishedAt (falls back to PublicationDate)
-//   Overview                → summary (HTML; stripped + truncated)
+//   Overview                → summary (HTML; stripped + truncated to ~280)
+//   Overview + Epidemiology → _tagText (stripped, ~1500 chars, tagger only)
 function parseWhoApi(jsonText: string, src: OutbreakSource): OutbreakAlert[] {
   const items: OutbreakAlert[] = [];
 
@@ -182,12 +195,20 @@ function parseWhoApi(jsonText: string, src: OutbreakSource): OutbreakAlert[] {
     // ItemDefaultUrl is a relative path. Prepend the WHO origin.
     const url = path.startsWith("http") ? path : `https://www.who.int${path}`;
 
-    // Overview/Summary fields contain HTML — strip and truncate.
+    // Build display summary (~280 chars) from Overview, falling back to Summary.
     const overview =
       (typeof r.Overview === "string" && r.Overview) ||
       (typeof r.Summary === "string" && r.Summary) ||
       "";
-    const summary = overview ? truncate(stripHtml(overview), 280) : undefined;
+    const summary = overview ? truncate(stripHtml(overview), SUMMARY_MAX_CHARS) : undefined;
+
+    // Build extended text for country tagging: combine the article's main
+    // narrative fields. WHO multi-country DONs typically name the affected
+    // countries in the Epidemiology or deeper Overview text, well past the
+    // 280-char display cutoff.
+    const epidemiology = typeof r.Epidemiology === "string" ? r.Epidemiology : "";
+    const longBody = stripHtml(`${overview} ${epidemiology}`);
+    const _tagText = longBody ? truncate(longBody, TAG_TEXT_MAX_CHARS) : undefined;
 
     items.push({
       id: `${src.id}-${stableHash(url)}`,
@@ -196,6 +217,7 @@ function parseWhoApi(jsonText: string, src: OutbreakSource): OutbreakAlert[] {
       url,
       publishedAt,
       summary,
+      _tagText,
     });
 
     if (items.length >= PER_SOURCE_LIMIT) break;
