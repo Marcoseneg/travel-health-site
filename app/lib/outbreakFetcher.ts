@@ -12,9 +12,10 @@
 //   2. Parallel fetch with per-source error isolation — if one feed is
 //      down/malformed, the others still render. Done via Promise.allSettled.
 //
-//   3. WHO DON has no RSS — the html-list parser scans the public listing
-//      page for <article> blocks and extracts title/url/date heuristically.
-//      Less reliable than RSS but better than nothing.
+//   3. WHO DON uses a JSON REST API (Sitefinity OData). The HTML listing
+//      page was switched to client-side rendering, so server-side fetches
+//      returned an empty page and the previous HTML scraper silently
+//      yielded zero items. The JSON API gives us clean structured data.
 //
 //   4. Caps per source — each source contributes at most 15 most recent
 //      alerts to keep the aggregated list manageable.
@@ -68,7 +69,8 @@ async function fetchSource(src: OutbreakSource): Promise<OutbreakAlert[]> {
       headers: {
         // Some feeds are touchy without a UA header
         "User-Agent": "TravelMed/1.0 (https://travelmed.ch)",
-        Accept: "application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8",
+        Accept:
+          "application/json, application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8",
       },
     });
     if (!res.ok) {
@@ -79,8 +81,8 @@ async function fetchSource(src: OutbreakSource): Promise<OutbreakAlert[]> {
     if (src.format === "rss" || src.format === "atom") {
       return parseRssOrAtom(body, src);
     }
-    if (src.format === "html-list") {
-      return parseHtmlList(body, src);
+    if (src.format === "json-who") {
+      return parseWhoApi(body, src);
     }
     return [];
   } finally {
@@ -136,42 +138,64 @@ function parseRssOrAtom(xml: string, src: OutbreakSource): OutbreakAlert[] {
   return items;
 }
 
-// ── HTML listing scraper (used for WHO DON) ───────────────────────────────
-// WHO DON listing page lists items in repeated link blocks. Each item is an
-// anchor pointing to /emergencies/disease-outbreak-news/item/<id>. We extract
-// the link, link text (title), and any nearby date.
-function parseHtmlList(html: string, src: OutbreakSource): OutbreakAlert[] {
+// ── WHO Sitefinity JSON API parser ────────────────────────────────────────
+// Endpoint: https://www.who.int/api/news/diseaseoutbreaknews
+// Returns a JSON array of DON records. Some Sitefinity setups wrap the
+// array in { value: [...] }; we handle both shapes.
+//
+// Field mapping:
+//   Title                   → title
+//   ItemDefaultUrl          → url (relative path; we prepend who.int origin)
+//   PublicationDateAndTime  → publishedAt (falls back to PublicationDate)
+//   Overview                → summary (HTML; stripped + truncated)
+function parseWhoApi(jsonText: string, src: OutbreakSource): OutbreakAlert[] {
   const items: OutbreakAlert[] = [];
 
-  // Match anchors that point to DON items, capturing href and inner text
-  const linkRegex = /<a\s+[^>]*href="(\/emergencies\/disease-outbreak-news\/item\/[^"]+)"[^>]*>([\s\S]*?)<\/a>/g;
-  let match: RegExpExecArray | null;
-  const seen = new Set<string>();
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonText);
+  } catch {
+    return items;
+  }
 
-  while ((match = linkRegex.exec(html)) !== null) {
-    const path = match[1];
-    if (seen.has(path)) continue;
-    seen.add(path);
+  const records: unknown[] = Array.isArray(parsed)
+    ? parsed
+    : Array.isArray((parsed as { value?: unknown[] })?.value)
+      ? (parsed as { value: unknown[] }).value
+      : [];
 
-    const url = `https://www.who.int${path}`;
-    const innerText = stripHtml(match[2]).trim();
-    if (!innerText || innerText.length < 8) continue;
+  for (const raw of records) {
+    if (!raw || typeof raw !== "object") continue;
+    const r = raw as Record<string, unknown>;
 
-    // Date: look for an ISO-ish date in the surrounding 200 chars
-    const surrounding = html.slice(
-      Math.max(0, match.index - 250),
-      Math.min(html.length, match.index + match[0].length + 250)
-    );
-    const dateMatch = surrounding.match(/(\d{1,2}\s+\w+\s+\d{4}|\d{4}-\d{2}-\d{2})/);
-    const publishedAt = dateMatch ? parseDate(dateMatch[1]) : null;
+    const title = typeof r.Title === "string" ? cleanText(r.Title) : "";
+    const path = typeof r.ItemDefaultUrl === "string" ? r.ItemDefaultUrl : "";
+    const dateRaw =
+      (typeof r.PublicationDateAndTime === "string" && r.PublicationDateAndTime) ||
+      (typeof r.PublicationDate === "string" && r.PublicationDate) ||
+      "";
+
+    if (!title || !path || !dateRaw) continue;
+    const publishedAt = parseDate(dateRaw);
     if (!publishedAt) continue;
+
+    // ItemDefaultUrl is a relative path. Prepend the WHO origin.
+    const url = path.startsWith("http") ? path : `https://www.who.int${path}`;
+
+    // Overview/Summary fields contain HTML — strip and truncate.
+    const overview =
+      (typeof r.Overview === "string" && r.Overview) ||
+      (typeof r.Summary === "string" && r.Summary) ||
+      "";
+    const summary = overview ? truncate(stripHtml(overview), 280) : undefined;
 
     items.push({
       id: `${src.id}-${stableHash(url)}`,
       sourceId: src.id,
-      title: innerText,
+      title,
       url,
       publishedAt,
+      summary,
     });
 
     if (items.length >= PER_SOURCE_LIMIT) break;
