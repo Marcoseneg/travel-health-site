@@ -23,7 +23,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/`,           lastModified, changeFrequency: "weekly",  priority: 1.0 },
     { url: `${BASE_URL}/countries`,  lastModified, changeFrequency: "weekly",  priority: 0.9 },
     { url: `${BASE_URL}/diseases`,   lastModified, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE_URL}/outbreaks`,  lastModified, changeFrequency: "daily",   priority: 0.7 },
+    { url: `${BASE_URL}/outbreaks`,  lastModified, changeFrequency: "hourly",  priority: 0.7 },
+    { url: `${BASE_URL}/itinerary`,  lastModified, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/guides`,     lastModified, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/about`,      lastModified, changeFrequency: "yearly",  priority: 0.4 },
   ];
