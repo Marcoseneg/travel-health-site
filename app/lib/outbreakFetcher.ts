@@ -17,17 +17,22 @@
 //      returned an empty page and the previous HTML scraper silently
 //      yielded zero items. The JSON API gives us clean structured data.
 //
-//   4. Country tagging gets extra context for WHO entries. WHO DONs often
+//   4. WHO URL construction uses `UrlName` (the slug, e.g. "2026-DON599"),
+//      not `ItemDefaultUrl`. Despite its name, ItemDefaultUrl in WHO's
+//      Sitefinity instance does not contain the full public path, so using
+//      it produces 404s. UrlName is reliably the slug.
+//
+//   5. Country tagging gets extra context for WHO entries. WHO DONs often
 //      describe multi-country events where the country names only appear
 //      deep in the article body. The WHO parser populates a `_tagText`
 //      field with the first ~1500 chars of the body, which the tagger
 //      scans alongside title/summary. The field is stripped from the alert
 //      before returning so it never reaches the client.
 //
-//   5. Caps per source — each source contributes at most 15 most recent
+//   6. Caps per source — each source contributes at most 15 most recent
 //      alerts to keep the aggregated list manageable.
 //
-//   6. Network timeouts — each feed has a 7 second budget. Slow feeds get
+//   7. Network timeouts — each feed has a 7 second budget. Slow feeds get
 //      dropped rather than blocking the whole page render.
 
 import {
@@ -41,6 +46,7 @@ const PER_SOURCE_LIMIT = 15;
 const FETCH_TIMEOUT_MS = 7000;
 const SUMMARY_MAX_CHARS = 280;
 const TAG_TEXT_MAX_CHARS = 1500; // extra body text passed only to the tagger
+const WHO_DON_BASE = "https://www.who.int/emergencies/disease-outbreak-news/item";
 
 // ── Public API ────────────────────────────────────────────────────────────
 export async function fetchAllOutbreaks(): Promise<OutbreakAlert[]> {
@@ -157,7 +163,9 @@ function parseRssOrAtom(xml: string, src: OutbreakSource): OutbreakAlert[] {
 //
 // Field mapping:
 //   Title                   → title
-//   ItemDefaultUrl          → url (relative path; we prepend who.int origin)
+//   UrlName                 → url (combined with WHO_DON_BASE)
+//                             ItemDefaultUrl is unreliable in WHO's instance
+//                             — we fall back to it only when UrlName is empty
 //   PublicationDateAndTime  → publishedAt (falls back to PublicationDate)
 //   Overview                → summary (HTML; stripped + truncated to ~280)
 //   Overview + Epidemiology → _tagText (stripped, ~1500 chars, tagger only)
@@ -182,18 +190,27 @@ function parseWhoApi(jsonText: string, src: OutbreakSource): OutbreakAlert[] {
     const r = raw as Record<string, unknown>;
 
     const title = typeof r.Title === "string" ? cleanText(r.Title) : "";
-    const path = typeof r.ItemDefaultUrl === "string" ? r.ItemDefaultUrl : "";
+
+    // Build URL from UrlName (the slug, e.g. "2026-DON599") — this is the
+    // reliable field. ItemDefaultUrl in WHO's API doesn't contain the
+    // full path and produces 404s, so it's only used as a last resort.
+    const urlName = typeof r.UrlName === "string" ? r.UrlName.trim() : "";
+    const fallbackPath = typeof r.ItemDefaultUrl === "string" ? r.ItemDefaultUrl.trim() : "";
+
     const dateRaw =
       (typeof r.PublicationDateAndTime === "string" && r.PublicationDateAndTime) ||
       (typeof r.PublicationDate === "string" && r.PublicationDate) ||
       "";
 
-    if (!title || !path || !dateRaw) continue;
+    if (!title || (!urlName && !fallbackPath) || !dateRaw) continue;
     const publishedAt = parseDate(dateRaw);
     if (!publishedAt) continue;
 
-    // ItemDefaultUrl is a relative path. Prepend the WHO origin.
-    const url = path.startsWith("http") ? path : `https://www.who.int${path}`;
+    const url = urlName
+      ? `${WHO_DON_BASE}/${urlName}`
+      : fallbackPath.startsWith("http")
+        ? fallbackPath
+        : `https://www.who.int${fallbackPath}`;
 
     // Build display summary (~280 chars) from Overview, falling back to Summary.
     const overview =
