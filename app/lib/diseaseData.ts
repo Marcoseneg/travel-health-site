@@ -71,7 +71,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   dengue: {
     label: "Dengue",
     icon: "🦟",
-    category: "Mosquito-borne viral",
+    category: "Mosquito-borne virus",
 
     transmission:
       "Spread by Aedes mosquitoes that bite during the day. Common in tropical and subtropical cities, peaking in the rainy season.",
@@ -150,7 +150,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   "yellow-fever": {
     label: "Yellow Fever",
     icon: "🦠",
-    category: "Vaccine-preventable",
+    category: "Mosquito-borne virus",
     transmission: "Transmitted by Aedes and Haemagogus mosquitoes in tropical regions of Africa and South America.",
     prevention: "Yellow fever vaccine (single dose provides lifelong protection). Required for entry into many countries. Mosquito avoidance.",
     preventionDetails: [
@@ -174,7 +174,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   typhoid: {
     label: "Typhoid",
     icon: "🦠",
-    category: "Food & waterborne",
+    category: "Food & waterborne bacterium",
     transmission: "Fecal-oral route through contaminated food and water. Caused by Salmonella typhi bacteria.",
     prevention: "Typhoid vaccine (injectable Vi polysaccharide or oral Ty21a). Safe food and water practices. Hand hygiene.",
     preventionDetails: [
@@ -203,7 +203,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   "hepatitis-a": {
     label: "Hepatitis A",
     icon: "💉",
-    category: "Vaccine-preventable",
+    category: "Food & waterborne virus",
     transmission: "Fecal-oral route through contaminated food, water, or close personal contact with an infected person.",
     prevention: "Hepatitis A vaccine (2-dose series provides long-term protection). Safe food and water practices. Hand hygiene.",
     preventionDetails: [
@@ -227,7 +227,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   rabies: {
     label: "Rabies",
     icon: "🦠",
-    category: "Animal exposure",
+    category: "Animal bite or scratch",
     transmission: "Transmitted through saliva of infected mammals, usually via bites or scratches. Dogs are the most common source in endemic countries.",
     prevention: "Pre-exposure vaccination (3-dose series) for high-risk travelers. Avoid contact with stray animals. Post-exposure prophylaxis (PEP) is critical after potential exposure.",
     preventionDetails: [
@@ -256,7 +256,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   cholera: {
     label: "Cholera",
     icon: "🦠",
-    category: "Food & waterborne",
+    category: "Food & waterborne bacterium",
     transmission: "Ingestion of water or food contaminated with Vibrio cholerae bacteria. Often linked to poor sanitation and humanitarian crises.",
     prevention: "Oral cholera vaccine (Dukoral, Vaxchora) for high-risk travelers. Safe water and food practices. Hand hygiene.",
     preventionDetails: [
@@ -303,6 +303,161 @@ export const diseases: Record<string, DiseaseInfo> = {
     symptoms: "Most infections are asymptomatic. Symptomatic cases: fever, headache, vomiting, confusion, seizures, encephalitis. 20–30% fatality rate in encephalitis cases.",
     treatment: "No specific antiviral. Supportive intensive care for encephalitis (seizure management, airway protection, ICP management).",
     regions: "East/Southeast Asia and the Western Pacific, especially rural agricultural areas. Seasonal (monsoon/post-monsoon).",
+    vaccineAvailable: true,
+    riskLevel: "moderate",
+  },
+
+  // ── Tick-borne Encephalitis ────────────────────────────────────────────────
+  // Sources: Swiss BAG/FOPH 2025 vaccination schedule (TBE recommended for
+  // all of Switzerland except cantons of Genève and Ticino as of 2019);
+  // FSME-Immun (Pfizer) and Encepur (GSK) prescribing information.
+  tbe: {
+    label: "Tick-borne Encephalitis",
+    icon: "🦠",
+    category: "Tick-borne virus",
+    transmission:
+      "Transmitted by Ixodes ricinus ticks active March–November (peak May–July). Rare cases also occur after consuming unpasteurised dairy products from infected goats, sheep, or cows. Not transmitted person-to-person.",
+    prevention:
+      "TBE vaccine (FSME-Immun or Encepur), tick-bite avoidance, and prompt tick removal. The Swiss BAG recommends TBE vaccination for all residents and travellers in Switzerland (except Genève and Ticino) and most of central, eastern, and northern Europe.",
+    preventionDetails: [
+      {
+        type: "vaccine",
+        title: "Standard schedule (FSME-Immun / Encepur)",
+        detail:
+          "3 intramuscular doses on days 0, 1–3 months, and 5–12 months. Long-term protection: booster every 10 years for all ages (Swiss BAG simplified the schedule in 2022 — previously every 3 years over age 60). Both FSME-Immun and Encepur are inactivated whole-virus vaccines and clinically equivalent. Approved from age 1 (paediatric formulations available).",
+      },
+      {
+        type: "vaccine",
+        title: "Accelerated schedule (last-minute travel)",
+        detail:
+          "When the standard 3-dose schedule isn't feasible: Encepur 0, 7, 21 days (officially licensed accelerated schedule), or FSME-Immun 0, 14 days. Both provide protection within 14 days of dose 2. A booster at 12–18 months consolidates long-term immunity. Useful for unvaccinated patients with imminent travel to a high-risk area in tick season.",
+      },
+      {
+        type: "behavior",
+        title: "Tick-bite avoidance",
+        detail:
+          "Wear long trousers tucked into socks and closed shoes when walking in forest, grassland, or scrub. Apply DEET 20–30% or Icaridin 20% to exposed skin and shoes. Permethrin-treated clothing is highly effective. Stick to marked paths. Perform a full body tick check (including scalp, armpits, groin, behind knees) within 2 hours of returning indoors and again before bed.",
+      },
+      {
+        type: "post-exposure",
+        title: "Tick removal — what to do",
+        detail:
+          "Remove the tick as quickly as possible: grasp it close to the skin with fine-tipped tweezers (not fingers) and pull straight upwards with steady, even pressure — no twisting, no oils, no lighters. Disinfect the bite site afterwards. Note the date and check the area for the next 6 weeks. Seek medical attention if you develop fever, headache, or expanding redness around the bite. Post-exposure TBE vaccination is NOT effective and not recommended.",
+      },
+      {
+        type: "post-exposure",
+        title: "⚠ Symptoms after a tick bite",
+        detail:
+          "TBE is biphasic: a flu-like illness (fever, headache, myalgia) appears 4–28 days after the bite and lasts 3–7 days, followed by a symptom-free interval. About 20–30% of symptomatic patients then progress to neurological disease (meningitis, encephalitis, myelitis) with stiff neck, severe headache, confusion, or focal weakness. Permanent neurological sequelae occur in 30–60% of CNS cases. Seek urgent medical care for any biphasic febrile illness after a tick bite, especially with neurological symptoms.",
+      },
+    ],
+    symptoms:
+      "Biphasic illness: 4–28 days after a tick bite, an initial flu-like phase with fever, headache, and muscle pain lasting up to a week. Most patients recover here. About 1 in 3 progress after a symptom-free interval to neurological disease — meningitis, encephalitis, or myelitis. Long-term neurological sequelae are common after the CNS phase.",
+    treatment:
+      "No specific antiviral treatment. Supportive care for the meningoencephalitic phase: hospitalisation, hydration, analgesia, anticonvulsants if seizures, ICU support for severe cases. Recovery from neurological disease is often slow and incomplete.",
+    regions:
+      "Endemic across central, eastern, and northern Europe — including most of Switzerland (excluding cantons of Genève and Ticino), Austria, Germany, Czech Republic, Slovakia, Hungary, Slovenia, Poland, the Baltic states, parts of Scandinavia, Russia, and into northern Asia. The Far Eastern subtype (Russia, parts of China and Japan) is more severe than the European subtype.",
+    vaccineAvailable: true,
+    riskLevel: "moderate",
+  },
+
+  // ── Zika ──────────────────────────────────────────────────────────────────
+  // Sources: CDC Zika travel guidance; WHO Zika virus disease position;
+  // CDC pre-conception waiting-period guidance (updated 2024).
+  zika: {
+    label: "Zika",
+    icon: "🦟",
+    category: "Mosquito-borne virus",
+    transmission:
+      "Primarily by daytime-biting Aedes mosquitoes (the same species that spread dengue and chikungunya). Also transmitted sexually (in semen and vaginal fluids for weeks to months after infection) and from mother to fetus during pregnancy.",
+    prevention:
+      "Strict daytime mosquito-bite prevention. No vaccine is available. Pregnancy and conception planning are the most important clinical considerations — pregnant women should avoid travel to areas with current Zika transmission.",
+    preventionDetails: [
+      {
+        type: "behavior",
+        title: "Daytime mosquito protection",
+        detail:
+          "Aedes mosquitoes bite mainly during the day, with peaks in early morning and late afternoon. Apply DEET 20–50% or Picaridin 20% to all exposed skin. Wear long sleeves and trousers. Stay in air-conditioned or well-screened accommodation. Same precautions as for dengue and chikungunya — they share the vector.",
+      },
+      {
+        type: "behavior",
+        title: "Pregnancy and conception planning",
+        detail:
+          "Pregnant women should NOT travel to areas with current Zika transmission — congenital Zika syndrome can cause microcephaly and severe brain abnormalities. Couples planning conception: women with possible exposure should wait at least 2 months before trying to conceive; men with possible exposure should wait at least 3 months and use condoms with partners who could become pregnant during that window. Discuss any Zika-area travel during the periconception period with a travel medicine specialist.",
+      },
+      {
+        type: "behavior",
+        title: "Sexual transmission prevention",
+        detail:
+          "Use condoms or abstain from sex during travel and for 3 months after return from a Zika area, even if asymptomatic. This applies regardless of pregnancy plans — sexual transmission has been documented for both male-to-female and female-to-male partners.",
+      },
+      {
+        type: "post-exposure",
+        title: "Symptoms after travel",
+        detail:
+          "Most Zika infections (~80%) cause no symptoms at all. When present, symptoms are usually mild: low-grade fever, maculopapular rash, non-purulent conjunctivitis, joint pain — lasting 2–7 days. Use paracetamol; avoid aspirin and NSAIDs until dengue is ruled out. Seek testing if symptomatic during or shortly after travel and you are pregnant or considering pregnancy.",
+      },
+    ],
+    symptoms:
+      "Asymptomatic in around 80% of infections. When symptomatic: low-grade fever, maculopapular rash, conjunctivitis, joint and muscle pain, headache. Mild and self-limiting in adults. Very rarely associated with Guillain-Barré syndrome. The major risk is congenital Zika syndrome in fetuses of infected pregnant women.",
+    treatment:
+      "No specific antiviral treatment. Supportive care: rest, fluids, paracetamol. Avoid aspirin and NSAIDs until dengue has been excluded. Pregnant women diagnosed with Zika need specialist obstetric follow-up with serial fetal ultrasounds.",
+    regions:
+      "Most of the Americas (especially Caribbean, Central America, northern South America), parts of Southeast Asia, the Pacific Islands, and sub-Saharan Africa. Outbreak intensity varies year to year; CDC and ECDC maintain country-level current-risk maps. Zika has been documented sporadically in southern Europe via local Aedes albopictus populations.",
+    vaccineAvailable: false,
+    riskLevel: "moderate",
+  },
+
+  // ── Mpox ──────────────────────────────────────────────────────────────────
+  // Sources: WHO mpox PHEIC declarations (2022 clade IIb, 2024 clade Ib);
+  // CDC mpox traveller guidance; JYNNEOS/Imvanex (Bavarian Nordic)
+  // prescribing information; ECDC clade Ib updates 2024–2025.
+  mpox: {
+    label: "Mpox",
+    icon: "🦠",
+    category: "Close-contact virus",
+    transmission:
+      "Transmitted by direct skin-to-skin or mucosal contact with lesions, body fluids, or contaminated materials (bedding, clothing). Sexual contact is the predominant route in the current global outbreak. Respiratory transmission requires prolonged close face-to-face contact. Animal-to-human transmission occurs in endemic African regions (rodents, primates).",
+    prevention:
+      "JYNNEOS/Imvanex vaccine for high-risk groups, sexual-health risk reduction, and avoidance of contact with cases or potentially infected animals in endemic regions.",
+    preventionDetails: [
+      {
+        type: "vaccine",
+        title: "JYNNEOS / Imvanex (modified vaccinia Ankara)",
+        detail:
+          "2 subcutaneous doses, 28 days apart. Recommended for: men who have sex with men with multiple recent partners; sex workers and their clients; healthcare workers caring for confirmed cases; laboratory staff handling orthopoxviruses; close contacts of confirmed cases. Approved from age 18 (used off-label in adolescents in outbreak settings). A non-replicating vaccine — safe in immunocompromised individuals, unlike older smallpox vaccines.",
+      },
+      {
+        type: "behavior",
+        title: "Sexual health and risk reduction",
+        detail:
+          "During active outbreaks, reduce partner numbers, avoid sex with anyone who has unexplained rash or sores, and have open conversations about recent symptoms or exposures. Condoms reduce but do not eliminate transmission risk (skin-to-skin contact at uncovered sites can still transmit). After mpox infection, wait until all lesions have fully crusted, fallen off, and new skin has formed before resuming sexual activity (typically 2–4 weeks).",
+      },
+      {
+        type: "behavior",
+        title: "Travel to endemic areas",
+        detail:
+          "In endemic African regions (Central and West Africa) avoid contact with rodents and primates, do not handle bushmeat, and avoid eating undercooked wild game. Healthcare workers travelling for clinical work in outbreak settings should be vaccinated and use full PPE. Routine tourist travel to endemic countries does not require vaccination unless other risk factors apply.",
+      },
+      {
+        type: "post-exposure",
+        title: "Post-exposure vaccination",
+        detail:
+          "JYNNEOS given within 4 days of exposure may prevent disease; given within 4–14 days it may attenuate severity. Indicated for high-risk contacts of confirmed cases. Seek medical attention urgently if you've had close contact (sexual, household, or healthcare) with a known mpox case.",
+      },
+      {
+        type: "post-exposure",
+        title: "⚠ Symptoms after possible exposure",
+        detail:
+          "Incubation 5–21 days. Watch for fever, swollen lymph nodes, and a vesicular/pustular rash — in the current outbreak often starting in the genital, perianal, or oral area before spreading. Seek medical attention promptly, isolate from others (including pets), and inform the clinic in advance so they can prepare PPE.",
+      },
+    ],
+    symptoms:
+      "Fever, headache, myalgia, and characteristic lymphadenopathy (often the distinguishing feature from chickenpox or smallpox), followed by a rash that progresses from macules to papules to vesicles to pustules to crusts over 2–4 weeks. In the current global outbreak, lesions are often genital, perianal, or oral and may be limited in number. Severe disease occurs in immunocompromised patients, young children, and pregnant women.",
+    treatment:
+      "Mostly supportive — analgesia, wound care, and isolation until lesions fully heal. Tecovirimat (TPOXX) is reserved for severe disease, immunocompromised patients, pregnancy, or lesions in anatomically sensitive areas; clinical trial evidence has been mixed. Brincidofovir and vaccinia immunoglobulin are second-line options.",
+    regions:
+      "Endemic in Central and West Africa with historical clade I (more severe) and clade II (less severe) circulation. Since 2022, clade IIb has caused a sustained global outbreak primarily affecting men who have sex with men. Since 2024, clade Ib has emerged with sustained transmission in the Democratic Republic of the Congo and surrounding countries (Burundi, Rwanda, Uganda, Kenya), with travel-related cases reported worldwide.",
     vaccineAvailable: true,
     riskLevel: "moderate",
   },
