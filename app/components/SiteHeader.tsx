@@ -162,26 +162,77 @@ export default function SiteHeader() {
             style={{
               width: "34px",
               height: "34px",
-              borderRadius: "9px",
-              background: "linear-gradient(135deg, var(--accent), var(--accent-dark))",
+              borderRadius: "10px",
+              background:
+                "linear-gradient(135deg, rgba(125,211,252,0.18), rgba(56,189,248,0.06))",
+              border: "1px solid rgba(125,211,252,0.25)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "15px",
-              boxShadow: "0 4px 16px rgba(56,189,248,0.3)",
+              position: "relative",
+              overflow: "hidden",
+              boxShadow:
+                "0 6px 18px rgba(56,189,248,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
             }}
           >
-            ✈
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 32 32"
+              fill="none"
+              aria-hidden="true"
+            >
+              <circle
+                cx="16"
+                cy="16"
+                r="9"
+                stroke="#7dd3fc"
+                strokeWidth="1.4"
+                fill="none"
+              />
+              <ellipse
+                cx="16"
+                cy="16"
+                rx="9"
+                ry="3.5"
+                stroke="#7dd3fc"
+                strokeWidth="1"
+                fill="none"
+              />
+              <line
+                x1="7"
+                y1="16"
+                x2="25"
+                y2="16"
+                stroke="#7dd3fc"
+                strokeWidth="1"
+              />
+            </svg>
+            {/* Subtle top-half highlight for glassmorphism */}
+            <span
+              aria-hidden="true"
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "50%",
+                background:
+                  "linear-gradient(180deg, rgba(255,255,255,0.08), transparent)",
+                pointerEvents: "none",
+              }}
+            />
           </div>
           <span
             style={{
-              fontWeight: 800,
+              fontWeight: 600,
               fontSize: "18px",
-              letterSpacing: "-0.03em",
+              letterSpacing: "-0.025em",
               color: "var(--foreground)",
             }}
           >
-            Travel<span style={{ color: "var(--accent)" }}>Med</span>
+            Travel
+            <span style={{ color: "var(--accent)", fontWeight: 400 }}>Med</span>
           </span>
         </a>
 

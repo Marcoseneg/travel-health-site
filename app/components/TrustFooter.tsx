@@ -209,6 +209,54 @@ const SOURCE_LINKS = [
   { label: "ISTM", href: "https://www.istm.org/" },
 ];
 
+// ── Social icon — small circular link with hover lift ───────────────────────
+function SocialIcon({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
+      style={{
+        width: "30px",
+        height: "30px",
+        borderRadius: "8px",
+        display: "inline-flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "rgba(255,255,255,0.03)",
+        border: "1px solid rgba(255,255,255,0.06)",
+        color: "#94a3b8",
+        textDecoration: "none",
+        transition: "color 160ms ease, background 160ms ease, transform 160ms ease, border-color 160ms ease",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = "#7dd3fc";
+        e.currentTarget.style.background = "rgba(56,189,248,0.08)";
+        e.currentTarget.style.borderColor = "rgba(125,211,252,0.25)";
+        e.currentTarget.style.transform = "translateY(-1px)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = "#94a3b8";
+        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
+        e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+        e.currentTarget.style.transform = "translateY(0)";
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
 export function SiteFooter() {
   return (
     <footer
@@ -250,26 +298,76 @@ export function SiteFooter() {
                 style={{
                   width: "30px",
                   height: "30px",
-                  borderRadius: "8px",
-                  background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
+                  borderRadius: "9px",
+                  background:
+                    "linear-gradient(135deg, rgba(125,211,252,0.18), rgba(56,189,248,0.06))",
+                  border: "1px solid rgba(125,211,252,0.25)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "13px",
-                  boxShadow: "0 4px 16px rgba(56,189,248,0.3)",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow:
+                    "0 4px 14px rgba(56,189,248,0.16), inset 0 1px 0 rgba(255,255,255,0.06)",
                 }}
               >
-                ✈
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="9"
+                    stroke="#7dd3fc"
+                    strokeWidth="1.4"
+                    fill="none"
+                  />
+                  <ellipse
+                    cx="16"
+                    cy="16"
+                    rx="9"
+                    ry="3.5"
+                    stroke="#7dd3fc"
+                    strokeWidth="1"
+                    fill="none"
+                  />
+                  <line
+                    x1="7"
+                    y1="16"
+                    x2="25"
+                    y2="16"
+                    stroke="#7dd3fc"
+                    strokeWidth="1"
+                  />
+                </svg>
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: "50%",
+                    background:
+                      "linear-gradient(180deg, rgba(255,255,255,0.08), transparent)",
+                    pointerEvents: "none",
+                  }}
+                />
               </div>
               <span
                 style={{
-                  fontWeight: 800,
+                  fontWeight: 600,
                   fontSize: "17px",
-                  letterSpacing: "-0.03em",
+                  letterSpacing: "-0.025em",
                   color: "#f1f5f9",
                 }}
               >
-                Travel<span style={{ color: "#38bdf8" }}>Med</span>
+                Travel
+                <span style={{ color: "#38bdf8", fontWeight: 400 }}>Med</span>
               </span>
             </Link>
             <p
@@ -310,6 +408,34 @@ export function SiteFooter() {
                 }}
               />
               CDC &amp; WHO aligned
+            </div>
+
+            {/* Social links — small icon row beneath the brand block */}
+            <div
+              style={{
+                marginTop: "20px",
+                display: "flex",
+                gap: "10px",
+              }}
+            >
+              <SocialIcon href="#" label="TravelMed on X">
+                {/* X (formerly Twitter) — clean filled logo */}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </SocialIcon>
+              <SocialIcon href="#" label="TravelMed on LinkedIn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                </svg>
+              </SocialIcon>
+              <SocialIcon href="#" label="TravelMed on Instagram">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z" />
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                </svg>
+              </SocialIcon>
             </div>
           </div>
 

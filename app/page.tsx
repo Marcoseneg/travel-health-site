@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import DestinationSearch from "./components/DestinationSearch";
 import GlobeHero from "./components/GlobeHero";
 import CountryChip from "./components/CountryChip";
+import CountUp from "./components/CountUp";
 import HowItWorks from "./components/HowItWorks";
 import PopularDestinations from "./components/PopularDestinations";
 import DiseaseLibrary from "./components/DiseaseLibrary";
@@ -55,7 +56,6 @@ export default function Home() {
               {/* ── Left column: copy + search card ─────────────────── */}
               <div className="hero-copy animate-fade-up">
                 <div className="hero-badge">
-                  <span className="hero-badge-dot" />
                   Physician-curated travel medicine
                 </div>
 
@@ -111,11 +111,6 @@ export default function Home() {
                     onAddCountry={addCountry}
                   />
 
-                  <p className="hero-helper">
-                    Press <kbd className="hero-kbd">/</kbd> to search &middot;
-                    Free, no account needed
-                  </p>
-
                   {hasDestinations && (
                     <button
                       className="hero-go-btn"
@@ -158,11 +153,15 @@ export default function Home() {
       <section className="stats-strip">
         <div className="stats-strip-inner">
           <div className="stats-strip-item">
-            <span className="stats-strip-num">95+</span>
+            <span className="stats-strip-num">
+              <CountUp end={65} suffix="+" />
+            </span>
             <span className="stats-strip-label">Destinations covered</span>
           </div>
           <div className="stats-strip-item">
-            <span className="stats-strip-num">9</span>
+            <span className="stats-strip-num">
+              <CountUp end={9} />
+            </span>
             <span className="stats-strip-label">Diseases tracked</span>
           </div>
           <div className="stats-strip-item">
@@ -186,6 +185,38 @@ export default function Home() {
       <TrustBanner />
 
       <SiteFooter />
+
+      {/* Card micro-interactions — hover lift + cyan glow.
+          Selectors target common card wrappers used across the home sections
+          (HowItWorks steps, PopularDestinations country cards, DiseaseLibrary
+          disease cards). Effects are restrained: 4px lift, soft cyan glow,
+          200ms ease. No-op on touch devices via @media (hover: hover). */}
+      <style jsx global>{`
+        @media (hover: hover) {
+          .disease-card,
+          .destination-card,
+          .step-card,
+          .route-card,
+          [data-card="lift"] {
+            transition:
+              transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 220ms ease,
+              border-color 220ms ease !important;
+            will-change: transform;
+          }
+          .disease-card:hover,
+          .destination-card:hover,
+          .step-card:hover,
+          .route-card:hover,
+          [data-card="lift"]:hover {
+            transform: translateY(-4px);
+            box-shadow:
+              0 12px 32px rgba(56, 189, 248, 0.12),
+              0 2px 8px rgba(0, 0, 0, 0.18) !important;
+            border-color: rgba(125, 211, 252, 0.22) !important;
+          }
+        }
+      `}</style>
     </>
   );
 }
