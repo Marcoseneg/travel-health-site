@@ -4,39 +4,72 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { diseases, DISEASE_LIST } from "../lib/diseaseData";
 
-type TransmissionCategory = "mosquito" | "food-water" | "animal" | "all";
+type TransmissionCategory =
+  | "mosquito"
+  | "tick"
+  | "food-water"
+  | "animal"
+  | "person-to-person"
+  | "all";
 
 const DISEASE_TRANSMISSION: Record<string, TransmissionCategory> = {};
 DISEASE_LIST.forEach((slug) => {
-  if (["yellow-fever", "japanese-encephalitis", "dengue", "chikungunya", "malaria"].includes(slug)) {
+  if (["yellow-fever", "japanese-encephalitis", "dengue", "chikungunya", "malaria", "zika"].includes(slug)) {
     DISEASE_TRANSMISSION[slug] = "mosquito";
   } else if (["typhoid", "cholera", "hepatitis-a"].includes(slug)) {
     DISEASE_TRANSMISSION[slug] = "food-water";
   } else if (slug === "rabies") {
     DISEASE_TRANSMISSION[slug] = "animal";
+  } else if (slug === "tbe") {
+    DISEASE_TRANSMISSION[slug] = "tick";
+  } else if (slug === "mpox") {
+    DISEASE_TRANSMISSION[slug] = "person-to-person";
   } else {
     const c = diseases[slug].category.toLowerCase();
-    DISEASE_TRANSMISSION[slug] = c.includes("mosquito") ? "mosquito" : c.includes("food") || c.includes("water") ? "food-water" : c.includes("animal") ? "animal" : "mosquito";
+    DISEASE_TRANSMISSION[slug] =
+      c.includes("mosquito") ? "mosquito" :
+      c.includes("tick") ? "tick" :
+      c.includes("food") || c.includes("water") ? "food-water" :
+      c.includes("animal") ? "animal" :
+      c.includes("contact") ? "person-to-person" :
+      "mosquito";
   }
 });
 
 const TRANSMISSION_FILTERS: { value: TransmissionCategory; label: string; icon: string }[] = [
   { value: "all", label: "All diseases", icon: "" },
   { value: "mosquito", label: "Mosquito-borne", icon: "🦟" },
+  { value: "tick", label: "Tick-borne", icon: "🪲" },
   { value: "food-water", label: "Food & water", icon: "🚰" },
   { value: "animal", label: "Animal exposure", icon: "🐕" },
+  { value: "person-to-person", label: "Close contact", icon: "🤝" },
 ];
 
 const SHORT_DESCRIPTIONS: Record<string, string> = {
-  malaria: "Life-threatening parasitic infection. Prevention combines mosquito avoidance with chemoprophylaxis.",
-  dengue: "Transmitted by daytime-biting Aedes mosquitoes. Prevention is primarily behavioral.",
-  chikungunya: "Causes severe joint pain that can persist for months. Same Aedes vector as dengue.",
-  "yellow-fever": "Single-dose vaccine provides lifelong protection. Required for entry to many countries.",
-  typhoid: "Spread through contaminated food and water. Vaccine available.",
-  "hepatitis-a": "Highly effective 2-dose vaccine. Spread through contaminated food, water, and close contact.",
-  rabies: "Nearly always fatal once symptomatic. Pre-exposure vaccine simplifies post-bite management.",
-  cholera: "Acute watery diarrhea that can kill within hours. Oral vaccine available for high-risk areas.",
-  "japanese-encephalitis": "Vaccine recommended for extended rural stays in Asia.",
+  malaria:
+    "Year-round risk in much of the tropics. Prevention combines mosquito avoidance with chemoprophylaxis.",
+  dengue:
+    "Spread by daytime-biting Aedes mosquitoes. Severe dengue is rare but the risk rises with a second infection.",
+  chikungunya:
+    "Sudden fever with joint pain that can last months. Same Aedes mosquitoes as dengue.",
+  "yellow-fever":
+    "Single dose protects for life. Required for entry into many African and South American countries.",
+  typhoid:
+    "Persistent fever from contaminated food and water. Two vaccines available — useful for longer or rougher trips.",
+  "hepatitis-a":
+    "Common worldwide, easy to catch, easy to prevent. Two-dose vaccine gives long-term protection.",
+  rabies:
+    "Nearly always fatal once symptoms start. Pre-exposure vaccine simplifies what to do after a bite.",
+  cholera:
+    "Severe diarrhea that can dehydrate within hours. Vaccine for outbreak areas and humanitarian work.",
+  "japanese-encephalitis":
+    "Rural Asia, especially during monsoon. Vaccine for stays of a month or more in farming areas.",
+  tbe:
+    "Tick-borne encephalitis, endemic across most of Switzerland. BAG-recommended vaccine for residents and visitors.",
+  zika:
+    "Usually mild — but congenital Zika syndrome makes pregnancy planning the central concern.",
+  mpox:
+    "Mostly spread by close skin-to-skin and sexual contact. Vaccine available for high-risk groups.",
 };
 
 function getPreventionTags(slug: string, d: typeof diseases[string]): string[] {
@@ -44,8 +77,10 @@ function getPreventionTags(slug: string, d: typeof diseases[string]): string[] {
   if (d.vaccineAvailable) tags.push("💉 Vaccine");
   if (slug === "malaria") tags.push("💊 Prophylaxis");
   if (DISEASE_TRANSMISSION[slug] === "mosquito") tags.push("🦟 Mosquito avoidance");
+  if (DISEASE_TRANSMISSION[slug] === "tick") tags.push("🪲 Tick avoidance");
   if (DISEASE_TRANSMISSION[slug] === "food-water") tags.push("🍽️ Food & water hygiene");
   if (slug === "rabies") tags.push("🐾 Animal avoidance");
+  if (DISEASE_TRANSMISSION[slug] === "person-to-person") tags.push("🤝 Contact precautions");
   return tags;
 }
 
@@ -127,8 +162,10 @@ export default function DiseasesPage() {
             const tags = getPreventionTags(slug, d);
             const accentColor =
               DISEASE_TRANSMISSION[slug] === "mosquito" ? "rgba(251,146,60,0.5)" :
+              DISEASE_TRANSMISSION[slug] === "tick" ? "rgba(132,204,22,0.5)" :
               DISEASE_TRANSMISSION[slug] === "food-water" ? "rgba(56,189,248,0.5)" :
               DISEASE_TRANSMISSION[slug] === "animal" ? "rgba(168,85,247,0.5)" :
+              DISEASE_TRANSMISSION[slug] === "person-to-person" ? "rgba(244,114,182,0.5)" :
               "rgba(100,116,139,0.3)";
 
             return (
