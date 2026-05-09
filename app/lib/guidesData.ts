@@ -5,6 +5,17 @@ export type ArticleCategory =
   | "travel-story"
   | "explainer";
 
+export type QuickRecCard = {
+  /** Emoji shown in the round badge at top-left of the card */
+  icon: string;
+  /** Short uppercase tag describing when this advice applies */
+  scenario: string;
+  /** The actual recommendation — drug name, action, or "Avoid X" */
+  recommendation: string;
+  /** Optional fine-print line (e.g. generic name, dosing schedule) */
+  detail?: string;
+};
+
 export type Article = {
   id: string;
   date: string;
@@ -18,6 +29,9 @@ export type Article = {
   /** Full article body in Markdown. When omitted, the slug page shows a
    *  "Coming soon" state — useful for placeholder articles in the index. */
   content?: string;
+  /** Optional row of scenario→recommendation cards rendered above the
+   *  markdown body. Useful for decision-oriented articles. */
+  quickRecommendations?: QuickRecCard[];
 };
 
 export const CATEGORY_LABELS: Record<ArticleCategory, { label: string; color: string }> = {
@@ -64,6 +78,14 @@ export const articles: Article[] = [
     readingTime: 10,
     coverGradient: "linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%)",
     featured: true,
+    quickRecommendations: [
+      { icon: "⏱️", scenario: "Short trips", recommendation: "Malarone", detail: "atovaquone/proguanil" },
+      { icon: "💰", scenario: "Budget travelers", recommendation: "Doxycycline" },
+      { icon: "📅", scenario: "Long trips, weekly dose", recommendation: "Mefloquine" },
+      { icon: "⚡", scenario: "Last-minute departure", recommendation: "Malarone or doxy" },
+      { icon: "☀️", scenario: "Sun-sensitive travelers", recommendation: "Avoid doxycycline" },
+      { icon: "🧠", scenario: "Psychiatric history", recommendation: "Avoid mefloquine" },
+    ],
     content: `# How to choose your malaria prophylaxis — Atovaquone-Proguanil, Doxycycline, or Mefloquine
 
 *A practical comparison from a Swiss travel medicine physician.*

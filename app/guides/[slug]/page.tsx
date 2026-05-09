@@ -5,6 +5,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { articles, CATEGORY_LABELS } from "../../lib/guidesData";
+import QuickRecommendations from "../../components/QuickRecommendations";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Article renderer for /guides/<slug>
@@ -170,13 +171,17 @@ export default function GuideArticlePage() {
 
         {/* ── Body ──────────────────────────────────────────────────── */}
         {article.content ? (
-          <div
-            style={{
-              fontSize: "17px",
-              color: TEXT_BODY,
-              lineHeight: 1.75,
-            }}
-          >
+          <>
+            {article.quickRecommendations && (
+              <QuickRecommendations cards={article.quickRecommendations} />
+            )}
+            <div
+              style={{
+                fontSize: "17px",
+                color: TEXT_BODY,
+                lineHeight: 1.75,
+              }}
+            >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
@@ -381,8 +386,9 @@ export default function GuideArticlePage() {
               }}
             >
               {article.content}
-            </ReactMarkdown>
-          </div>
+              </ReactMarkdown>
+            </div>
+          </>
         ) : (
           // ── Placeholder state ─────────────────────────────────────────
           <div
