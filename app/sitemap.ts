@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SUPPORTED_COUNTRIES } from "./lib/travelData";
 import { DISEASE_LIST } from "./lib/diseaseData";
+import { articles } from "./lib/guidesData";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // sitemap.ts
@@ -9,8 +10,12 @@ import { DISEASE_LIST } from "./lib/diseaseData";
 // what pages exist on the site. We list every page we want indexed,
 // with a hint about update frequency and relative priority.
 //
-// The country and disease pages are generated dynamically from the
+// Country, disease, and guide pages are generated dynamically from the
 // underlying data, so the sitemap stays in sync as you add more.
+//
+// Guides: only articles that have actual content (`content` field set)
+// are included. Placeholders are excluded so Google doesn't index empty
+// "Coming soon" pages.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BASE_URL = "https://travelmed.ch";
@@ -47,5 +52,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...countryPages, ...diseasePages];
+  // ── One entry per published guide ────────────────────────────────────────
+  // The `content` filter ensures placeholder articles ("Coming soon" pages)
+  // are excluded — they'd otherwise be indexed as thin content, which can
+  // hurt the site's overall quality signal.
+  const guidePages: MetadataRoute.Sitemap = articles
+    .filter((a) => a.content)
+    .map((a) => ({
+      url: `${BASE_URL}/guides/${a.id}`,
+      lastModified: new Date(a.date),
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
+
+  return [...staticPages, ...countryPages, ...diseasePages, ...guidePages];
 }
