@@ -34,7 +34,7 @@ export type Article = {
   quickRecommendations?: QuickRecCard[];
   /** Optional named illustration rendered as a cover image at the top
    *  of the article. Components are mapped in the article renderer. */
-  coverIllustration?: "malaria-pills" | "cruise-ship";
+  coverIllustration?: "malaria-pills" | "cruise-ship" | "repellent-sprays";
 };
 
 export const CATEGORY_LABELS: Record<ArticleCategory, { label: string; color: string }> = {
@@ -48,15 +48,158 @@ export const CATEGORY_LABELS: Record<ArticleCategory, { label: string; color: st
 export const articles: Article[] = [
   {
     id: "best-deet-sprays-2026",
-    date: "2026-04-12",
-    title: "The 5 best DEET sprays for tropical travel, tested",
+    date: "2026-04-30",
+    title: "Anti-Brumm vs NoBite vs Care Plus: a Swiss physician's repellent guide",
     subtitle:
-      "A physician's hands-on comparison of concentration, duration, smell, and skin feel — from 20% to 98.1% DEET.",
+      "Why I keep recommending Anti-Brumm Forte for most travelers — and the situations where I switch to picaridin or higher-concentration DEET.",
     category: "gear-review",
-    tags: ["mosquito protection", "gear", "DEET"],
+    tags: ["mosquito protection", "DEET", "picaridin", "permethrin", "Swiss"],
     readingTime: 8,
     coverGradient: "linear-gradient(135deg, #0c4a6e 0%, #164e63 100%)",
+    coverIllustration: "repellent-sprays",
     featured: true,
+    quickRecommendations: [
+      { icon: "⏱️", scenario: "Most travelers", recommendation: "Anti-Brumm Forte", detail: "30% DEET" },
+      { icon: "🌳", scenario: "High-intensity exposure", recommendation: "Care Plus 50%", detail: "Amazon, PNG, jungle" },
+      { icon: "🤰", scenario: "Pregnancy", recommendation: "NoBite Skin", detail: "20% icaridin" },
+      { icon: "👶", scenario: "Children", recommendation: "Anti-Brumm 20%", detail: "or NoBite Skin" },
+      { icon: "👕", scenario: "Clothing layer", recommendation: "NoBite Clothes", detail: "permethrin spray" },
+      { icon: "☀️", scenario: "With sunscreen", recommendation: "Sunscreen first", detail: "wait 20 min" },
+    ],
+    content: `## The short answer
+
+For most Swiss travelers heading to a malaria or dengue zone, I recommend **Anti-Brumm Forte** (30% DEET). Available in every pharmacy in Switzerland, well-tolerated, effective for 6–8 hours, costs about CHF 15.
+
+I switch to **Care Plus 50% DEET** for high-intensity exposure — Amazon basin, Papua New Guinea, dense jungle. I recommend **NoBite Skin** (20% icaridin) for travelers who can't tolerate DEET or specifically prefer the lighter feel.
+
+For clothing, I always recommend pretreating with **permethrin** (NoBite Clothes) as a separate, complementary layer.
+
+This is what actually works in Swiss pharmacies, with real travelers, in 2026.
+
+---
+
+## Why Anti-Brumm Forte is my default
+
+Anti-Brumm Forte (30% DEET) is the product I send 80% of my patients to buy. The reasons, in order of how much they actually matter:
+
+**Availability.** Every pharmacy in Switzerland stocks it. Migros and Coop pharmacies carry it. The traveler doesn't need to shop around. Compare this with American brands like Off! that are difficult to find in CH or require an order from abroad.
+
+**Effective duration.** 30% DEET protects for 6–8 hours. That's enough for a full day of sightseeing or a long evening outside. Higher concentrations (50%, 100%) extend duration somewhat, but the diminishing returns are real — going from 30% to 50% adds maybe 2 more hours, while making the skin feel a bit worse.
+
+**Tolerability.** Patients tolerate Anti-Brumm Forte well. It's a spray (which most travelers prefer over creams), and the carrier formulation is less greasy than older DEET products. It still smells like DEET — that's chemistry, not formulation — but it's less aggressive than 100% military-grade products.
+
+**Trust factor.** Anti-Brumm has been on the Swiss market for decades. Manufactured in Germany by Hermes Arzneimittel. Swiss travelers, especially older ones, recognize the brand and trust it. That matters for compliance.
+
+**Cost.** About CHF 15 for a 75 ml bottle, which covers a couple of weeks of regular use.
+
+The honest downsides: it's still DEET, which can damage plastics (don't spray it on synthetic watch straps or sunglasses frames), and it has a noticeable smell. Both are universal DEET issues, not Anti-Brumm specific.
+
+## When I switch to Care Plus 50% DEET
+
+For high-intensity exposure where 30% isn't quite enough:
+
+**Amazon basin, Papua New Guinea, Borneo interior.** Dense biting pressure, often round-the-clock. The extra hours per application matter when you're hiking twelve.
+
+**Travelers who sweat heavily.** Heavy perspiration shortens any repellent's effective duration. Higher concentration buys back some of that loss.
+
+**Multi-day treks where reapplication is logistically difficult.**
+
+Care Plus is a Dutch brand sold in Swiss travel pharmacies — most pharmacy chains carry it in their travel section or order it on request. About CHF 18–22 for a 100 ml bottle. Available in 30%, 40%, and 50% concentrations. The 50% is the one I prescribe for the situations above.
+
+What about 100% DEET? Generally not necessary, and the increase in skin sensitization isn't worth the marginal duration extension. The exception is treating gear (where it doesn't touch skin) — but even there, permethrin is better.
+
+## When I recommend picaridin instead of DEET
+
+Picaridin (also called icaridin in Europe) is essentially equivalent to DEET in efficacy at 20% concentration. The differences are sensory: picaridin has no smell, doesn't damage plastics, and feels lighter on skin.
+
+The Swiss-available picaridin products:
+
+- **NoBite Skin** (20% icaridin). Spray, ~CHF 15. Available in most pharmacies.
+- **Autan Active Spray** (20% icaridin). Found in Migros, Coop, and pharmacies. Slightly cheaper.
+
+Both work equally well. Patients who try both usually develop a preference based on the smell of the carrier or the spray feel.
+
+Situations where I specifically recommend picaridin over DEET:
+
+**Pregnancy.** DEET is generally considered safe in pregnancy at standard concentrations — WHO and CDC both support its use. But I have several pregnant patients who feel uncomfortable applying DEET despite the evidence. For them, picaridin gives equivalent protection with less psychological burden. I prescribe whichever gives the patient the confidence to actually use it.
+
+**Travelers who hate DEET smell.** Real complaint, not trivial. If the smell is the difference between using the product and forgetting it, switch.
+
+**People with watches or sunglasses they care about.** DEET genuinely damages many plastics. Picaridin doesn't.
+
+**Children, in some European guidelines.** Some pediatric guidelines prefer picaridin from age 6 months; the CDC allows DEET from 2 months. Either is reasonable.
+
+What picaridin doesn't replace: extreme high-intensity exposure (Amazon-class), where the longer duration of 50% DEET still wins.
+
+## Children
+
+The basics:
+
+- **Under 2 months:** no chemical repellent. Physical barriers only — mosquito nets over strollers, long sleeves.
+- **2 months to 12 years:** 10–30% DEET, or 20% picaridin. Apply by an adult. Wash off when the child comes back indoors.
+- **Over 12 years:** same as adult dosing.
+
+I usually recommend **Anti-Brumm 20%** (the lower-concentration version) for children, or **NoBite Skin** (20% icaridin). Apply to your own hands first, then to the child — never spray directly into a child's face.
+
+Avoid combination sunscreen + repellent products. They sound convenient but cause real problems: sunscreen needs frequent reapplication, DEET shouldn't be reapplied as often, and DEET reduces sunscreen's UV protection by about a third. Always apply sunscreen first, wait 15–20 minutes, then apply repellent on top.
+
+## Permethrin-treated clothing — the underused second layer
+
+This is the recommendation patients most often haven't heard about.
+
+**What it is:** Permethrin is a different chemical class — it kills or paralyzes insects on contact with treated fabric. Unlike DEET or picaridin, it goes on clothes, not skin.
+
+**Why it matters:** Mosquitoes and ticks contact your clothing before they reach skin. Permethrin-treated clothing kills them before they bite. Combined with a skin repellent, the protection is significantly higher than either alone.
+
+**The Swiss product:** **NoBite Clothes** spray. Treat clothing yourself: lay it flat, spray evenly until damp, let dry overnight before wearing. One treatment lasts through 4–6 washes — about 4–6 weeks of daily wear. About CHF 25 for a 100 ml bottle, enough for a couple of outfits.
+
+**Who benefits most:** travelers to high-risk malaria areas, tick-exposed travelers (forest hiking in central/eastern Europe in tick season), and travelers in areas with high biting pressure where DEET alone isn't quite enough.
+
+**Important safety note:** permethrin is toxic to cats. Don't treat clothes in a household with cats nearby, and don't let cats sleep on freshly treated items. Once dry, the residual on adult clothing in normal household use is generally fine.
+
+## Quick scenarios
+
+**The 10-day Tanzania safari.** Anti-Brumm Forte for skin. NoBite Clothes treatment for the safari shirt and trousers worn at dawn and dusk.
+
+**Two weeks backpacking in Vietnam.** Anti-Brumm Forte. The 30% concentration handles daytime Aedes mosquitoes (dengue, chikungunya) and evening Anopheles (malaria) equally well.
+
+**Amazon expedition.** Care Plus 50% DEET for skin, NoBite Clothes for everything fabric. Bring two bottles of each — running out is the main risk.
+
+**Hiking in Switzerland in tick season.** Anti-Brumm Forte for legs and arms. NoBite Clothes for hiking trousers and socks. The clothing layer is what catches ticks before they latch.
+
+**Pregnant traveler.** NoBite Skin or Autan (picaridin). Standard reapplication frequency.
+
+**Family with young children.** Anti-Brumm 20% for kids, Anti-Brumm Forte 30% for adults. NoBite Skin is also fine for both.
+
+**Beach holiday with no malaria or dengue risk.** Honestly optional. Picaridin if you want comfort from bites; no repellent needed if you don't mind a few evening mosquitoes.
+
+## Frequently asked questions
+
+**How often do I reapply?**
+Read the bottle. As a rough rule: 30% DEET, 6–8 hours. 50% DEET, 8–10 hours. Picaridin 20%, 6–8 hours. Reapply earlier if heavily sweating, swimming, or wiping skin frequently.
+
+**Sunscreen first or repellent first?**
+Sunscreen first. Wait 15–20 minutes for it to bind to skin. Then apply repellent on top. The opposite order reduces sunscreen efficacy.
+
+**What about citronella and "natural" products?**
+They don't work well enough for high-risk travel. Citronella, eucalyptus oil, and other plant-based repellents have a short-duration effect (often 30–60 minutes) but cannot match DEET or picaridin for actual disease-transmission prevention. Fine for an evening in your Swiss garden; not appropriate for malaria-zone travel.
+
+**What about ultrasonic repellent devices?**
+They don't work. Despite continued marketing, multiple studies show no measurable effect. Save the money.
+
+**Does spraying on clothes work as well as on skin?**
+Often better. DEET sprayed on clothes lasts longer than on skin (skin metabolizes it; cloth doesn't). Picaridin works similarly. But neither replaces a permethrin treatment — different mechanism.
+
+**My DEET ruined my watch strap. Can I get it back?**
+No. DEET dissolves several types of plastic and synthetic rubber. Apply only to skin or fabric, and keep it away from watch straps, eyewear frames, and synthetic strap webbing.
+
+**What's the difference between DEET and picaridin in the field?**
+For most travelers in most situations, none. They're equivalent at 20–30% concentration. The differences are sensory (smell, feel) and material (DEET damages plastics; picaridin doesn't). I prescribe whichever the patient will actually use consistently.
+
+---
+
+Buy your repellent in Switzerland before you leave. Pharmacy prices abroad are often higher and product reliability varies. The Anti-Brumm Forte you drop into your travel kit at the local Apotheke costs CHF 15 and lasts the whole trip — easiest decision in your travel prep.
+`,
   },
   {
     id: "cuba-travel-health-2026",
@@ -72,7 +215,7 @@ export const articles: Article[] = [
   },
   {
     id: "malaria-prophylaxis-compared",
-    date: "2026-05-09",
+    date: "2026-05-03",
     title: "Malarone vs. Doxycycline vs. Mefloquine: a physician's straight take",
     subtitle:
       "Why I prescribe Malarone first for most travelers — and the specific situations where I switch.",

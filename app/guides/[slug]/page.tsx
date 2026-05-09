@@ -8,11 +8,13 @@ import { articles, CATEGORY_LABELS } from "../../lib/guidesData";
 import QuickRecommendations from "../../components/QuickRecommendations";
 import MalariaPillsIllustration from "../../components/illustrations/MalariaPillsIllustration";
 import CruiseShipIllustration from "../../components/illustrations/CruiseShipIllustration";
+import RepellentSpraysIllustration from "../../components/illustrations/RepellentSpraysIllustration";
 
 // Map article.coverIllustration values to the actual components.
 const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
   "malaria-pills": MalariaPillsIllustration,
   "cruise-ship": CruiseShipIllustration,
+  "repellent-sprays": RepellentSpraysIllustration,
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

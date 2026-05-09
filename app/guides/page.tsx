@@ -2,6 +2,18 @@
 
 import { useState, useMemo } from "react";
 import { articles, CATEGORY_LABELS, type ArticleCategory } from "../lib/guidesData";
+import MalariaPillsIllustration from "../components/illustrations/MalariaPillsIllustration";
+import CruiseShipIllustration from "../components/illustrations/CruiseShipIllustration";
+import RepellentSpraysIllustration from "../components/illustrations/RepellentSpraysIllustration";
+
+// Map article.coverIllustration values to component refs.
+// When an article has a coverIllustration set, we render the matching
+// component layered over the gradient in the featured card header.
+const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
+  "malaria-pills": MalariaPillsIllustration,
+  "cruise-ship": CruiseShipIllustration,
+  "repellent-sprays": RepellentSpraysIllustration,
+};
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);
@@ -21,7 +33,10 @@ export default function GuidesPage() {
     return list;
   }, [filter]);
 
-  const featured = articles.filter((a) => a.featured).slice(0, 3);
+  const featured = articles
+    .filter((a) => a.featured)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .slice(0, 3);
 
   const categories: { value: FilterMode; label: string }[] = [
     { value: "all", label: "All" },
@@ -124,17 +139,37 @@ export default function GuidesPage() {
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
                   }}
                 >
-                  {/* Gradient header */}
+                  {/* Gradient header (with optional illustration overlay) */}
                   <div
                     style={{
                       height: "140px",
                       background: article.coverGradient,
                       position: "relative",
+                      overflow: "hidden",
                       display: "flex",
                       alignItems: "flex-end",
                       padding: "16px 20px",
                     }}
                   >
+                    {article.coverIllustration &&
+                      COVER_ILLUSTRATIONS[article.coverIllustration] && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          {(() => {
+                            const Illus =
+                              COVER_ILLUSTRATIONS[article.coverIllustration!];
+                            return <Illus />;
+                          })()}
+                        </div>
+                      )}
                     <span
                       style={{
                         position: "absolute",
