@@ -6,6 +6,14 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { articles, CATEGORY_LABELS } from "../../lib/guidesData";
 import QuickRecommendations from "../../components/QuickRecommendations";
+import MalariaPillsIllustration from "../../components/illustrations/MalariaPillsIllustration";
+import CruiseShipIllustration from "../../components/illustrations/CruiseShipIllustration";
+
+// Map article.coverIllustration values to the actual components.
+const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
+  "malaria-pills": MalariaPillsIllustration,
+  "cruise-ship": CruiseShipIllustration,
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Article renderer for /guides/<slug>
@@ -172,6 +180,23 @@ export default function GuideArticlePage() {
         {/* ── Body ──────────────────────────────────────────────────── */}
         {article.content ? (
           <>
+            {article.coverIllustration &&
+              COVER_ILLUSTRATIONS[article.coverIllustration] && (
+                <div
+                  style={{
+                    marginBottom: "32px",
+                    borderRadius: "16px",
+                    overflow: "hidden",
+                    border: "1px solid rgba(255,255,255,0.06)",
+                  }}
+                >
+                  {(() => {
+                    const Illustration =
+                      COVER_ILLUSTRATIONS[article.coverIllustration!];
+                    return <Illustration />;
+                  })()}
+                </div>
+              )}
             {article.quickRecommendations && (
               <QuickRecommendations cards={article.quickRecommendations} />
             )}

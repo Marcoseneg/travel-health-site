@@ -32,6 +32,9 @@ export type Article = {
   /** Optional row of scenario→recommendation cards rendered above the
    *  markdown body. Useful for decision-oriented articles. */
   quickRecommendations?: QuickRecCard[];
+  /** Optional named illustration rendered as a cover image at the top
+   *  of the article. Components are mapped in the article renderer. */
+  coverIllustration?: "malaria-pills" | "cruise-ship";
 };
 
 export const CATEGORY_LABELS: Record<ArticleCategory, { label: string; color: string }> = {
@@ -69,225 +72,115 @@ export const articles: Article[] = [
   },
   {
     id: "malaria-prophylaxis-compared",
-    date: "2026-03-18",
-    title: "Malarone vs. Doxycycline vs. Mefloquine: which prophylaxis is right for you?",
+    date: "2026-05-09",
+    title: "Malarone vs. Doxycycline vs. Mefloquine: a physician's straight take",
     subtitle:
-      "Side effects, cost, dosing schedules, and contraindications — a clinical comparison of the three main malaria prevention drugs.",
+      "Why I prescribe Malarone first for most travelers — and the specific situations where I switch.",
     category: "prevention",
-    tags: ["malaria", "prophylaxis", "medication"],
-    readingTime: 10,
+    tags: ["malaria", "prophylaxis", "Malarone", "doxycycline", "mefloquine"],
+    readingTime: 7,
     coverGradient: "linear-gradient(135deg, #4c1d95 0%, #1e1b4b 100%)",
+    coverIllustration: "malaria-pills",
     featured: true,
     quickRecommendations: [
-      { icon: "⏱️", scenario: "Short trips", recommendation: "Malarone", detail: "atovaquone/proguanil" },
+      { icon: "⏱️", scenario: "Short trips", recommendation: "Malarone", detail: "atovaquone-proguanil" },
       { icon: "💰", scenario: "Budget travelers", recommendation: "Doxycycline" },
       { icon: "📅", scenario: "Long trips, weekly dose", recommendation: "Mefloquine" },
       { icon: "⚡", scenario: "Last-minute departure", recommendation: "Malarone or doxy" },
       { icon: "☀️", scenario: "Sun-sensitive travelers", recommendation: "Avoid doxycycline" },
       { icon: "🧠", scenario: "Psychiatric history", recommendation: "Avoid mefloquine" },
     ],
-    content: `# How to choose your malaria prophylaxis — Atovaquone-Proguanil, Doxycycline, or Mefloquine
+    content: `## The short answer
 
-*A practical comparison from a Swiss travel medicine physician.*
+For most travelers I see in clinic, I prescribe **Malarone** (atovaquone-proguanil). It's the cleanest option — best tolerated, simplest schedule, fewest hassles.
 
----
+I switch to **doxycycline** when cost matters or the trip is long. I reach for **mefloquine** in only a few specific situations.
 
-## TL;DR
-
-For most travelers preparing for a typical 1–3 week trip, **atovaquone-proguanil** (Malarone) is the default — best tolerated, simplest schedule, fewest hassles.
-
-Switch to **doxycycline** if cost matters, the trip is long, or you want the bonus protection it offers against leptospirosis and rickettsial infections (relevant for adventure travel).
-
-Switch to **mefloquine** for trips longer than 3 weeks where weekly dosing meaningfully improves compliance — provided you have no history of depression, anxiety, psychosis, or seizures.
-
-For pregnancy, mefloquine is the option of choice in the second and third trimesters. Atovaquone-proguanil is generally avoided; doxycycline is contraindicated.
-
-These three drugs are the realistic options in Switzerland today. Chloroquine is essentially obsolete — Plasmodium falciparum, the species responsible for nearly all severe malaria, is resistant almost everywhere it occurs.
+This is not a textbook comparison. It's the framework I actually use when I'm sitting across from a patient who's about to fly to Africa or Asia.
 
 ---
 
-## A 30-second framework
+## Why Malarone is my default
 
-Before reading the rest, ask yourself three questions:
+When a patient walks into my office and asks "what should I take?", my opening assumption is Malarone. I've prescribed it hundreds of times. It's the drug I'd take myself.
 
-1. **How long is the trip?** Under 3 weeks → daily dosing is fine. Over 3 weeks → weekly dosing is worth considering.
-2. **Any psychiatric history?** Even mild depression or anxiety in your past medical record rules out mefloquine.
-3. **Pregnant or planning conception?** Talk to a travel medicine specialist — drug choice is more constrained.
+The reasons, in order of how much they actually matter:
 
-Most people answer: short trip, no psych history, not pregnant. For them, atovaquone-proguanil is the right answer.
+**Tolerability.** This matters more than anything else. A drug with great efficacy that the patient stops taking on day three because of nausea provides zero protection. Malarone is the best-tolerated of the three. Most patients report mild stomach upset at worst. Plenty report nothing at all.
 
----
+**Schedule.** One tablet daily, starting one day before the trip, ending one week after. The week-after window is the part that actually gets followed. With doxycycline you keep going for four weeks. With mefloquine, four more weekly doses. People stop. Malarone people finish.
 
-## Side-by-side comparison
+**Simplicity in the consultation.** No psychiatric history screen needed. No "are you a diver?" branch. No "are you under eight years old?" exclusion. Almost every adult traveler is a candidate.
 
-| | Atovaquone-Proguanil | Doxycycline | Mefloquine |
-|---|---|---|---|
-| **Brand name** | Malarone | (generic) | Lariam |
-| **Dose** | 250/100 mg, 1 tablet daily | 100 mg daily | 250 mg weekly |
-| **Start before travel** | 1–2 days | 1–2 days | 2–3 weeks |
-| **Continue after return** | 7 days | 4 weeks | 4 weeks |
-| **Take with food?** | Yes — fatty meal improves absorption | Yes, with full glass of water, sit upright 30 min | Either way |
-| **Cost in CH** | ~CHF 50–80 / week | ~CHF 1–3 / week | ~CHF 10–15 / week |
-| **Most common side effect** | Mild GI upset | Sun sensitivity, GI upset | Vivid dreams, dizziness |
-| **Serious concern** | Rare | Esophageal irritation if taken incorrectly | Rare neuropsychiatric reactions |
-| **Pregnancy** | Generally avoided | Contraindicated | OK in 2nd/3rd trimester |
-| **Children** | From 5 kg | Contraindicated under age 8 | From 5 kg |
-| **Diving** | Fine | Fine (the contraindication is a myth) | Avoid — dizziness risk |
+**Speed.** A patient who walks in three days before departure can start Malarone the next morning and be protected. The other two need a longer runway. Most last-minute travelers I see leave my clinic with Malarone.
 
----
+The downside is cost — about CHF 50–80 per week of trip in Switzerland. For a 10-day Tanzania safari, that's small change compared to the rest of the trip cost. For a six-month research stay in West Africa, it becomes prohibitive. That's where I switch.
 
-## Atovaquone-Proguanil (Malarone)
+## When I switch to doxycycline
 
-**Why it's my default for most travelers.** Excellent tolerability profile, very short pre-travel lead time, only 7 days of post-travel dosing, and effective against all common Plasmodium species including chloroquine-resistant P. falciparum.
+Cost-driven, mostly. Specifically when one of these is true:
 
-**Dosing.** One adult tablet (250 mg atovaquone / 100 mg proguanil) daily, with food. Take it at the same time every day to keep blood levels stable. Start 1–2 days before entering the malaria area, continue daily throughout, and continue for 7 days after leaving. The short post-travel period is a real advantage — most patients actually finish the course.
+**The trip is long.** Months, not weeks. Daily Malarone for half a year is expensive enough to tip many patients to skipping prophylaxis entirely — which is worse. A daily 100 mg doxycycline tablet costs about 20 cents.
 
-**Side effects.** Most are mild and GI-related: nausea, abdominal discomfort, occasionally diarrhea. Headache is reported in around 10%. Mouth ulcers occasionally. Very rarely: elevated liver enzymes. Vivid dreams happen but less prominently than with mefloquine. Most patients tolerate it without complaint.
+**The traveler is a backpacker who specifically asks.** Many young travelers research this themselves and arrive in clinic already preferring doxy. I generally agree — they're cost-sensitive, generally healthy, and the bonus protection against leptospirosis and African tick-bite fever is genuinely useful for their style of travel.
 
-**The downsides.**
-- **Cost.** Significantly more expensive than the alternatives. For a 2-week trip with the surrounding lead-in and follow-up, you're looking at roughly CHF 150–200. Long trips become expensive quickly.
-- **Daily dosing.** Easy for short trips, harder to sustain for months.
-- **Take with food** — patients who skip breakfast and dose on an empty stomach absorb less, so this matters.
+**Malarone isn't an option** because of severe kidney problems or other contraindications.
 
-**Who I don't prescribe it to.**
-- Severe renal impairment (creatinine clearance <30 ml/min) — the proguanil component accumulates.
-- Pregnancy — limited safety data.
-- Patients who genuinely cannot afford it for a long trip.
+What I tell every doxycycline patient:
 
-**Practical tip.** I tell patients to set a daily phone alarm and pair the dose with a fixed daily meal — breakfast usually works. Missing a dose by a few hours is fine; missing a whole day, take it as soon as you remember and continue normally. Don't double up.
+- Take it with a full glass of water and don't lie down for half an hour. Otherwise you risk irritation in the throat or chest that can be unpleasant.
+- Sun protection is non-negotiable. SPF 50 every day, hats, long sleeves where you can. Doxycycline makes you sunburn faster.
+- Continue for four weeks after you leave the malaria area. This is the rule that gets broken most.
+- Yes, you can scuba dive on it. The "doxy is bad for divers" thing is a myth from confusion with mefloquine.
 
----
+## When I reach for mefloquine
 
-## Doxycycline
+Three situations, mainly:
 
-**Where it shines.** Cheap, well-studied, broadly active. Good choice for budget travelers, long trips where mefloquine isn't appropriate, and adventure travel where the bonus antimicrobial coverage matters.
+**Long trips where weekly dosing is the difference.** Six months in rural Africa. Daily Malarone is too expensive. Daily doxycycline for half a year is real compliance work. Once-weekly mefloquine is sustainable in a way the others aren't.
 
-**Dosing.** 100 mg once daily. Start 1–2 days before, continue daily throughout, continue for 4 weeks (28 days) after leaving the malaria area. The long tail is the main compliance challenge — by week 3 of being home, many patients stop.
+**Pregnancy in the second or third trimester.** When travel can't be avoided (and ideally it should be), mefloquine is the option. Malarone has limited pregnancy safety data; doxycycline is contraindicated in pregnancy.
 
-**The bonus protection nobody mentions.** Doxycycline also covers:
-- Leptospirosis (relevant for fresh-water exposure, jungle trekking, flooding)
-- Rickettsial infections (African tick-bite fever especially — common in safari travelers in southern Africa)
-- Some other zoonoses
+**Patients who already know it works for them.** A handful of long-term expats and aid workers know mefloquine well, have tolerated it before, and prefer the weekly schedule.
 
-For a backpacker doing a 4-week trip through east Africa with hiking and water exposure, this matters.
+The hard rule: I will not prescribe mefloquine to any patient with a personal psychiatric history. Even mild depression years ago counts. Same for seizure disorder or cardiac conduction problems. The rare neuropsychiatric reactions are uncommon — but they happen, and they happen disproportionately to people with vulnerable history.
 
-**The sun sensitivity issue.** Real. Around 5–20% of users develop a phototoxic skin reaction — looks like an exaggerated sunburn, often on areas the patient didn't think were that exposed (back of hands, tops of feet, neck). It's manageable: high-SPF sunscreen on every exposed area, every day, reapplied; long sleeves and hats; shade during peak hours. Most patients can take doxycycline through a tropical trip without significant sunburn if they're careful. A minority cannot tolerate the photosensitivity at all and need to switch.
+I also do something I think every prescriber should: I have patients take their first two or three doses at home, before departure. If they have any unusual dreams, anxiety, or mood change, we switch them to Malarone before they leave Switzerland. This catches almost all intolerance reactions early.
 
-**Esophageal irritation.** Take with a full glass of water, do not lie down for at least 30 minutes after. Patients who take it at bedtime and immediately go to sleep can develop esophageal ulceration — uncommon but unpleasant. Morning dosing with breakfast is safer.
+## Quick scenarios
 
-**Other side effects.**
-- GI upset (food helps).
-- Vaginal candidiasis in women — common enough that I warn patients and consider whether they want a fluconazole tablet to carry "just in case".
-- Tooth discoloration in children under 8 — absolute contraindication.
-- Pregnancy — contraindicated all trimesters.
+The most common situations I actually see in clinic.
 
-**The diving myth.** A persistent myth claims doxycycline is contraindicated for divers. It is not. The confusion comes from mefloquine, which IS contraindicated in diving due to dizziness and altered consciousness risk. Doxycycline has no such concern. Divers can and do use it.
+**The 10-day Tanzania safari.** Malarone. Don't overthink it.
 
-**Who I prescribe it to.**
-- Cost-sensitive travelers.
-- Long trips (3+ weeks) where mefloquine is contraindicated.
-- Adventure trips with relevant bonus-coverage indications.
-- Travelers who specifically ask for it after reading about the comparison.
+**The six-month research trip in West Africa.** Mefloquine, after psychiatric screen and a three-week home trial.
+
+**Pregnancy.** Specialist consult. If past first trimester and travel is unavoidable, mefloquine.
+
+**Children.** Under eight years old, no doxycycline. Malarone from 5 kg, mefloquine from 5 kg. Pediatric Malarone is the cleanest answer for most families.
+
+**The diver.** Doxycycline or Malarone. Mefloquine is out — dizziness underwater is dangerous.
+
+**The patient with a history of depression.** Malarone for short trips, doxycycline for long ones. Mefloquine is off the table forever, even for "just one course."
+
+**The four-week Southeast Asia backpacker.** Doxycycline. Cheap, the bonus antibiotic coverage helps with their style of travel, and they're typically young enough to manage the sun-protection requirement.
+
+## Three questions that come up every consultation
+
+**What if I miss a dose?**
+Take it as soon as you remember the same day. Skip if you've already passed into the next day's window. Never double up.
+
+**What if I get sick anyway?**
+Prophylaxis reduces malaria risk by about 90%, not 100%. Any fever during or in the three months after travel to a malaria area gets a malaria blood test, immediately. Even if you took every dose perfectly. This is non-negotiable.
+
+**Can I drink alcohol on these?**
+Yes, in moderation. Heavy drinking interferes with everything and is its own bad idea on travel. No specific drug-alcohol interaction worth special concern.
 
 ---
 
-## Mefloquine (Lariam)
+That's the framework. For nine out of ten travelers, it leads to Malarone. For the rest, the decision is usually obvious within a sentence or two of conversation.
 
-**The honest version.** Mefloquine has a reputation problem in 2026. Years of negative coverage — particularly around US military use — have made many travelers refuse it on sight, and many GPs have stopped offering it. That said, it remains the right answer for specific situations, and the side-effect risk needs context, not dismissal or hyperbole.
-
-**Where it's genuinely the best option.**
-- **Long trips (3+ weeks)** where weekly dosing is much more sustainable than daily. Six months in rural Africa? Mefloquine is realistic; doxycycline daily for half a year often isn't.
-- **Pregnancy in the 2nd or 3rd trimester** when travel to a malaria-endemic area cannot be avoided. Atovaquone-proguanil and doxycycline are both off the table.
-- **Cost-constrained long trips** where Malarone would be unaffordable and doxycycline is contraindicated for some other reason.
-
-**Dosing.** 250 mg once weekly, same day every week. Start 2–3 weeks before travel — this is critical. The long lead-in lets you detect intolerance before you're in a malaria zone. Continue weekly throughout, then for 4 more weekly doses after leaving.
-
-**The "test run" approach.** Because side effects typically appear in the first 2–3 doses, taking the first weeks of mefloquine before departure gives you a chance to switch if you don't tolerate it. I tell patients: "If you have any unusual dreams, anxiety, dizziness, or mood change in the first three weeks, call me immediately and we'll switch you to atovaquone-proguanil before you leave."
-
-**Side effects, in honest categories.**
-- **Common and mild:** vivid dreams (around 30%), mild dizziness, nausea, headache. Often settles after the first few doses.
-- **Uncommon but notable:** anxiety, insomnia, low mood. Reason to switch.
-- **Rare but serious:** psychosis, seizures, severe depression. Estimated incidence around 1 in 10,000–13,000. Much more likely with personal or family psychiatric history — which is why screening matters.
-
-**Absolute contraindications.**
-- Personal history of depression, anxiety disorder, psychosis, schizophrenia, or any serious psychiatric condition.
-- History of seizures or epilepsy.
-- Cardiac conduction abnormalities.
-- Hypersensitivity to mefloquine or quinine-class drugs.
-
-**Relative contraindications worth discussing.**
-- First trimester of pregnancy (now considered probably safe by WHO and CDC, but data still accumulating).
-- Activities requiring fine coordination or alertness (pilots, divers).
-
-**My honest take as a prescribing physician.** Mefloquine is a useful drug that I prescribe for the right patient. I screen carefully for psychiatric history (often the patient has forgotten or didn't think a years-old episode of depression mattered — it does). I always do the 2–3 week pre-travel run. And I'm very comfortable switching patients off it if they report any neuropsychiatric symptoms, no matter how minor.
-
----
-
-## Specific scenarios
-
-These cover most of what I see in clinic.
-
-### The 10-day Tanzania safari
-
-Atovaquone-proguanil. Short trip, daily dosing is fine, the cost (~CHF 100–120 total) is rounding error compared to the rest of a safari budget. Excellent tolerability matters when you're paying premium for the experience.
-
-### The 6-month research trip in West Africa
-
-Mefloquine, assuming clean psychiatric history. Six months of daily Malarone is roughly CHF 1,500. Six months of daily doxycycline carries cumulative photosensitivity risk and compliance burden. Weekly mefloquine — once you've established tolerance over the first 2–3 weeks — is practical and sustainable.
-
-### The pregnant woman with unavoidable travel
-
-Specialist consult. Pre-travel obstetric assessment, malaria-zone specifics, gestational age, alternatives to travel, all need weighing. If prophylaxis is needed and we're past the first trimester, mefloquine is the answer. If first trimester or any complications — case-by-case decision.
-
-### The diver
-
-Doxycycline (no issue) or atovaquone-proguanil. Mefloquine is out — dizziness underwater is dangerous.
-
-### The backpacker on a budget, 4 weeks Southeast Asia
-
-Doxycycline. Cheap, daily dosing manageable for the trip duration, adventure-related bonus coverage useful. Counsel on sun protection and esophageal safety.
-
-### The patient with a history of depression
-
-Atovaquone-proguanil for short trips. Doxycycline for longer trips. Mefloquine is contraindicated regardless of how distant or mild the psychiatric history was. This isn't an area to negotiate.
-
-### Children
-
-Under 8 years old: doxycycline is contraindicated (tooth discoloration). Atovaquone-proguanil from 5 kg, mefloquine from 5 kg, both with weight-based dosing. Pediatric formulations exist for atovaquone-proguanil. For most pediatric travelers, AP is the simplest choice.
-
-### The traveler who's read about mefloquine and is scared
-
-Don't argue. If atovaquone-proguanil or doxycycline are appropriate alternatives for their itinerary, prescribe one of those. The therapeutic relationship matters more than winning an argument about a specific drug.
-
----
-
-## Practical FAQ
-
-**What if I miss a dose?** Atovaquone-proguanil and doxycycline: take it as soon as you remember if it's the same day, otherwise skip and continue normally. Don't double up. Mefloquine: same — take the missed dose as soon as you remember, then resume the weekly schedule from that day.
-
-**Can I drink alcohol?** Yes for all three, in moderation. Heavy drinking interferes with all of them and is its own risk on travel. No specific drug-alcohol interaction worth special concern.
-
-**What about sunscreen with doxycycline?** Use SPF 50, broad-spectrum, applied every morning to all exposed skin including hands, feet, neck, ears. Reapply every 2 hours if outdoors. Hats and long sleeves help most. Prevention is much easier than treating a phototoxic burn.
-
-**When should I actually start the drug?** Atovaquone-proguanil and doxycycline: 1–2 days before entering the malaria area is sufficient. Mefloquine: 2–3 weeks before. If you find out 4 days before departure that you need mefloquine, you don't have enough lead time — switch to a different drug.
-
-**What if I get sick anyway?** Prophylaxis reduces but does not eliminate malaria risk. Any febrile illness during or up to 3 months after travel to a malaria area is malaria until proven otherwise. Get a blood film immediately. This is true even if you took every dose perfectly.
-
-**Can I stop the drug early because I left the malaria zone?** No. The post-travel continuation is to clear parasites that may have been incubating in your liver during exposure. Stopping early defeats much of the point of taking it at all.
-
-**Standby emergency self-treatment — when?** For travelers heading to remote areas where medical care is more than 24 hours away, I sometimes prescribe artemether-lumefantrine as standby treatment in addition to prophylaxis. This is a separate decision from prophylaxis choice and worth discussing with a travel medicine specialist before any remote travel.
-
----
-
-## When to come see a travel medicine physician
-
-If your trip involves any of: pregnancy, young children, complex medical history, planned diving or other special activities, immunosuppression, or destinations with complicated regional malaria patterns — book a consultation. The 30-minute appointment will save you a lot of guesswork and may catch contraindications you didn't know to mention.
-
-For a straightforward 2-week beach holiday in a low-risk area, your GP can prescribe and you'll be fine. For most other trips, the consultation is worth it.
-
----
-
-*This guide is general information and does not substitute for individualized medical advice. Drug choice should always be made with a prescribing physician who knows your medical history.*
+If your trip involves any complications — pregnancy, young children, complex medical history, immunosuppression, planned diving in malaria zones — book a travel medicine consultation. The 30 minutes is worth it.
 `,
   },
   {
@@ -344,5 +237,177 @@ For a straightforward 2-week beach holiday in a low-risk area, your GP can presc
     tags: ["Japanese Encephalitis", "vaccine", "Asia"],
     readingTime: 8,
     coverGradient: "linear-gradient(135deg, #1e3a5f 0%, #172554 100%)",
+  },
+  {
+    id: "cruise-health-physician-guide",
+    date: "2026-05-09",
+    title: "Cruise health: a physician's honest take on staying healthy at sea",
+    subtitle:
+      "What actually goes wrong on cruises, what to pack, and what the ship's doctor can and can't do for you.",
+    category: "prevention",
+    tags: ["cruise", "norovirus", "motion sickness", "pre-existing conditions"],
+    readingTime: 9,
+    coverGradient: "linear-gradient(135deg, #0a1628 0%, #020617 100%)",
+    coverIllustration: "cruise-ship",
+    featured: true,
+    quickRecommendations: [
+      { icon: "🧼", scenario: "Norovirus", recommendation: "Soap & water", detail: "alcohol gel doesn't kill it" },
+      { icon: "🩹", scenario: "Motion sickness", recommendation: "Scopolamine patch", detail: "before boarding" },
+      { icon: "🦟", scenario: "Tropical ports", recommendation: "DEET / Picaridin" },
+      { icon: "💊", scenario: "Chronic conditions", recommendation: "2× medication", detail: "redundancy is the rule" },
+      { icon: "🚁", scenario: "Insurance", recommendation: "Medical evac coverage", detail: "not optional" },
+      { icon: "🩺", scenario: "When in doubt", recommendation: "See ship's doctor", detail: "low threshold" },
+    ],
+    content: `## The short answer
+
+Cruises are not my favorite recommendation. Confined ship environments amplify infectious disease, the average passenger is older with chronic conditions, and the medical backup at sea is more limited than people realize.
+
+That said — if you're going, here's what actually matters and what to plan for. I'd rather you go prepared than not at all.
+
+---
+
+## What actually goes wrong on cruises
+
+Three categories cover almost everything I see in returning cruise travelers:
+
+**Norovirus.** The recurring villain. Ships are uniquely vulnerable — same buffet lines, same handrails, same bathrooms, hundreds of people sharing them. Outbreaks happen, get reported, and the CDC's Vessel Sanitation Program publishes them. If you go on enough cruises, you will eventually be on one when an outbreak occurs. Plan for it.
+
+**Respiratory infections.** COVID, influenza, RSV — all spread on ships. The older passenger demographic means more severe outcomes. The pandemic-era cruise ship outbreaks were a reminder of what was already known from norovirus: confined population, shared air systems, dense social contact.
+
+**Motion sickness.** Not life-threatening, but can ruin a trip. Easier to prevent than to treat once it's started.
+
+**Other things that come up less often** but matter: infectious risks on port days (dengue, traveler's diarrhea), accidents on shore excursions, and acute presentations of chronic conditions in passengers who underestimate how isolated they'll be.
+
+## Norovirus: assume it's possible, plan accordingly
+
+The cruise norovirus playbook is well-established. Wash your hands frequently with soap and water — alcohol-based sanitizers don't reliably kill norovirus. Use the hand-washing stations near dining rooms (they exist for a reason). Don't share utensils. If you feel any stomach symptoms, isolate to your cabin and report it — yes, even though it ruins your day, because not reporting it means more people get sick.
+
+If you do get hit:
+
+- Oral rehydration is the priority. The ship's medical center has it.
+- Don't try to push through. You'll feel better in 24–48 hours, and a day in your cabin is better than seeding your travel companions.
+- Loperamide (Imodium) is a reasonable tool, not a cure.
+
+## Respiratory infections
+
+Respiratory illness on cruises declined in 2023–2024 as the world figured out post-pandemic protocols, then quietly came back. The basics:
+
+- Get your flu shot before any winter cruise.
+- COVID booster within the past year if you're over 65 or have chronic conditions.
+- Wear a mask in genuinely crowded indoor spaces — embarkation lines, elevators during peak hours, the lobby on day one. It looks unusual on a cruise. It still works.
+- If you develop symptoms, isolate. Don't be the person who joins formal night with a cough.
+
+## Motion sickness
+
+This is where I have actual opinions about which products work and which don't.
+
+**First-line: scopolamine patch.** Apply behind the ear several hours before boarding. Lasts three days per patch. By far the most effective option for serious motion sickness. Available by prescription.
+
+**Second-line: meclizine or cinnarizine.** Antihistamines, less drowsy than dimenhydrinate (Dramamine), available over the counter in most countries.
+
+**Wrist bands and ginger pills.** Possibly placebo. If they work for you, they work for you — no harm in trying.
+
+**Avoid scopolamine if** you have severe glaucoma or urinary retention.
+
+## What about the recent hantavirus story?
+
+Worth a mention because people will ask. In May 2026, a cruise ship cluster of severe respiratory illness was attributed to hantavirus and made international news. It was extremely unusual — hantavirus on cruises is not a known pattern, and the case count was small.
+
+The general lesson is not "hantavirus is now a cruise risk." It's that any cluster of severe respiratory illness on a confined ship will spread before it's identified. That's a known pattern, and the response is the same as ever: report symptoms early, isolate, follow medical advice.
+
+## Port-day infectious risks
+
+The cruise itself is one risk environment. Port days are different.
+
+**Caribbean and Mexico.** Dengue, chikungunya, and Zika in season. Same Aedes mosquitoes you'd worry about anywhere. Daytime mosquito repellent. Light long sleeves. Dengue is the most likely.
+
+**Mediterranean.** Surprisingly few infectious risks. Food and water hygiene is the main thing.
+
+**Africa.** Yellow fever, malaria, and typhoid depending on the specific ports. Cruise itineraries that include African ports often need pre-trip vaccinations months in advance — book your travel medicine consultation early.
+
+**Asia.** Variable by route. Japanese encephalitis if you're doing rural day excursions in monsoon season; otherwise mostly food and water hygiene.
+
+For any cruise with tropical port days, look up each port's health profile before booking — TravelMed's country pages have current vaccine recommendations and outbreak alerts.
+
+## Pre-existing conditions on a cruise
+
+This is where I see the most real medical issues. Cruises attract older travelers with chronic conditions, and the gap between "feeling fine on land" and "managing a cardiac event at sea" is wider than most people realize.
+
+The honest version of what to plan for:
+
+**Diabetes.** Bring twice the insulin you think you need. Pack glucagon. Tell the cruise line in advance — most have refrigeration in cabins on request. Time-zone changes complicate dosing; talk to your endocrinologist before a multi-time-zone itinerary.
+
+**Cardiac conditions.** If you've had a recent event (within six months) or have unstable angina, talk to your cardiologist before booking. Cruise ship medical centers can stabilize, but cannot do cardiac catheterization. Helicopter evacuation from a ship at sea takes hours, not minutes.
+
+**Renal disease.** A small number of cruise lines have onboard dialysis. Most don't. Confirm before booking.
+
+**Mobility.** Ships are not as accessible as marketed. Plan for walking distances longer than you expect.
+
+**Anticoagulation.** Bring more medication than you think you'll need. Don't forget that vacation can disrupt routine in ways that affect compliance.
+
+**For everyone:**
+
+- Travel insurance with medical evacuation coverage. Not optional. Standard travel insurance often doesn't cover cruise evacuation.
+- A list of all medications with generic names, dosages, and prescribing physicians, kept in your wallet and a backup in your cabin safe.
+- Enough medication for the trip plus seven to ten extra days. Connections get missed.
+
+## What's actually on the ship's medical center
+
+Useful expectation-setting. A typical large cruise ship medical center has:
+
+- One or two physicians, usually with emergency or general practice background
+- A few nurses
+- Basic lab capability (blood counts, electrolytes, troponin, urinalysis)
+- ECG, basic ultrasound, often X-ray
+- IV fluids, oxygen, basic resuscitation equipment
+- A small pharmacy of common medications
+
+What they cannot do: cardiac catheterization, complex surgery, advanced imaging (CT, MRI), childbirth assistance for complicated deliveries, dialysis (with rare exceptions). For anything serious, you'll be evacuated — by helicopter if conditions allow, or by diverting to the nearest port.
+
+The medical center charges for visits. Travel insurance usually covers it; check your policy before boarding.
+
+## My cruise medical kit
+
+What I'd actually pack as a physician for a typical week-long cruise:
+
+- All my regular medications, in original containers, in carry-on
+- A backup of essential medications in a separate bag
+- Loperamide (Imodium) for diarrhea
+- Oral rehydration salt sachets
+- Acetaminophen / paracetamol
+- An antihistamine (cetirizine for daytime, diphenhydramine for sleep if needed)
+- Scopolamine patches if I'm prone to motion sickness
+- Basic wound care: bandages, antiseptic wipes, antibiotic ointment
+- Hand sanitizer (despite the norovirus caveat — it works for most other things)
+- Sunscreen, SPF 50, multiple bottles
+- Insect repellent for tropical ports
+
+What I leave at home: pre-emptive antibiotics. Most cases of traveler's diarrhea on cruises are viral and antibiotics don't help. If you really need them, the ship's doctor can prescribe.
+
+## When to use the ship's doctor
+
+Lower threshold than you'd use at home. You're paying for it, the queue is short, and conditions you'd "wait out" at home can spiral on a ship without normal support.
+
+Worth a visit:
+
+- Any new chest pain, breathlessness, or palpitations
+- Fever over 38.5°C, especially with other symptoms
+- Vomiting or diarrhea that doesn't settle in 24 hours
+- Any new neurological symptom — confusion, weakness, severe headache
+- Anything you'd call your GP for at home
+
+Manage yourself:
+
+- Mild seasickness
+- Sunburn (unless severe)
+- Minor cuts and scrapes
+- Standard cold symptoms in someone otherwise well
+
+## Bottom line
+
+If you're going on a cruise — and many of my patients do, and enjoy them — go prepared. Travel insurance with evacuation coverage. Medication redundancy. Hand hygiene taken seriously. Awareness of what the ship can and cannot do medically.
+
+I'm not against cruises. I am against pretending they're risk-free. They're a confined environment with an older demographic and limited medical backup, and that combination has real implications. The travelers who do well are the ones who know that going in and plan accordingly.
+`,
   },
 ];
