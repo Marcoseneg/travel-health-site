@@ -32,6 +32,7 @@ import { cameroon } from "./cameroon";
 import { capeVerde } from "./cape-verde";
 import { centralAfricanRepublic } from "./central-african-republic";
 import { chad } from "./chad";
+import { colombia } from "./colombia";
 import { comoros } from "./comoros";
 import { congo } from "./congo";
 import { coteDivoire } from "./cote-divoire";
@@ -95,6 +96,7 @@ export const countries: Record<string, CountryInfo> = {
   "cape-verde": capeVerde,
   "central-african-republic": centralAfricanRepublic,
   chad: chad,
+  colombia: colombia,
   comoros: comoros,
   congo: congo,
   "cote-divoire": coteDivoire,
