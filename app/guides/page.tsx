@@ -5,6 +5,7 @@ import { articles, CATEGORY_LABELS, type ArticleCategory } from "../lib/guidesDa
 import MalariaPillsIllustration from "../components/illustrations/MalariaPillsIllustration";
 import CruiseShipIllustration from "../components/illustrations/CruiseShipIllustration";
 import RepellentSpraysIllustration from "../components/illustrations/RepellentSpraysIllustration";
+import ChildTravelKitIllustration from "../components/illustrations/ChildTravelKitIllustration";
 
 // Map article.coverIllustration values to component refs.
 // When an article has a coverIllustration set, we render the matching
@@ -13,6 +14,7 @@ const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
   "malaria-pills": MalariaPillsIllustration,
   "cruise-ship": CruiseShipIllustration,
   "repellent-sprays": RepellentSpraysIllustration,
+  "child-travel-kit": ChildTravelKitIllustration,
 };
 
 function formatDate(dateStr: string): string {

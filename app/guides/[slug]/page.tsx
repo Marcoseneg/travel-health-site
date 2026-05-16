@@ -9,12 +9,15 @@ import QuickRecommendations from "../../components/QuickRecommendations";
 import MalariaPillsIllustration from "../../components/illustrations/MalariaPillsIllustration";
 import CruiseShipIllustration from "../../components/illustrations/CruiseShipIllustration";
 import RepellentSpraysIllustration from "../../components/illustrations/RepellentSpraysIllustration";
+import ChildTravelKitIllustration from "../../components/illustrations/ChildTravelKitIllustration";
 
 // Map article.coverIllustration values to the actual components.
 const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
   "malaria-pills": MalariaPillsIllustration,
   "cruise-ship": CruiseShipIllustration,
   "repellent-sprays": RepellentSpraysIllustration,
+  "child-travel-kit": ChildTravelKitIllustration,
+
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
