@@ -2,20 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { articles, CATEGORY_LABELS, type ArticleCategory } from "../lib/guidesData";
-import MalariaPillsIllustration from "../components/illustrations/MalariaPillsIllustration";
-import CruiseShipIllustration from "../components/illustrations/CruiseShipIllustration";
-import RepellentSpraysIllustration from "../components/illustrations/RepellentSpraysIllustration";
-import ChildTravelKitIllustration from "../components/illustrations/ChildTravelKitIllustration";
-
-// Map article.coverIllustration values to component refs.
-// When an article has a coverIllustration set, we render the matching
-// component layered over the gradient in the featured card header.
-const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
-  "malaria-pills": MalariaPillsIllustration,
-  "cruise-ship": CruiseShipIllustration,
-  "repellent-sprays": RepellentSpraysIllustration,
-  "child-travel-kit": ChildTravelKitIllustration,
-};
+import { COVER_ILLUSTRATIONS } from "../components/illustrations";
 
 function formatDate(dateStr: string): string {
   const d = new Date(dateStr);

@@ -6,19 +6,11 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { articles, CATEGORY_LABELS } from "../../lib/guidesData";
 import QuickRecommendations from "../../components/QuickRecommendations";
-import MalariaPillsIllustration from "../../components/illustrations/MalariaPillsIllustration";
-import CruiseShipIllustration from "../../components/illustrations/CruiseShipIllustration";
-import RepellentSpraysIllustration from "../../components/illustrations/RepellentSpraysIllustration";
-import ChildTravelKitIllustration from "../../components/illustrations/ChildTravelKitIllustration";
-
-// Map article.coverIllustration values to the actual components.
-const COVER_ILLUSTRATIONS: Record<string, () => React.ReactElement> = {
-  "malaria-pills": MalariaPillsIllustration,
-  "cruise-ship": CruiseShipIllustration,
-  "repellent-sprays": RepellentSpraysIllustration,
-  "child-travel-kit": ChildTravelKitIllustration,
-
-};
+import { COVER_ILLUSTRATIONS } from "../../components/illustrations";
+import AuthorByline from "../../components/guides/AuthorByline";
+import GuideTOC from "../../components/guides/GuideTOC";
+import RelatedGuides from "../../components/guides/RelatedGuides";
+import { formatDate, slugify } from "../../lib/utils/formatDate";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Article renderer for /guides/<slug>
@@ -44,14 +36,6 @@ const ACCENT = "#38bdf8";
 const ACCENT_BRIGHT = "#7dd3fc";
 const SURFACE = "rgba(255,255,255,0.025)";
 const BORDER = "rgba(255,255,255,0.07)";
-
-function formatDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
-}
 
 export default function GuideArticlePage() {
   const params = useParams();
@@ -162,24 +146,9 @@ export default function GuideArticlePage() {
           {article.subtitle}
         </p>
 
-        {/* ── Meta row ───────────────────────────────────────────────── */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "12px",
-            fontSize: "13px",
-            color: TEXT_FAINT,
-            paddingBottom: "32px",
-            borderBottom: `1px solid ${BORDER}`,
-            marginBottom: "40px",
-          }}
-        >
-          <span>{formatDate(article.date)}</span>
-          <span>·</span>
-          <span>{article.readingTime} min read</span>
-          <span>·</span>
-          <span>By Marco Seneghini, MD</span>
+        {/* ── Author byline ─────────────────────────────────────────── */}
+        <div style={{ paddingBottom: "32px", borderBottom: `1px solid ${BORDER}`, marginBottom: "40px" }}>
+          <AuthorByline date={article.date} readingTime={article.readingTime} />
         </div>
 
         {/* ── Body ──────────────────────────────────────────────────── */}
@@ -205,6 +174,7 @@ export default function GuideArticlePage() {
             {article.quickRecommendations && (
               <QuickRecommendations cards={article.quickRecommendations} />
             )}
+            <GuideTOC content={article.content} />
             <div
               style={{
                 fontSize: "17px",
@@ -229,20 +199,35 @@ export default function GuideArticlePage() {
                     {children}
                   </h2>
                 ),
-                h2: ({ children }) => (
-                  <h2
-                    style={{
-                      fontSize: "24px",
-                      fontWeight: 800,
-                      color: TEXT_PRIMARY,
-                      letterSpacing: "-0.02em",
-                      lineHeight: 1.3,
-                      margin: "40px 0 14px",
-                    }}
-                  >
-                    {children}
-                  </h2>
-                ),
+                h2: ({ children }) => {
+                  // Generate stable id from heading text so the in-page
+                  // TOC (<GuideTOC />) can scroll-link to this section.
+                  const text =
+                    typeof children === "string"
+                      ? children
+                      : Array.isArray(children)
+                      ? children
+                          .map((c) => (typeof c === "string" ? c : ""))
+                          .join("")
+                      : "";
+                  const id = slugify(text);
+                  return (
+                    <h2
+                      id={id}
+                      style={{
+                        fontSize: "24px",
+                        fontWeight: 800,
+                        color: TEXT_PRIMARY,
+                        letterSpacing: "-0.02em",
+                        lineHeight: 1.3,
+                        margin: "40px 0 14px",
+                        scrollMarginTop: "80px",
+                      }}
+                    >
+                      {children}
+                    </h2>
+                  );
+                },
                 h3: ({ children }) => (
                   <h3
                     style={{
@@ -418,6 +403,7 @@ export default function GuideArticlePage() {
               {article.content}
               </ReactMarkdown>
             </div>
+            <RelatedGuides currentSlug={article.id} />
           </>
         ) : (
           // ── Placeholder state ─────────────────────────────────────────
