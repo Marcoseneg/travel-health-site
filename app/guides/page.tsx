@@ -5,22 +5,108 @@ import { articles, CATEGORY_LABELS, type ArticleCategory } from "../lib/guidesDa
 import { COVER_ILLUSTRATIONS } from "../components/illustrations";
 import { formatDate } from "../lib/utils/formatDate";
 import FeaturedHero from "../components/guides/FeaturedHero";
+import { countries } from "../../data/countries";
+import { diseases } from "../lib/diseaseData";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Guides listing page
 //
 // Layout (top to bottom):
-//   1. Header (eyebrow + title + intro)
+//   1. Header — large title + single subtitle (matches site style).
 //   2. Featured carousel — wide hero rotating through up to 3 articles
-//      that have `featured: true` AND `content`. Only shown when no
-//      category filter is active.
-//   3. Category filter pills
+//      (only shown when no category filter is active).
+//   3. Category filter pills.
 //   4. Unified article grid — every article rendered as a big illustration
 //      card. Responsive 1/2/3 columns. Placeholders dimmed with a
 //      "Coming soon" badge.
+//   5. Trust signals — bordered editorial block with stats + 4 icon cards.
 // ─────────────────────────────────────────────────────────────────────────────
 
 type FilterMode = "all" | ArticleCategory;
+
+// ── Outline SVG icons used in the trust signals block ─────────────────────
+
+function IconCheck() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="1.5"
+         strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M8 12.5 11 15.5 16 9" />
+    </svg>
+  );
+}
+
+function IconBook() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="1.5"
+         strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V4H6.5A2.5 2.5 0 0 0 4 6.5z" />
+      <path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5H6.5A2.5 2.5 0 0 0 4 19.5z" />
+    </svg>
+  );
+}
+
+function IconBalance() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="1.5"
+         strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 4v17" />
+      <path d="M5 21h14" />
+      <path d="M6 4l-3 7h6z" />
+      <path d="M18 4l-3 7h6z" />
+      <path d="M3 11a3 3 0 0 0 6 0" />
+      <path d="M15 11a3 3 0 0 0 6 0" />
+      <path d="M6 4l12 0" />
+    </svg>
+  );
+}
+
+function IconClock() {
+  return (
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none"
+         stroke="currentColor" strokeWidth="1.5"
+         strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
+const TRUST_SIGNALS: {
+  Icon: React.ComponentType;
+  title: string;
+  description: string;
+}[] = [
+  {
+    Icon: IconCheck,
+    title: "Physician written",
+    description:
+      "Every guide is written and reviewed by a practising travel medicine physician.",
+  },
+  {
+    Icon: IconBook,
+    title: "Primary sources",
+    description:
+      "Built on WHO, CDC, and PAHO guidelines — never secondary rewrites.",
+  },
+  {
+    Icon: IconBalance,
+    title: "Independent",
+    description:
+      "No affiliate links. No paid placements. No commercial bias.",
+  },
+  {
+    Icon: IconClock,
+    title: "Kept current",
+    description:
+      "Outbreak alerts update daily; country and disease pages reviewed regularly.",
+  },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function GuidesPage() {
   const [filter, setFilter] = useState<FilterMode>("all");
@@ -33,8 +119,6 @@ export default function GuidesPage() {
     return list;
   }, [filter]);
 
-  // Featured: 3 most recent articles flagged featured AND with content
-  // (so placeholders never appear in the hero carousel).
   const featured = useMemo(
     () =>
       articles
@@ -43,6 +127,10 @@ export default function GuidesPage() {
         .slice(0, 3),
     []
   );
+
+  const countryCount = Object.keys(countries).length;
+  const diseaseCount = Object.keys(diseases).length;
+  const publishedCount = articles.filter((a) => a.content).length;
 
   const categories: { value: FilterMode; label: string }[] = [
     { value: "all", label: "All" },
@@ -62,33 +150,14 @@ export default function GuidesPage() {
       }}
     >
       {/* ── Page header ─────────────────────────────────────────────── */}
-      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "48px 24px 0" }}>
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "6px 16px",
-            borderRadius: "999px",
-            background: "rgba(255,255,255,0.03)",
-            border: "1px solid rgba(255,255,255,0.07)",
-            marginBottom: "16px",
-            fontSize: "12px",
-            fontWeight: 600,
-            color: "#64748b",
-            letterSpacing: "0.04em",
-            textTransform: "uppercase",
-          }}
-        >
-          Journal
-        </div>
+      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "56px 24px 0" }}>
         <h1
           style={{
-            fontSize: "clamp(32px, 4vw, 52px)",
+            fontSize: "clamp(36px, 4.5vw, 56px)",
             fontWeight: 800,
             letterSpacing: "-0.04em",
-            lineHeight: 1.1,
-            margin: "0 0 12px",
+            lineHeight: 1.05,
+            margin: "0 0 18px",
           }}
         >
           Guides & articles
@@ -99,11 +168,10 @@ export default function GuidesPage() {
             color: "#64748b",
             maxWidth: "600px",
             lineHeight: 1.6,
-            margin: "0 0 40px",
+            margin: "0 0 44px",
           }}
         >
-          Physician-written deep dives on travel health — gear reviews,
-          destination guides, prevention strategies, and field-tested advice.
+          Physician-written. Field-tested. Straight answers for real travel.
         </p>
       </section>
 
@@ -208,7 +276,6 @@ export default function GuidesPage() {
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
                   }}
                 >
-                  {/* Cover: gradient header + optional illustration overlay */}
                   <div
                     style={{
                       height: "160px",
@@ -232,7 +299,6 @@ export default function GuidesPage() {
                       </div>
                     )}
 
-                    {/* Category badge — top left */}
                     <span
                       style={{
                         position: "absolute",
@@ -253,7 +319,6 @@ export default function GuidesPage() {
                       {cat.label}
                     </span>
 
-                    {/* "Coming soon" badge — top right, only for placeholders */}
                     {isPlaceholder && (
                       <span
                         style={{
@@ -275,7 +340,6 @@ export default function GuidesPage() {
                     )}
                   </div>
 
-                  {/* Card body */}
                   <div
                     style={{
                       padding: "20px 24px 22px",
@@ -325,6 +389,103 @@ export default function GuidesPage() {
             })}
           </div>
         )}
+      </section>
+
+      {/* ── Trust signals (bordered container) ────────────────────────── */}
+      <section style={{ padding: "16px 24px 96px" }}>
+        <div
+          style={{
+            maxWidth: "1100px",
+            margin: "0 auto",
+            padding: "48px clamp(20px, 4vw, 48px)",
+            borderRadius: "24px",
+            background: "rgba(255,255,255,0.02)",
+            border: "1px solid rgba(255,255,255,0.08)",
+          }}
+        >
+          <div style={{ textAlign: "center", marginBottom: "44px" }}>
+            <h2
+              style={{
+                fontSize: "clamp(22px, 2.6vw, 30px)",
+                fontWeight: 700,
+                letterSpacing: "-0.025em",
+                margin: "0 0 14px",
+                lineHeight: 1.2,
+                color: "#f1f5f9",
+              }}
+            >
+              Independent. Physician-written. Kept current.
+            </h2>
+            <p
+              style={{
+                fontSize: "15px",
+                color: "#94a3b8",
+                margin: 0,
+                lineHeight: 1.55,
+                maxWidth: "640px",
+                marginInline: "auto",
+              }}
+            >
+              {countryCount} countries · {diseaseCount} diseases ·{" "}
+              {publishedCount} published guides — all reviewed by a practising
+              travel medicine physician.
+            </p>
+          </div>
+
+          {/* Trust signals — borderless centered cards */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "24px",
+            }}
+          >
+            {TRUST_SIGNALS.map((s) => {
+              const Icon = s.Icon;
+              return (
+                <div
+                  key={s.title}
+                  style={{
+                    textAlign: "center",
+                    padding: "12px 8px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: "14px",
+                      color: "#7dd3fc",
+                    }}
+                  >
+                    <Icon />
+                  </div>
+                  <h3
+                    style={{
+                      fontSize: "15px",
+                      fontWeight: 700,
+                      margin: "0 0 8px",
+                      color: "#f1f5f9",
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    {s.title}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: "13.5px",
+                      color: "#94a3b8",
+                      lineHeight: 1.5,
+                      margin: 0,
+                    }}
+                  >
+                    {s.description}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
     </main>
   );
