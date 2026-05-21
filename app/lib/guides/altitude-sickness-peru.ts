@@ -61,6 +61,34 @@ export const altitudeSicknessPeru: Article = {
       detail: "500–1,000 m, day or night",
     },
   ],
+  symptomComparison: {
+    mild: {
+      title: "Mild (acute mountain sickness)",
+      action: "Stop ascending, rest at current altitude",
+      bullets: [
+        "Headache, usually frontal and throbbing",
+        "Nausea, sometimes vomiting",
+        "Loss of appetite",
+        "Fatigue, \"everything feels heavy\"",
+        "Disturbed sleep, vivid or fragmented dreams",
+        "Dizziness, especially on standing",
+      ],
+      footer: "Usually resolves with rest and 24–48 h of acclimatization at the same altitude.",
+    },
+    severe: {
+      title: "Severe — descend immediately",
+      action: "500–1,000 m down, day or night",
+      bullets: [
+        "Severe headache that doesn't respond to paracetamol or ibuprofen",
+        "Confusion, slurred speech, or behavioral change",
+        "Ataxia — difficulty walking in a straight line",
+        "Shortness of breath at rest",
+        "Cough, especially with frothy or pink sputum",
+        "Bluish lips or face",
+      ],
+      footer: "Points to HACE (brain swelling) or HAPE (fluid in the lungs) — acutely life-threatening.",
+    },
+  },
   content: `
 ## The short answer
 
@@ -82,27 +110,9 @@ Peru is a particular problem because most travelers fly straight from Lima (sea 
 
 Symptoms typically start 6 to 10 hours after arriving at altitude. They're often dismissed as jet lag or dehydration. Recognizing them matters — continuing to ascend with mild symptoms is what turns acute mountain sickness into the dangerous forms.
 
-**🟢 Mild (acute mountain sickness):**
+<!-- SYMPTOM_COMPARISON -->
 
-- Headache, usually frontal and throbbing
-- Nausea, sometimes vomiting
-- Loss of appetite
-- Fatigue, "everything feels heavy"
-- Disturbed sleep, vivid or fragmented dreams
-- Dizziness, especially on standing
-
-These usually resolve with rest and 24–48 hours of acclimatization at the same altitude.
-
-**🔴 Severe — descend immediately:**
-
-- Severe headache that doesn't respond to paracetamol or ibuprofen
-- Confusion, slurred speech, or behavioral change
-- Ataxia — difficulty walking in a straight line
-- Shortness of breath at rest
-- Cough, especially with frothy or pink sputum
-- Bluish lips or face
-
-These point to **high-altitude cerebral edema** (brain swelling) or **high-altitude pulmonary edema** (fluid in the lungs). Both are acutely life-threatening. The treatment is immediate descent of 500 to 1,000 m — at night if necessary — plus oxygen if available.
+If severe symptoms develop, the treatment is immediate descent of 500 to 1,000 m — at night if necessary — plus oxygen if available. Don't wait for morning, don't debate.
 
 ## How to prevent altitude sickness
 

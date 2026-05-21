@@ -16,9 +16,10 @@ import { diseases } from "../lib/diseaseData";
 //   2. Featured carousel — wide hero rotating through up to 3 articles
 //      (only shown when no category filter is active).
 //   3. Category filter pills.
-//   4. Unified article grid — every article rendered as a big illustration
-//      card. Responsive 1/2/3 columns. Placeholders dimmed with a
-//      "Coming soon" badge.
+//   4. Unified article grid — every article rendered as a card. Articles
+//      with `coverImage` show a real photo as background; everything else
+//      keeps the gradient + SVG illustration. Responsive 1/2/3 columns.
+//      Placeholders dimmed with a "Coming soon" badge.
 //   5. Trust signals — bordered editorial block with stats + 4 icon cards.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -248,6 +249,7 @@ export default function GuidesPage() {
                 article.coverIllustration && COVER_ILLUSTRATIONS[article.coverIllustration]
                   ? COVER_ILLUSTRATIONS[article.coverIllustration]
                   : null;
+              const hasPhoto = !!article.coverImage;
 
               return (
                 <a
@@ -276,27 +278,55 @@ export default function GuidesPage() {
                     e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
                   }}
                 >
+                  {/* ── Cover area: photo if coverImage is set, else gradient + SVG ── */}
                   <div
                     style={{
                       height: "160px",
-                      background: article.coverGradient,
+                      background: hasPhoto ? "#000" : article.coverGradient,
                       position: "relative",
                       overflow: "hidden",
                     }}
                   >
-                    {Illustration && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          pointerEvents: "none",
-                        }}
-                      >
-                        <Illustration />
-                      </div>
+                    {hasPhoto && article.coverImage ? (
+                      <>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={article.coverImage.src}
+                          alt={article.coverImage.alt}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            objectPosition: article.coverImage.focusPoint ?? "center",
+                            display: "block",
+                          }}
+                        />
+                        {/* Subtle top-down darkening so the category badge stays legible */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            background:
+                              "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 45%, rgba(0,0,0,0.1) 100%)",
+                            pointerEvents: "none",
+                          }}
+                        />
+                      </>
+                    ) : (
+                      Illustration && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                          }}
+                        >
+                          <Illustration />
+                        </div>
+                      )
                     )}
 
                     <span

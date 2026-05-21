@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -14,6 +14,7 @@ import RelatedGuides from "../../components/guides/RelatedGuides";
 import QuickFacts from "../../components/guides/QuickFacts";
 import OnThisPageNav from "../../components/guides/OnThisPageNav";
 import PhysicianTake from "../../components/guides/PhysicianTake";
+import SymptomComparison from "../../components/guides/SymptomComparison";
 import { formatDate, slugify } from "../../lib/utils/formatDate";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
@@ -29,6 +30,11 @@ const SURFACE = "rgba(255,255,255,0.025)";
 const BORDER = "rgba(255,255,255,0.07)";
 
 const SIDEBAR_BREAKPOINT = 1000;
+
+// Splits markdown content on the SymptomComparison marker. The marker
+// must be on its own line. Whitespace around it is consumed so the
+// before/after chunks don't end up with stray blank paragraphs.
+const SYMPTOM_MARKER_RE = /\n*<!--\s*SYMPTOM_COMPARISON\s*-->\s*\n*/;
 
 function buildHeadingNumbers(content: string | undefined): Map<string, number> {
   const map = new Map<string, number>();
@@ -68,6 +74,15 @@ export default function GuideArticlePage() {
     [article?.content]
   );
 
+  // Split markdown into segments on the SymptomComparison marker.
+  // If no marker or no data: just a single segment.
+  const contentSegments = useMemo<string[]>(() => {
+    if (!article?.content) return [];
+    if (!article.symptomComparison) return [article.content];
+    const parts = article.content.split(SYMPTOM_MARKER_RE);
+    return parts;
+  }, [article?.content, article?.symptomComparison]);
+
   if (!article) {
     return (
       <main style={{ background: PAGE_BG, minHeight: "100vh", color: TEXT_PRIMARY, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
@@ -93,6 +108,104 @@ export default function GuideArticlePage() {
       : null;
   const hasPhotoHero = !!article.coverImage;
   const useTwoColumn = isDesktop && !!article.content;
+
+  // Markdown component overrides — defined inside render so h2 can close
+  // over `headingNumbers`. Reused across all content segments.
+  const markdownComponents = {
+    h1: ({ children }: any) => (
+      <h1 style={{ fontSize: "30px", fontWeight: 800, color: TEXT_PRIMARY, letterSpacing: "-0.02em", margin: "48px 0 16px", lineHeight: 1.2 }}>
+        {children}
+      </h1>
+    ),
+    h2: ({ children }: any) => {
+      const text =
+        typeof children === "string"
+          ? children
+          : Array.isArray(children)
+          ? children.map((c: any) => (typeof c === "string" ? c : "")).join("")
+          : "";
+      const id = slugify(text);
+      const num = headingNumbers.get(id);
+      return (
+        <h2
+          id={id}
+          style={{
+            fontSize: "24px",
+            fontWeight: 800,
+            color: TEXT_PRIMARY,
+            letterSpacing: "-0.02em",
+            lineHeight: 1.3,
+            margin: "40px 0 14px",
+            scrollMarginTop: "80px",
+            display: "flex",
+            alignItems: "baseline",
+            gap: "14px",
+          }}
+        >
+          {num !== undefined && (
+            <span
+              style={{
+                color: ACCENT_BRIGHT,
+                fontWeight: 700,
+                fontVariantNumeric: "tabular-nums",
+                flexShrink: 0,
+              }}
+              aria-hidden="true"
+            >
+              {num}.
+            </span>
+          )}
+          <span>{children}</span>
+        </h2>
+      );
+    },
+    h3: ({ children }: any) => (
+      <h3 style={{ fontSize: "19px", fontWeight: 700, color: TEXT_PRIMARY, letterSpacing: "-0.01em", margin: "32px 0 12px" }}>
+        {children}
+      </h3>
+    ),
+    p: ({ children }: any) => <p style={{ margin: "0 0 18px", lineHeight: 1.75 }}>{children}</p>,
+    ul: ({ children }: any) => <ul style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ul>,
+    ol: ({ children }: any) => <ol style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ol>,
+    li: ({ children }: any) => <li style={{ margin: "0 0 6px" }}>{children}</li>,
+    strong: ({ children }: any) => <strong style={{ color: TEXT_PRIMARY, fontWeight: 700 }}>{children}</strong>,
+    em: ({ children }: any) => <em style={{ color: TEXT_PRIMARY, fontStyle: "italic" }}>{children}</em>,
+    a: ({ children, href }: any) => (
+      <a
+        href={href}
+        target={href?.startsWith("http") ? "_blank" : undefined}
+        rel={href?.startsWith("http") ? "noreferrer noopener" : undefined}
+        style={{ color: ACCENT_BRIGHT, textDecoration: "underline", textDecorationColor: "rgba(125,211,252,0.3)", textUnderlineOffset: "3px" }}
+      >
+        {children}
+      </a>
+    ),
+    blockquote: ({ children }: any) => (
+      <blockquote style={{ borderLeft: `3px solid ${ACCENT}`, padding: "4px 0 4px 20px", margin: "24px 0", color: TEXT_PRIMARY, fontStyle: "italic" }}>
+        {children}
+      </blockquote>
+    ),
+    code: ({ children }: any) => (
+      <code style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: "4px", padding: "1px 6px", fontSize: "0.92em", fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", color: TEXT_PRIMARY }}>
+        {children}
+      </code>
+    ),
+    table: ({ children }: any) => (
+      <div style={{ overflowX: "auto", margin: "24px 0" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>{children}</table>
+      </div>
+    ),
+    thead: ({ children }: any) => <thead>{children}</thead>,
+    tbody: ({ children }: any) => <tbody>{children}</tbody>,
+    tr: ({ children }: any) => <tr style={{ borderBottom: `1px solid ${BORDER}` }}>{children}</tr>,
+    th: ({ children }: any) => (
+      <th style={{ textAlign: "left", padding: "10px 12px", fontWeight: 700, color: TEXT_PRIMARY, background: SURFACE, borderBottom: `1px solid ${BORDER}` }}>
+        {children}
+      </th>
+    ),
+    td: ({ children }: any) => <td style={{ padding: "10px 12px", verticalAlign: "top", color: TEXT_BODY }}>{children}</td>,
+    hr: () => <hr style={{ border: 0, height: "1px", background: BORDER, margin: "40px 0" }} />,
+  };
 
   return (
     <main
@@ -212,7 +325,10 @@ export default function GuideArticlePage() {
                   fontSize: isDesktop ? "18px" : "15px",
                   color: "rgba(255,255,255,0.9)",
                   lineHeight: 1.45,
-                  margin: 0,
+                  marginTop: 0,
+                  marginRight: 0,
+                  marginBottom: 0,
+                  marginLeft: 0,
                   maxWidth: "640px",
                   textShadow: "0 1px 12px rgba(0,0,0,0.5)",
                 }}
@@ -360,106 +476,23 @@ export default function GuideArticlePage() {
                 <GuideTOC content={article.content} />
 
                 <div style={{ fontSize: "17px", color: TEXT_BODY, lineHeight: 1.75 }}>
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    components={{
-                      h1: ({ children }) => (
-                        <h1 style={{ fontSize: "30px", fontWeight: 800, color: TEXT_PRIMARY, letterSpacing: "-0.02em", margin: "48px 0 16px", lineHeight: 1.2 }}>
-                          {children}
-                        </h1>
-                      ),
-                      h2: ({ children }) => {
-                        const text =
-                          typeof children === "string"
-                            ? children
-                            : Array.isArray(children)
-                            ? children.map((c) => (typeof c === "string" ? c : "")).join("")
-                            : "";
-                        const id = slugify(text);
-                        const num = headingNumbers.get(id);
-                        return (
-                          <h2
-                            id={id}
-                            style={{
-                              fontSize: "24px",
-                              fontWeight: 800,
-                              color: TEXT_PRIMARY,
-                              letterSpacing: "-0.02em",
-                              lineHeight: 1.3,
-                              margin: "40px 0 14px",
-                              scrollMarginTop: "80px",
-                              display: "flex",
-                              alignItems: "baseline",
-                              gap: "14px",
-                            }}
-                          >
-                            {num !== undefined && (
-                              <span
-                                style={{
-                                  color: ACCENT_BRIGHT,
-                                  fontWeight: 700,
-                                  fontVariantNumeric: "tabular-nums",
-                                  flexShrink: 0,
-                                }}
-                                aria-hidden="true"
-                              >
-                                {num}.
-                              </span>
-                            )}
-                            <span>{children}</span>
-                          </h2>
-                        );
-                      },
-                      h3: ({ children }) => (
-                        <h3 style={{ fontSize: "19px", fontWeight: 700, color: TEXT_PRIMARY, letterSpacing: "-0.01em", margin: "32px 0 12px" }}>
-                          {children}
-                        </h3>
-                      ),
-                      p: ({ children }) => <p style={{ margin: "0 0 18px", lineHeight: 1.75 }}>{children}</p>,
-                      ul: ({ children }) => <ul style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ul>,
-                      ol: ({ children }) => <ol style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ol>,
-                      li: ({ children }) => <li style={{ margin: "0 0 6px" }}>{children}</li>,
-                      strong: ({ children }) => <strong style={{ color: TEXT_PRIMARY, fontWeight: 700 }}>{children}</strong>,
-                      em: ({ children }) => <em style={{ color: TEXT_PRIMARY, fontStyle: "italic" }}>{children}</em>,
-                      a: ({ children, href }) => (
-                        <a
-                          href={href}
-                          target={href?.startsWith("http") ? "_blank" : undefined}
-                          rel={href?.startsWith("http") ? "noreferrer noopener" : undefined}
-                          style={{ color: ACCENT_BRIGHT, textDecoration: "underline", textDecorationColor: "rgba(125,211,252,0.3)", textUnderlineOffset: "3px" }}
-                        >
-                          {children}
-                        </a>
-                      ),
-                      blockquote: ({ children }) => (
-                        <blockquote style={{ borderLeft: `3px solid ${ACCENT}`, padding: "4px 0 4px 20px", margin: "24px 0", color: TEXT_PRIMARY, fontStyle: "italic" }}>
-                          {children}
-                        </blockquote>
-                      ),
-                      code: ({ children }) => (
-                        <code style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: "4px", padding: "1px 6px", fontSize: "0.92em", fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", color: TEXT_PRIMARY }}>
-                          {children}
-                        </code>
-                      ),
-                      table: ({ children }) => (
-                        <div style={{ overflowX: "auto", margin: "24px 0" }}>
-                          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>{children}</table>
-                        </div>
-                      ),
-                      thead: ({ children }) => <thead>{children}</thead>,
-                      tbody: ({ children }) => <tbody>{children}</tbody>,
-                      tr: ({ children }) => <tr style={{ borderBottom: `1px solid ${BORDER}` }}>{children}</tr>,
-                      th: ({ children }) => (
-                        <th style={{ textAlign: "left", padding: "10px 12px", fontWeight: 700, color: TEXT_PRIMARY, background: SURFACE, borderBottom: `1px solid ${BORDER}` }}>
-                          {children}
-                        </th>
-                      ),
-                      td: ({ children }) => <td style={{ padding: "10px 12px", verticalAlign: "top", color: TEXT_BODY }}>{children}</td>,
-                      hr: () => <hr style={{ border: 0, height: "1px", background: BORDER, margin: "40px 0" }} />,
-                    }}
-                  >
-                    {article.content}
-                  </ReactMarkdown>
+                  {contentSegments.map((segment, i) => (
+                    <Fragment key={i}>
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
+                        {segment}
+                      </ReactMarkdown>
+                      {/* Insert SymptomComparison between the two segments,
+                          i.e. after the first segment when there are two. */}
+                      {i === 0 &&
+                        article.symptomComparison &&
+                        contentSegments.length > 1 && (
+                          <SymptomComparison
+                            mild={article.symptomComparison.mild}
+                            severe={article.symptomComparison.severe}
+                          />
+                        )}
+                    </Fragment>
+                  ))}
                 </div>
 
                 {!useTwoColumn && <RelatedGuides currentSlug={article.id} />}
@@ -486,10 +519,6 @@ export default function GuideArticlePage() {
             )}
           </div>
 
-          {/* ── Right sidebar — simple non-sticky stack ────────────────────────
-              All three sidebar components render in normal document flow.
-              They scroll naturally with the page. No sticky behavior, no
-              measurement, no overlap possible. */}
           {useTwoColumn && article.content && (
             <aside style={{ minWidth: 0 }}>
               <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>

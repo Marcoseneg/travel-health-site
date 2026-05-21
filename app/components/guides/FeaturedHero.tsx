@@ -1,8 +1,13 @@
 // app/components/guides/FeaturedHero.tsx
 //
 // Wide featured-article carousel rendered at the top of /guides.
-// Shows one featured article at a time across the full content width,
-// with a tall illustration-led hero card and rotating slides.
+// Shows one featured article at a time across the full content width.
+//
+// Each slide adapts to the article's cover style:
+//   • Articles with `coverImage` → real photograph as full background,
+//     with a stronger dark gradient on the left for text legibility.
+//   • Articles with gradient + SVG illustration → existing layout
+//     (gradient backdrop full-width, illustration on right 50%).
 //
 // Behavior:
 //   • Autoplay every 7 seconds, paused on hover/focus.
@@ -13,10 +18,6 @@
 //   • Respects `prefers-reduced-motion` — autoplay disabled in that mode.
 //   • Falls back gracefully: 0 slides → renders nothing,
 //     1 slide → renders the card without any carousel chrome.
-//
-// Layout: text content on the left, illustration on the right at desktop
-// widths. On narrow screens (<720px) the illustration is hidden to keep
-// the title readable; the gradient backdrop remains.
 
 "use client";
 
@@ -139,6 +140,7 @@ export default function FeaturedHero({ articles }: Props) {
               ? COVER_ILLUSTRATIONS[article.coverIllustration]
               : null;
           const isActive = i === index;
+          const hasPhoto = !!article.coverImage;
 
           return (
             <a
@@ -159,50 +161,82 @@ export default function FeaturedHero({ articles }: Props) {
                 display: "block",
               }}
             >
-              {/* Background — article's gradient */}
-              <div
-                style={{
-                  position: "absolute",
-                  inset: 0,
-                  background: article.coverGradient,
-                }}
-              />
+              {/* Background layer: photo or gradient depending on article */}
+              {hasPhoto && article.coverImage ? (
+                <>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={article.coverImage.src}
+                    alt={article.coverImage.alt}
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      objectPosition: article.coverImage.focusPoint ?? "center",
+                    }}
+                  />
+                  {/* Stronger dark overlay so the title remains readable
+                      over any background photo. Heavier on left where text sits. */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: isDesktop
+                        ? "linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.45) 45%, rgba(0,0,0,0.15) 100%)"
+                        : "linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.75) 100%)",
+                    }}
+                  />
+                </>
+              ) : (
+                <>
+                  {/* Gradient backdrop */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: article.coverGradient,
+                    }}
+                  />
 
-              {/* Illustration on the right (desktop only) */}
-              {isDesktop && Illustration && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    bottom: 0,
-                    width: "50%",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    pointerEvents: "none",
-                    opacity: 0.95,
-                  }}
-                >
-                  <div style={{ width: "100%", padding: "0 40px" }}>
-                    <Illustration />
-                  </div>
-                </div>
+                  {/* SVG illustration on the right (desktop only) */}
+                  {isDesktop && Illustration && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        bottom: 0,
+                        width: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        pointerEvents: "none",
+                        opacity: 0.95,
+                      }}
+                    >
+                      <div style={{ width: "100%", padding: "0 40px" }}>
+                        <Illustration />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Subtle dark overlay on the left for text legibility */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      bottom: 0,
+                      width: isDesktop ? "60%" : "100%",
+                      background: isDesktop
+                        ? "linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0) 100%)"
+                        : "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.65) 100%)",
+                    }}
+                  />
+                </>
               )}
-
-              {/* Subtle dark overlay on the left for text legibility */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  bottom: 0,
-                  width: isDesktop ? "60%" : "100%",
-                  background: isDesktop
-                    ? "linear-gradient(90deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.2) 70%, rgba(0,0,0,0) 100%)"
-                    : "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.65) 100%)",
-                }}
-              />
 
               {/* Text content */}
               <div
@@ -217,7 +251,6 @@ export default function FeaturedHero({ articles }: Props) {
                   justifyContent: "center",
                 }}
               >
-                {/* "FEATURED GUIDE" badge */}
                 <span
                   style={{
                     display: "inline-flex",
@@ -248,7 +281,7 @@ export default function FeaturedHero({ articles }: Props) {
                     lineHeight: 1.1,
                     margin: "0 0 14px",
                     color: "#ffffff",
-                    textShadow: "0 2px 12px rgba(0,0,0,0.35)",
+                    textShadow: "0 2px 12px rgba(0,0,0,0.45)",
                   }}
                 >
                   {article.title}
@@ -261,13 +294,12 @@ export default function FeaturedHero({ articles }: Props) {
                     lineHeight: 1.5,
                     margin: "0 0 20px",
                     maxWidth: "520px",
-                    textShadow: "0 1px 8px rgba(0,0,0,0.3)",
+                    textShadow: "0 1px 8px rgba(0,0,0,0.4)",
                   }}
                 >
                   {article.subtitle}
                 </p>
 
-                {/* Meta row */}
                 <div
                   style={{
                     display: "flex",
@@ -326,7 +358,7 @@ export default function FeaturedHero({ articles }: Props) {
         )}
       </div>
 
-      {/* ── Dot indicators (always shown when >1 slide) ────────────────── */}
+      {/* ── Dot indicators ───────────────────────────────────────────── */}
       {hasCarouselControls && (
         <div
           style={{
