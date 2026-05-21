@@ -38,6 +38,29 @@ export type QuickFact = {
   value: string;
 };
 
+/**
+ * Optional cover photo for the article. When set, the article page
+ * renders a full-bleed photographic hero with title overlay instead
+ * of the default contained gradient + SVG cover. Best suited for
+ * destination guides where a real-place photograph carries more
+ * editorial weight than an illustration.
+ */
+export type CoverImage = {
+  /** Public-relative path, e.g. "/images/articles/altitude-sickness-peru-cover.jpg" */
+  src: string;
+  /** Alt text describing the image for accessibility and SEO */
+  alt: string;
+  /** Optional photo credit displayed in the bottom-right of the hero */
+  credit?: string;
+  /**
+   * Optional CSS `object-position` value to control where the photo
+   * focuses when it's cropped to the hero's aspect ratio. Defaults
+   * to "center". Use "center 30%" to bias toward the upper portion,
+   * "center top" to anchor to the top edge, etc.
+   */
+  focusPoint?: string;
+};
+
 export type Article = {
   id: string;
   date: string;
@@ -50,13 +73,14 @@ export type Article = {
   featured?: boolean;
   content?: string;
   quickRecommendations?: QuickRecCard[];
-  /**
-   * Optional structured "Quick facts" reference data displayed at the
-   * top of the article body. Renders as a grid of icon + label + value
-   * rows. Omit on articles where it doesn't add value.
-   */
   quickFacts?: QuickFact[];
+  physicianTake?: string;
   /** Identifier for the cover illustration component to render on top
-   *  of the article. Components are mapped in the article renderer. */
+   *  of the article. Components are mapped in the article renderer.
+   *  Ignored when `coverImage` is also set. */
   coverIllustration?: "malaria-pills" | "cruise-ship" | "repellent-sprays" | "child-travel-kit";
+  /** Real photograph cover — takes precedence over `coverIllustration`
+   *  when set. The article page renders a full-bleed photographic
+   *  hero with title overlay. */
+  coverImage?: CoverImage;
 };

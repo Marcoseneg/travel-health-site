@@ -3,7 +3,7 @@ import type { Article } from "./types";
 // ── malaria-prophylaxis-compared ─────────────────────────────────────────────────────────────────
 export const malariaProphylaxisCompared: Article = {
   id: "malaria-prophylaxis-compared",
-  date: "2026-05-09",
+  date: "2026-05-14",
   title: "Malarone vs. Doxycycline vs. Mefloquine: a physician's straight take",
   subtitle:
     "Why I prescribe Malarone first for most travelers — and the specific situations where I switch.",

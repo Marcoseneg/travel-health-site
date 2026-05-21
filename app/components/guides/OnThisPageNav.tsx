@@ -4,10 +4,14 @@
 // on desktop. Lists the article's H2 section headings and highlights the
 // one currently in view via IntersectionObserver.
 //
-// Click on a section to smooth-scroll to it. Headings must have `id`
-// attributes that match the slugified heading text — the article renderer
-// in `app/guides/[slug]/page.tsx` adds these via the same `slugify`
-// helper used here, so the IDs line up.
+// Each heading is auto-numbered (1, 2, 3...) to match the numbering on
+// the H2 itself in the article body. Order is consistent because the
+// extraction walks the markdown source top-to-bottom in every component.
+//
+// The opaque page-colored backdrop + blur prevents overlap-bleed when
+// the nav becomes sticky and other sidebar elements scroll underneath.
+// A max-height + internal scroll keeps very long TOCs from outgrowing
+// the viewport.
 //
 // Hidden when fewer than 3 sections (not worth the chrome) and on
 // mobile (the in-body GuideTOC already provides navigation there).
@@ -45,15 +49,11 @@ export default function OnThisPageNav({ content }: Props) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const headings = extractH2s(content);
 
-  // Track which H2 is currently in view. Uses IntersectionObserver with
-  // a "viewport band" near the top of the screen — a heading is
-  // considered active once it scrolls into the top ~40% of the viewport.
   useEffect(() => {
     if (headings.length === 0) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Of all currently-intersecting entries, pick the topmost one
         const visible = entries
           .filter((e) => e.isIntersecting)
           .sort(
@@ -64,8 +64,6 @@ export default function OnThisPageNav({ content }: Props) {
         }
       },
       {
-        // Top 100px is treated as "out of view"; bottom 60% is also
-        // ignored, so the active heading is the one in the top ~40%.
         rootMargin: "-100px 0px -60% 0px",
         threshold: 0,
       }
@@ -109,7 +107,7 @@ export default function OnThisPageNav({ content }: Props) {
       </div>
 
       <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
-        {headings.map((h) => {
+        {headings.map((h, i) => {
           const isActive = h.id === activeId;
           return (
             <li key={h.id} style={{ margin: 0 }}>
@@ -120,14 +118,14 @@ export default function OnThisPageNav({ content }: Props) {
                   const el = document.getElementById(h.id);
                   if (el) {
                     el.scrollIntoView({ behavior: "smooth", block: "start" });
-                    // Update active immediately for visual feedback
                     setActiveId(h.id);
-                    // Update URL hash without jumping
                     history.replaceState(null, "", `#${h.id}`);
                   }
                 }}
                 style={{
-                  display: "block",
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "10px",
                   padding: "7px 0 7px 14px",
                   borderLeft: `2px solid ${
                     isActive ? "#7dd3fc" : "rgba(255,255,255,0.06)"
@@ -138,10 +136,22 @@ export default function OnThisPageNav({ content }: Props) {
                   lineHeight: 1.4,
                   fontWeight: isActive ? 600 : 400,
                   transition: "color 0.15s, border-color 0.15s",
-                  marginLeft: "-2px", // align border with parent edge
+                  marginLeft: "-2px",
                 }}
               >
-                {h.text}
+                <span
+                  style={{
+                    color: isActive ? "#7dd3fc" : "#64748b",
+                    flexShrink: 0,
+                    fontWeight: 600,
+                    fontVariantNumeric: "tabular-nums",
+                    minWidth: "18px",
+                  }}
+                  aria-hidden="true"
+                >
+                  {i + 1}.
+                </span>
+                <span>{h.text}</span>
               </a>
             </li>
           );

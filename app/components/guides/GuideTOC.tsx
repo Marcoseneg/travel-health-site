@@ -4,13 +4,17 @@
 // Auto-extracts H2 headings (## Heading) from the article's markdown
 // content and links each one to a scroll anchor on the page.
 //
+// Each heading is auto-numbered (1, 2, 3...) to match the numbering
+// rendered on the H2 itself in the article body. The numbering happens
+// independently in each component (TOC, OnThisPageNav, H2 override),
+// but the order is consistent because they all walk the same markdown
+// source top-to-bottom.
+//
 // For the anchor scrolling to work, the article renderer must add
 // matching `id` attributes to H2 headings using the same `slugify`
-// helper from `lib/utils/formatDate.ts`. See the H2 override in
-// `app/guides/[slug]/page.tsx`.
+// helper from `lib/utils/formatDate.ts`.
 //
-// If the article has fewer than 3 H2 headings, the TOC is suppressed
-// — it would feel redundant with such short articles.
+// If the article has fewer than 3 H2 headings, the TOC is suppressed.
 
 "use client";
 
@@ -20,19 +24,14 @@ type Heading = { id: string; text: string };
 
 function extractH2s(markdown: string): Heading[] {
   const headings: Heading[] = [];
-  // Track whether we're inside a fenced code block, so `## ` lines
-  // that happen to appear inside one don't get picked up.
   let inFence = false;
-
   for (const rawLine of markdown.split("\n")) {
-    const line = rawLine;
-    if (/^\s*```/.test(line)) {
+    if (/^\s*```/.test(rawLine)) {
       inFence = !inFence;
       continue;
     }
     if (inFence) continue;
-
-    const match = line.match(/^##\s+(.+?)\s*$/);
+    const match = rawLine.match(/^##\s+(.+?)\s*$/);
     if (match) {
       const text = match[1].trim();
       headings.push({ id: slugify(text), text });
@@ -42,14 +41,12 @@ function extractH2s(markdown: string): Heading[] {
 }
 
 type Props = {
-  /** Raw markdown content from article.content */
   content: string;
 };
 
 export default function GuideTOC({ content }: Props) {
   const headings = extractH2s(content);
 
-  // Skip rendering if too few sections to make a useful TOC
   if (headings.length < 3) return null;
 
   return (
@@ -85,7 +82,7 @@ export default function GuideTOC({ content }: Props) {
           gap: "4px 24px",
         }}
       >
-        {headings.map((h) => (
+        {headings.map((h, i) => (
           <li key={h.id}>
             <a
               href={`#${h.id}`}
@@ -104,12 +101,14 @@ export default function GuideTOC({ content }: Props) {
                 style={{
                   color: "#7dd3fc",
                   flexShrink: 0,
-                  fontSize: "12px",
-                  marginTop: "2px",
+                  fontSize: "13px",
+                  fontWeight: 700,
+                  fontVariantNumeric: "tabular-nums",
+                  minWidth: "20px",
                 }}
                 aria-hidden="true"
               >
-                ✓
+                {i + 1}.
               </span>
               <span>{h.text}</span>
             </a>
