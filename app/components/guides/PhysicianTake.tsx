@@ -5,21 +5,17 @@
 // editor's own opinion or high-level summary of the article — the
 // "here's how I'd put it to a colleague" line.
 //
-// Visual treatment uses the site's cyan accent. A large decorative
-// quote mark in the corner signals "this is editorial commentary,
-// not reference data" (which is the role of the amber-accented Quick
-// Facts box).
+// The visible label reads "Quick take" rather than "Physician take" to
+// avoid the self-authoritative tone of quoting oneself by name. No
+// attribution line — the article byline already credits the author.
+// The data field on Article stays named `physicianTake` for code
+// continuity; only the user-facing label changed.
 
 type Props = {
   quote: string;
-  /** Defaults to "Dr. Marco Seneghini" — override only for guest writers. */
-  author?: string;
 };
 
-export default function PhysicianTake({
-  quote,
-  author = "Dr. Marco Seneghini",
-}: Props) {
+export default function PhysicianTake({ quote }: Props) {
   return (
     <div
       style={{
@@ -69,24 +65,14 @@ export default function PhysicianTake({
           fontSize: "16px",
           color: "#f1f5f9",
           lineHeight: 1.65,
-          margin: "0 0 16px",
+          marginTop: 0,
+          marginRight: 0,
+          marginBottom: 0,
           marginLeft: "44px",
           letterSpacing: "-0.005em",
         }}
       >
         {quote}
-      </p>
-
-      <p
-        style={{
-          fontSize: "13px",
-          color: "#94a3b8",
-          margin: 0,
-          marginLeft: "44px",
-          fontStyle: "italic",
-        }}
-      >
-        — {author}
       </p>
     </div>
   );

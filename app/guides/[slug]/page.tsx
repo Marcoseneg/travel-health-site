@@ -68,7 +68,6 @@ export default function GuideArticlePage() {
     [article?.content]
   );
 
-  // ── Not found ─────────────────────────────────────────────────────────────
   if (!article) {
     return (
       <main style={{ background: PAGE_BG, minHeight: "100vh", color: TEXT_PRIMARY, fontFamily: "'DM Sans', system-ui, sans-serif" }}>
@@ -93,7 +92,6 @@ export default function GuideArticlePage() {
       ? COVER_ILLUSTRATIONS[article.coverIllustration]
       : null;
   const hasPhotoHero = !!article.coverImage;
-
   const useTwoColumn = isDesktop && !!article.content;
 
   return (
@@ -105,7 +103,6 @@ export default function GuideArticlePage() {
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
-      {/* ── Back link (always at the top, on dark background) ────────────── */}
       <div
         style={{
           maxWidth: useTwoColumn ? "1100px" : "720px",
@@ -127,7 +124,6 @@ export default function GuideArticlePage() {
         </Link>
       </div>
 
-      {/* ── Full-bleed photo hero (only when coverImage is set) ──────────── */}
       {hasPhotoHero && article.coverImage && (
         <section
           style={{
@@ -245,7 +241,6 @@ export default function GuideArticlePage() {
         </section>
       )}
 
-      {/* ── Article body ─────────────────────────────────────────────────── */}
       <article
         style={{
           maxWidth: useTwoColumn ? "1100px" : "720px",
@@ -261,7 +256,6 @@ export default function GuideArticlePage() {
             alignItems: "start",
           }}
         >
-          {/* ── Main column ──────────────────────────────────────────────── */}
           <div style={{ minWidth: 0 }}>
             {!hasPhotoHero && (
               <>
@@ -492,31 +486,14 @@ export default function GuideArticlePage() {
             )}
           </div>
 
-          {/* ── Right sidebar (desktop with content only) ─────────────────── */}
+          {/* ── Right sidebar — simple non-sticky stack ────────────────────────
+              All three sidebar components render in normal document flow.
+              They scroll naturally with the page. No sticky behavior, no
+              measurement, no overlap possible. */}
           {useTwoColumn && article.content && (
-            <aside style={{ minWidth: 0, alignSelf: "start" }}>
-              {/* Quick Facts scrolls normally with the page */}
-              {article.quickFacts && (
-                <div style={{ marginBottom: "16px" }}>
-                  <QuickFacts facts={article.quickFacts} />
-                </div>
-              )}
-
-              {/* Single sticky wrapper holds both On This Page + Related Guides
-                  so they stay visible together as a unit while scrolling.
-                  Internal scroll kicks in if the combined content is taller
-                  than the viewport (rare, but defensive). */}
-              <div
-                style={{
-                  position: "sticky",
-                  top: "100px",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                  maxHeight: "calc(100vh - 120px)",
-                  overflowY: "auto",
-                }}
-              >
+            <aside style={{ minWidth: 0 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                {article.quickFacts && <QuickFacts facts={article.quickFacts} />}
                 <OnThisPageNav content={article.content} />
                 <RelatedGuides currentSlug={article.id} variant="sidebar" />
               </div>
