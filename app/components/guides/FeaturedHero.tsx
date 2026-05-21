@@ -126,7 +126,7 @@ export default function FeaturedHero({ articles }: Props) {
       <div
         style={{
           position: "relative",
-          height: isDesktop ? "380px" : "320px",
+          height: isDesktop ? "340px" : "320px",
           borderRadius: "24px",
           overflow: "hidden",
           border: "1px solid rgba(255,255,255,0.07)",
@@ -211,7 +211,7 @@ export default function FeaturedHero({ articles }: Props) {
                   zIndex: 2,
                   width: isDesktop ? "55%" : "100%",
                   height: "100%",
-                  padding: isDesktop ? "48px 56px" : "32px 28px",
+                  padding: isDesktop ? "44px 56px" : "32px 28px",
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "center",
@@ -232,7 +232,7 @@ export default function FeaturedHero({ articles }: Props) {
                     background: "rgba(251,191,36,0.15)",
                     border: "1px solid rgba(251,191,36,0.35)",
                     color: "#fcd34d",
-                    marginBottom: "20px",
+                    marginBottom: "18px",
                   }}
                 >
                   Featured guide
@@ -241,7 +241,7 @@ export default function FeaturedHero({ articles }: Props) {
                 <h2
                   style={{
                     fontSize: isDesktop
-                      ? "clamp(28px, 3.4vw, 44px)"
+                      ? "clamp(28px, 3.2vw, 40px)"
                       : "clamp(24px, 6vw, 32px)",
                     fontWeight: 800,
                     letterSpacing: "-0.025em",
@@ -256,10 +256,10 @@ export default function FeaturedHero({ articles }: Props) {
 
                 <p
                   style={{
-                    fontSize: isDesktop ? "16px" : "14px",
+                    fontSize: isDesktop ? "15px" : "14px",
                     color: "rgba(241,245,249,0.9)",
-                    lineHeight: 1.55,
-                    margin: "0 0 22px",
+                    lineHeight: 1.5,
+                    margin: "0 0 20px",
                     maxWidth: "520px",
                     textShadow: "0 1px 8px rgba(0,0,0,0.3)",
                   }}

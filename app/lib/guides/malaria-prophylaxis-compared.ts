@@ -21,6 +21,17 @@ export const malariaProphylaxisCompared: Article = {
     { icon: "☀️", scenario: "Sun-sensitive travelers", recommendation: "Avoid doxycycline" },
     { icon: "🧠", scenario: "Psychiatric history", recommendation: "Avoid mefloquine" },
   ],
+  
+  quickFacts: [
+    { icon: "🦟", label: "Risk areas", value: "Sub-Saharan Africa, parts of Asia & Latin America" },
+    { icon: "💊", label: "First-line Rx", value: "Atovaquone-proguanil (Malarone)" },
+    { icon: "⏱️", label: "Start prophylaxis", value: "1–2 days before travel" },
+    { icon: "🌙", label: "Continue after", value: "7 days post-exposure (Malarone)" },
+    { icon: "⚠️", label: "Avoid in", value: "Pregnancy (doxy), seizure history (mefloquine)" },
+    { icon: "💰", label: "Approx. cost", value: "CHF 50–80 for a 2-week trip" },
+  ],
+  
+  
   content: `## The short answer
 
 For most travelers I see, I prescribe **Malarone** (atovaquone-proguanil). It's the cleanest option — best tolerated, simplest schedule, fewest hassles.

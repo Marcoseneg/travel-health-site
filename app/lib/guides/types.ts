@@ -24,23 +24,39 @@ export type QuickRecCard = {
   detail?: string;
 };
 
+/**
+ * One row in the "Quick facts" box rendered at the top of an article.
+ * Used for at-a-glance reference data — risk areas, dosing schedule,
+ * cost range, key contraindications.
+ */
+export type QuickFact = {
+  /** Emoji shown at the left of the fact row */
+  icon: string;
+  /** Short label, e.g. "First-line Rx" */
+  label: string;
+  /** The actual value, e.g. "Atovaquone-proguanil (Malarone)" */
+  value: string;
+};
+
 export type Article = {
   id: string;
   date: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   category: ArticleCategory;
-  tags: string[];
-  readingTime: number; // minutes
-  coverGradient: string; // CSS gradient for the card header
+  tags?: string[];
+  readingTime: number;
+  coverGradient: string;
   featured?: boolean;
-  /** Full article body in Markdown. When omitted, the slug page shows a
-   *  "Coming soon" state — useful for placeholder articles in the index. */
   content?: string;
-  /** Optional row of scenario→recommendation cards rendered above the
-   *  markdown body. Useful for decision-oriented articles. */
   quickRecommendations?: QuickRecCard[];
-  /** Optional named illustration rendered as a cover image at the top
+  /**
+   * Optional structured "Quick facts" reference data displayed at the
+   * top of the article body. Renders as a grid of icon + label + value
+   * rows. Omit on articles where it doesn't add value.
+   */
+  quickFacts?: QuickFact[];
+  /** Identifier for the cover illustration component to render on top
    *  of the article. Components are mapped in the article renderer. */
   coverIllustration?: "malaria-pills" | "cruise-ship" | "repellent-sprays" | "child-travel-kit";
 };

@@ -68,7 +68,7 @@ export default function AuthorByline({ date, readingTime }: Props) {
             flexWrap: "wrap",
           }}
         >
-          <span>Swiss infectious diseases physician</span>
+          <span>Infectious diseases physician</span>
           <span style={{ color: "#475569" }}>·</span>
           <span>Updated {formatDate(date)}</span>
           <span style={{ color: "#475569" }}>·</span>
