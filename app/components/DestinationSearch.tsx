@@ -61,36 +61,40 @@ export default function DestinationSearch({
   };
 
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: "520px" }}>
+    <div style={{ position: "relative", width: "100%" }}>
+      {/* Brighter "Option C" search bar — it carries a persistent cyan ring
+          and soft glow even when not focused, so it reads as the clear
+          primary action without a surrounding card. Focus deepens it. */}
       <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: "12px",
-          borderRadius: "16px",
-          padding: "0 20px",
-          height: "56px",
+          gap: "14px",
+          borderRadius: "15px",
+          padding: "0 22px",
+          height: "60px",
           background: focused
-            ? "rgba(255,255,255,0.07)"
-            : "rgba(255,255,255,0.035)",
+            ? "rgba(56,189,248,0.07)"
+            : "rgba(255,255,255,0.07)",
           border: `1.5px solid ${
-            focused ? "rgba(56,189,248,0.4)" : "var(--border)"
+            focused ? "rgba(56,189,248,0.7)" : "rgba(56,189,248,0.45)"
           }`,
           boxShadow: focused
-            ? "0 0 40px rgba(56,189,248,0.06), inset 0 1px 0 rgba(255,255,255,0.04)"
-            : "inset 0 1px 0 rgba(255,255,255,0.02)",
-          transition: "all 0.3s ease",
+            ? "0 0 0 5px rgba(56,189,248,0.12), 0 0 40px rgba(56,189,248,0.14), inset 0 1px 0 rgba(255,255,255,0.06)"
+            : "0 0 0 4px rgba(56,189,248,0.08), 0 0 32px rgba(56,189,248,0.10), inset 0 1px 0 rgba(255,255,255,0.05)",
+          transition: "all 0.25s ease",
         }}
       >
         <svg
-          width="18"
-          height="18"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
-          stroke={focused ? "var(--accent)" : "var(--text-dim)"}
+          stroke="#7dd3fc"
           strokeWidth="2"
           strokeLinecap="round"
           aria-hidden="true"
+          style={{ flexShrink: 0 }}
         >
           <circle cx="11" cy="11" r="8" />
           <path d="m21 21-4.3-4.3" />
@@ -103,7 +107,7 @@ export default function DestinationSearch({
           onFocus={() => setFocused(true)}
           onBlur={() => setTimeout(() => setFocused(false), 200)}
           onKeyDown={handleKeyDown}
-          placeholder="Add destinations to your itinerary…"
+          placeholder="Where are you travelling?"
           aria-label="Search and add destinations"
           role="combobox"
           aria-expanded={focused && !!query.trim()}
@@ -114,7 +118,8 @@ export default function DestinationSearch({
             outline: "none",
             color: "var(--foreground)",
             width: "100%",
-            fontSize: "15px",
+            fontSize: "16px",
+            fontWeight: 500,
             fontFamily: "inherit",
           }}
         />

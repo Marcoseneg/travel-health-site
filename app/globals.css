@@ -608,3 +608,299 @@ a {
     font-size: 30px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   BUILD-YOUR-TRIP  (Option C — bare search + three-zone row)
+   ─ A small uppercase label sits above the search bar (no
+   surrounding card). Below the search, a three-zone row:
+   destinations · quick recommendations · floating GO badge.
+   ═══════════════════════════════════════════════════════════ */
+
+.hero-build-label {
+  margin: 0 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── The three-zone row ──────────────────────────────────── */
+
+.trip-row {
+  position: relative;             /* anchor for the floating GO badge */
+  max-width: 600px;
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  /* right room so the protruding GO badge never covers zone 2 */
+  padding-right: 56px;
+  animation: fade-up 0.4s ease-out both;
+}
+
+.trip-zone {
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  background: rgba(255, 255, 255, 0.022);
+  padding: 16px;
+  min-height: 200px;
+}
+
+.trip-zone-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.trip-zone-num {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(56, 189, 248, 0.14);
+  color: #7dd3fc;
+  font-size: 11px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trip-zone-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #f1f5f9;
+}
+
+.trip-zone-clear {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 5px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: #64748b;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.trip-zone-clear:hover {
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.08);
+}
+
+/* ── Empty-state block (icon + instruction) ──────────────── */
+
+.trip-zone-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 6px 4px;
+}
+
+.trip-zone-empty-icon {
+  color: rgba(125, 211, 252, 0.32);
+  margin-bottom: 12px;
+}
+
+.trip-hint {
+  margin: 0;
+  max-width: 200px;
+  color: #64748b;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+
+/* ── Zone 1: destination list ────────────────────────────── */
+
+.trip-country-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.trip-country-row:last-child {
+  border-bottom: none;
+}
+
+.trip-country-flag {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.trip-country-name {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.trip-country-x {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: #94a3b8;
+  font-size: 9px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.trip-country-x:hover {
+  color: #fca5a5;
+  background: rgba(248, 113, 113, 0.14);
+}
+
+/* ── Zone 2: quick recommendations ───────────────────────── */
+
+.trip-rec-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 4px;
+}
+
+.trip-rec-ico {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+}
+
+.trip-rec-txt {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.trip-rec-l {
+  color: #e2e8f0;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.trip-rec-v {
+  color: #8696ac;
+  font-size: 11.5px;
+}
+
+/* ── Zone 3: floating circular GO badge ──────────────────── */
+
+.trip-go {
+  position: absolute;
+  z-index: 20;
+  top: 50%;
+  right: -42px;
+  width: 84px;
+  height: 84px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  color: #02131d;
+  font-family: inherit;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  background: linear-gradient(135deg, #6dd3ff 0%, #38bdf8 42%, #0ea5e9 100%);
+  box-shadow:
+    0 18px 48px rgba(14, 165, 233, 0.42),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset,
+    0 0 0 8px rgba(56, 189, 248, 0.08);
+  transform: translateY(-50%);
+  transition: scale 0.2s ease, box-shadow 0.25s ease;
+  animation: go-btn-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.trip-go:hover {
+  scale: 1.06;
+  box-shadow:
+    0 24px 60px rgba(14, 165, 233, 0.55),
+    0 0 0 1px rgba(255, 255, 255, 0.16) inset,
+    0 0 0 14px rgba(56, 189, 248, 0.12);
+}
+
+.trip-go:active {
+  scale: 0.98;
+}
+
+.trip-go-label {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.trip-go svg {
+  opacity: 0.85;
+}
+
+/* Dimmed empty-state GO — a non-interactive preview of step 3 */
+.trip-go.dimmed {
+  background: rgba(255, 255, 255, 0.06);
+  color: #475569;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  cursor: default;
+  animation: none;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 1180px) {
+  .trip-row {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 780px) {
+  .trip-row {
+    grid-template-columns: 1fr;
+    padding-right: 0;
+  }
+
+  .trip-zone {
+    min-height: 0;
+  }
+
+  /* GO badge becomes a normal full-width CTA when the zones stack */
+  .trip-go {
+    position: static;
+    width: 100%;
+    height: auto;
+    min-height: 52px;
+    margin-top: 2px;
+    padding: 14px 20px;
+    border-radius: 14px;
+    flex-direction: row;
+    gap: 10px;
+    transform: none;
+    animation: none;
+    letter-spacing: -0.01em;
+  }
+
+  .trip-go:hover {
+    scale: 1;
+  }
+}

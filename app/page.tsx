@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DestinationSearch from "./components/DestinationSearch";
 import GlobeHero from "./components/GlobeHero";
-import CountryChip from "./components/CountryChip";
+import ItineraryPanel from "./components/ItineraryPanel";
 import CountUp from "./components/CountUp";
 import HowItWorks from "./components/HowItWorks";
 import PopularDestinations from "./components/PopularDestinations";
@@ -34,12 +34,12 @@ export default function Home() {
     );
   };
 
+  const clearAll = () => setSelectedCountries([]);
+
   const goToItinerary = () => {
     if (selectedCountries.length === 0) return;
     router.push(`/itinerary?countries=${selectedCountries.join(",")}`);
   };
-
-  const hasDestinations = selectedCountries.length > 0;
 
   return (
     <>
@@ -53,12 +53,8 @@ export default function Home() {
             <div className="hero-aurora hero-aurora-left" aria-hidden />
 
             <div className="hero-grid">
-              {/* ── Left column: copy + search card ─────────────────── */}
+              {/* ── Left column: copy + search + itinerary row ──────── */}
               <div className="hero-copy animate-fade-up">
-                <div className="hero-badge">
-                  Physician-curated travel medicine
-                </div>
-
                 <h1 className="hero-title">
                   Travel safe.
                   <br />
@@ -70,69 +66,22 @@ export default function Home() {
                   outbreak alerts — tailored to your itinerary.
                 </p>
 
-                {/* ── Search card ──────────────────────────────────── */}
-                <div className="hero-card">
-                  <div className="hero-card-top">
-                    <div>
-                      <p className="hero-card-label">Build your trip</p>
-                      <p className="hero-card-subtitle">
-                        Add one or more destinations to generate a personalized
-                        health brief.
-                      </p>
-                    </div>
-                    <span
-                      className={`hero-card-status ${
-                        hasDestinations ? "is-active" : ""
-                      }`}
-                    >
-                      {hasDestinations
-                        ? `${selectedCountries.length} selected`
-                        : "Ready"}
-                    </span>
-                  </div>
+                {/* Build your trip — bare label + search bar (no card) */}
+                <p className="hero-build-label">Build your trip</p>
+                <DestinationSearch
+                  selectedCountries={selectedCountries}
+                  onAddCountry={addCountry}
+                />
 
-                  <div className="hero-chip-area">
-                    {selectedCountries.map((slug) => (
-                      <CountryChip
-                        key={slug}
-                        slug={slug}
-                        onRemove={removeCountry}
-                      />
-                    ))}
-                    {!hasDestinations && (
-                      <span className="hero-chip-placeholder">
-                        No destinations selected yet
-                      </span>
-                    )}
-                  </div>
-
-                  <DestinationSearch
-                    selectedCountries={selectedCountries}
-                    onAddCountry={addCountry}
-                  />
-
-                  {hasDestinations && (
-                    <button
-                      className="hero-go-btn"
-                      onClick={goToItinerary}
-                      aria-label="Get health brief"
-                    >
-                      <span className="hero-go-btn-label">GO</span>
-                      <svg
-                        width="22"
-                        height="22"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <path d="M5 12h14M12 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
+                {/* Three-zone itinerary row — always rendered; the zones
+                    transform between an instructional empty state and the
+                    populated state. */}
+                <ItineraryPanel
+                  selectedCountries={selectedCountries}
+                  onRemoveCountry={removeCountry}
+                  onClearAll={clearAll}
+                  onGo={goToItinerary}
+                />
               </div>
 
               {/* ── Right column: globe ─────────────────────────────── */}

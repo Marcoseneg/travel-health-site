@@ -450,10 +450,10 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
     if (activeFilter === "yellow-fever") {
       const risk = getYFRisk(countryLabel);
       const labels: Record<YellowFeverRisk, string> = {
-        required: "Required",
-        recommended: "Recommended",
+        required: "Vaccination required",
+        recommended: "Vaccination recommended",
         "generally-not": "Generally not required",
-        none: "Not applicable",
+        none: "No yellow fever risk",
       };
       return { risk, label: labels[risk] };
     }

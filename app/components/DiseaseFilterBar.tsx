@@ -89,11 +89,12 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
               {btn.dotActive && (
                 <span
                   style={{
-                    width: "16px",
-                    height: "6px",
+                    width: "8px",
+                    height: "8px",
                     borderRadius: "50%",
-                    background: isActive ? btn.dotActive : "#475569",
+                    background: btn.dotActive,
                     display: "inline-block",
+                    flexShrink: 0,
                     transition: "background 0.2s",
                   }}
                 />

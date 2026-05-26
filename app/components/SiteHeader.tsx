@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   DESTINATION_LIST,
   SUPPORTED_COUNTRIES,
@@ -50,6 +50,15 @@ const LANGUAGES = [
 
 export default function SiteHeader() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  // A nav link is "active" when its href matches the current route.
+  // "/" matches only the exact homepage; every other link matches its
+  // own path and any sub-page beneath it (e.g. /guides/foo highlights Guides).
+  const isActiveLink = (href: string) => {
+    if (href === "/") return pathname === "/";
+    return pathname === href || pathname.startsWith(href + "/");
+  };
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
@@ -461,25 +470,30 @@ export default function SiteHeader() {
           }}
           className="hidden-mobile"
         >
-          {NAV_LINKS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              className="nav-link"
-              style={{
-                padding: "8px 14px",
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "#cbd5e1",
-                textDecoration: "none",
-                borderRadius: "8px",
-                whiteSpace: "nowrap",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((item) => {
+            const active = isActiveLink(item.href);
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                className="nav-link"
+                aria-current={active ? "page" : undefined}
+                style={{
+                  padding: "8px 14px",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  color: active ? "#7dd3fc" : "#cbd5e1",
+                  textDecoration: "none",
+                  borderRadius: "8px",
+                  whiteSpace: "nowrap",
+                  letterSpacing: "-0.01em",
+                  background: active ? "rgba(56,189,248,0.1)" : "transparent",
+                }}
+              >
+                {item.label}
+              </a>
+            );
+          })}
         </nav>
 
         {/* ── Divider between nav and language selector ────────────── */}
@@ -730,23 +744,27 @@ export default function SiteHeader() {
             borderTop: "1px solid var(--border)",
           }}
         >
-          {NAV_LINKS.map((item) => (
-            <a
-              key={item.label}
-              href={item.href}
-              onClick={() => setMobileOpen(false)}
-              style={{
-                padding: "12px 0",
-                fontSize: "15px",
-                fontWeight: 500,
-                color: "var(--text-muted)",
-                textDecoration: "none",
-                borderBottom: "1px solid var(--border)",
-              }}
-            >
-              {item.label}
-            </a>
-          ))}
+          {NAV_LINKS.map((item) => {
+            const active = isActiveLink(item.href);
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setMobileOpen(false)}
+                aria-current={active ? "page" : undefined}
+                style={{
+                  padding: "12px 0",
+                  fontSize: "15px",
+                  fontWeight: active ? 700 : 500,
+                  color: active ? "#7dd3fc" : "var(--text-muted)",
+                  textDecoration: "none",
+                  borderBottom: "1px solid var(--border)",
+                }}
+              >
+                {item.label}
+              </a>
+            );
+          })}
           {/* Language options in mobile menu */}
           <div
             style={{
