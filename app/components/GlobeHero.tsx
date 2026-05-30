@@ -110,16 +110,29 @@ function computeFeatureCenter(feat: any): LngLat | null {
 type Props = {
   selectedCountries: CountrySlug[];
   onToggleCountry: (country: CountrySlug) => void;
+  /**
+   * When set, locks the globe to a specific disease overlay and hides
+   * the filter chip bar. Used on /diseases/[slug] pages to show a static
+   * distribution map for one disease. Leave undefined on the homepage so
+   * the user-driven chip bar continues to work as before.
+   */
+  fixedFilter?: FilterMode;
 };
 
-export default function GlobeHero({ selectedCountries, onToggleCountry }: Props) {
+export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFilter }: Props) {
   const globeRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [allCountries, setAllCountries] = useState<Feature[]>([]);
   const [hovered, setHovered] = useState<Feature | null>(null);
   const [hoveredName, setHoveredName] = useState("");
-  const [activeFilter, setActiveFilter] = useState<FilterMode>("none");
+  const [activeFilter, setActiveFilter] = useState<FilterMode>(fixedFilter ?? "none");
   const globeSize = useGlobeSize();
+
+  // When `fixedFilter` is supplied (disease-page mode), keep the active filter
+  // in sync with it. The chip bar is hidden in this mode, so users can't toggle.
+  useEffect(() => {
+    if (fixedFilter !== undefined) setActiveFilter(fixedFilter);
+  }, [fixedFilter]);
 
   // Toggle handler: clicking the active filter deselects it
   const handleFilterChange = useCallback((filter: FilterMode) => {
@@ -450,10 +463,10 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
     if (activeFilter === "yellow-fever") {
       const risk = getYFRisk(countryLabel);
       const labels: Record<YellowFeverRisk, string> = {
-        required: "Vaccination required",
-        recommended: "Vaccination recommended",
+        required: "Required",
+        recommended: "Recommended",
         "generally-not": "Generally not required",
-        none: "No yellow fever risk",
+        none: "Not applicable",
       };
       return { risk, label: labels[risk] };
     }
@@ -569,20 +582,22 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
           marginTop lift). This keeps the filter bar at its original visual
           position on the page while the globe sphere sits 28px higher,
           shrinking the visible gap between the filter and the globe. */}
-      <div
-        style={{
-          position: "absolute",
-          top: "36px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          zIndex: 30,
-        }}
-      >
-        <DiseaseFilterBar
-          activeFilter={activeFilter}
-          onFilterChange={handleFilterChange}
-        />
-      </div>
+      {!fixedFilter && (
+        <div
+          style={{
+            position: "absolute",
+            top: "36px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 30,
+          }}
+        >
+          <DiseaseFilterBar
+            activeFilter={activeFilter}
+            onFilterChange={handleFilterChange}
+          />
+        </div>
+      )}
 
       {/* ── Tooltip ──────────────────────────────────────────────────── */}
       {/* Floating tooltip removed — labels at each country handle this now */}

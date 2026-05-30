@@ -1,9 +1,28 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// FILE PATH:  app/diseases/[slug]/page.tsx
+//
+//   ⚠️  IMPORTANT — this file MUST replace the one at:
+//           app/diseases/[slug]/page.tsx     ← the [slug] folder, with brackets
+//
+//       It does NOT go in:
+//           app/diseases/page.tsx            ← (that's the listing page; don't touch it)
+//           app/page.tsx                     ← (that's the homepage; don't touch it)
+//           any other 'page.tsx' in the project
+//
+//   The brackets in [slug] are a real part of the folder name — Next.js
+//   uses them to mark a dynamic route. Make sure the file lands inside
+//   the brackets-folder, not somewhere else.
+// ═══════════════════════════════════════════════════════════════════════════
+
 "use client";
 
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { diseases } from "../../lib/diseaseData";
 import DiseaseLinkedText from "../../components/DiseaseLinkedText";
+import DiseaseDistributionGlobe, {
+  type DistributionDisease,
+} from "../../components/DiseaseDistributionGlobe";
 
 const PREVENTION_TYPE_STYLES: Record<string, { icon: string; color: string; bg: string }> = {
   vaccine: { icon: "💉", color: "#34d399", bg: "rgba(52,211,153,0.06)" },
@@ -11,6 +30,20 @@ const PREVENTION_TYPE_STYLES: Record<string, { icon: string; color: string; bg: 
   behavior: { icon: "🛡️", color: "#94a3b8", bg: "rgba(148,163,184,0.04)" },
   "post-exposure": { icon: "🏥", color: "#f59e0b", bg: "rgba(245,158,11,0.06)" },
 };
+
+// Diseases that have country-level geographic risk data. Only these get the
+// distribution globe inside their "Endemic regions" section; the rest stay
+// text-only until/unless geographic data is added for them.
+const DISEASES_WITH_MAP = [
+  "malaria",
+  "yellow-fever",
+  "dengue",
+  "chikungunya",
+] as const;
+
+function hasDistributionMap(slug: string): slug is DistributionDisease {
+  return (DISEASES_WITH_MAP as readonly string[]).includes(slug);
+}
 
 export default function DiseasePage() {
   const params = useParams();
@@ -30,6 +63,7 @@ export default function DiseasePage() {
 
   const prophylaxisItems = d.preventionDetails?.filter(p => p.type === "prophylaxis") || [];
   const otherItems = d.preventionDetails?.filter(p => p.type !== "prophylaxis") || [];
+  const showMap = hasDistributionMap(slug);
 
   return (
     <main style={{ minHeight: "100vh", background: "#030712", color: "#f1f5f9", fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif" }}>
@@ -53,10 +87,6 @@ export default function DiseasePage() {
         </Link>
 
         {/* ── Header ─────────────────────────────────────────────── */}
-        {/* Bare icon at editorial scale — no container box. The emoji is
-            already detailed enough to act as a visual anchor on its own;
-            wrapping it in a tinted badge made it look like floating UI
-            chrome rather than illustrated content. */}
         <div style={{
           display: "flex",
           alignItems: "center",
@@ -133,14 +163,33 @@ export default function DiseasePage() {
           </div>
         </div>
 
-        {/* Regions */}
+        {/* ── Endemic regions (with optional distribution globe) ───── */}
+        {/* For diseases with country-level risk data (malaria, yellow fever,
+            dengue, chikungunya), this section grows into a substantial
+            visual section: a static reference globe with the disease overlay
+            applied, a legend, and the text description below. Other diseases
+            keep the original compact text-only box. */}
         <div style={{
-          padding: "20px 28px", borderRadius: "16px", marginBottom: "40px",
-          background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
+          padding: showMap ? "28px 28px 24px" : "20px 28px",
+          borderRadius: "16px",
+          marginBottom: "40px",
+          background: "rgba(255,255,255,0.02)",
+          border: "1px solid rgba(255,255,255,0.06)",
         }}>
-          <div style={{ fontSize: "11px", fontWeight: 700, color: "#475569", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "10px" }}>
+          <div style={{
+            fontSize: "11px", fontWeight: 700, color: "#475569",
+            textTransform: "uppercase", letterSpacing: "0.06em",
+            marginBottom: showMap ? "20px" : "10px",
+          }}>
             Endemic regions
           </div>
+
+          {showMap && (
+            <div style={{ marginBottom: "24px" }}>
+              <DiseaseDistributionGlobe disease={slug} />
+            </div>
+          )}
+
           <p style={{ fontSize: "14px", color: "#94a3b8", lineHeight: 1.7, margin: 0 }}>
             <DiseaseLinkedText text={d.regions} currentSlug={slug} />
           </p>
