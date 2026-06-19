@@ -85,6 +85,9 @@ export const honduras: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/honduras",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/honduras.jpg",
+      mapCaption: "Malaria risk areas in Honduras (CDC).",
     },
     dengue: {
       riskSummary:

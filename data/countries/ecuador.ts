@@ -131,6 +131,9 @@ export const ecuador: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/ecuador",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/ecuador.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in Ecuador (CDC).",
     },
     malaria: {
       riskSummary:
@@ -144,6 +147,9 @@ export const ecuador: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/ecuador",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/ecuador.jpg",
+      mapCaption: "Malaria risk areas in Ecuador (CDC).",
     },
     dengue: {
       riskSummary:

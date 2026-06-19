@@ -121,6 +121,9 @@ export const papuaNewGuinea: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/papua-new-guinea",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/papua-new-guinea.jpg",
+      mapCaption: "Malaria risk areas in Papua New Guinea (CDC).",
     },
     dengue: {
       riskSummary:

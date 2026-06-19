@@ -130,6 +130,9 @@ export const guyana: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/guyana",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/guyana.jpg",
+      mapCaption: "Malaria risk areas in Guyana (CDC).",
     },
     dengue: {
       riskSummary:

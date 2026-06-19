@@ -102,6 +102,9 @@ export const yemen: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/yemen",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/yemen.jpg",
+      mapCaption: "Malaria risk areas in Yemen (CDC).",
     },
     dengue: {
       riskSummary:

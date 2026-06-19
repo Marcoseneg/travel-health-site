@@ -85,6 +85,9 @@ export const costaRica: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/costa-rica",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/costa-rica.jpg",
+      mapCaption: "Malaria risk areas in Costa Rica (CDC).",
     },
     dengue: {
       riskSummary:

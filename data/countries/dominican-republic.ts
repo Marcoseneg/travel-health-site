@@ -101,6 +101,9 @@ export const dominicanRepublic: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/dominican-republic",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/dominican-republic.jpg",
+      mapCaption: "Malaria risk areas in Dominican Republic (CDC).",
     },
     dengue: {
       riskSummary:

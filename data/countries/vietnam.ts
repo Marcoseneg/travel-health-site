@@ -99,6 +99,9 @@ export const vietnam: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/vietnam",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/vietnam.jpg",
+      mapCaption: "Malaria risk areas in Vietnam (CDC).",
     },
     dengue: {
       riskSummary:

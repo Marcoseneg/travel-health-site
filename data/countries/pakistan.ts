@@ -117,6 +117,9 @@ export const pakistan: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/pakistan",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/pakistan.jpg",
+      mapCaption: "Malaria risk areas in Pakistan (CDC).",
     },
     dengue: {
       riskSummary:

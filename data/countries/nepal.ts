@@ -118,6 +118,9 @@ export const nepal: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/nepal",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/nepal.jpg",
+      mapCaption: "Malaria risk areas in Nepal (CDC).",
     },
     dengue: {
       riskSummary:

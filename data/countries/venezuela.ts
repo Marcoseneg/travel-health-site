@@ -120,6 +120,9 @@ export const venezuela: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/venezuela",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/venezuela.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in Venezuela (CDC).",
     },
     malaria: {
       riskSummary:
@@ -133,6 +136,9 @@ export const venezuela: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/venezuela",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/venezuela.jpg",
+      mapCaption: "Malaria risk areas in Venezuela (CDC).",
     },
     dengue: {
       riskSummary:

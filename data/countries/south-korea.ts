@@ -83,6 +83,9 @@ export const southKorea: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/south-korea",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/south-korea.jpg",
+      mapCaption: "Malaria risk areas in South Korea (CDC).",
     },
     yellowFever: {
       riskSummary:

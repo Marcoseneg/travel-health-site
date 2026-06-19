@@ -136,6 +136,9 @@ export const bolivia: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/bolivia",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/bolivia.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in Bolivia (CDC).",
     },
     malaria: {
       riskSummary:
@@ -149,6 +152,9 @@ export const bolivia: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/bolivia",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/bolivia.jpg",
+      mapCaption: "Malaria risk areas in Bolivia (CDC).",
     },
     dengue: {
       riskSummary:

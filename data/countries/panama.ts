@@ -102,6 +102,9 @@ export const panama: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/panama",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/panama.jpg",
+      mapCaption: "Malaria risk areas in Panama (CDC).",
     },
     dengue: {
       riskSummary:
@@ -133,6 +136,9 @@ export const panama: CountryInfo = {
         "Yellow fever vaccination is recommended for mainland areas east of the Canal Zone (Darién, Guna Yala, eastern Panamá/Colón) but NOT for Panama City, the Canal Zone, or western tourist areas. A certificate may additionally be required when arriving from a country with risk of yellow fever transmission. See country alerts for the regional detail.",
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/panama",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/panama.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in Panama (CDC).",
     },
   },
 };
