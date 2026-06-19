@@ -36,6 +36,7 @@ export const malariaRiskByCountry: Record<string, MalariaRisk> = {
   "Gambia": "high",
   "Mauritania": "moderate",
   "Comoros": "moderate",
+  "São Tomé & Príncipe": "moderate",
   "Kenya": "moderate",
   "Zimbabwe": "moderate",
   "Madagascar": "moderate",
