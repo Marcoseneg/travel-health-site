@@ -178,8 +178,8 @@ export default function DiseasesPage() {
                   background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
                   borderLeft: `3px solid ${accentColor}`, color: "#f1f5f9", transition: "all 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; (e.currentTarget.style as any).borderLeftColor = accentColor; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; (e.currentTarget.style as any).borderLeftColor = accentColor; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.borderLeftColor = accentColor; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderLeftColor = accentColor; }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
                   <div style={{ fontSize: "17px", fontWeight: 700, letterSpacing: "-0.02em" }}>{d.label}</div>

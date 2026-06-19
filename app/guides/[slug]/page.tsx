@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { useState, useEffect, useMemo, Fragment } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
+import type { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { articles, CATEGORY_LABELS } from "../../lib/guidesData";
 import QuickRecommendations from "../../components/QuickRecommendations";
@@ -15,14 +16,13 @@ import QuickFacts from "../../components/guides/QuickFacts";
 import OnThisPageNav from "../../components/guides/OnThisPageNav";
 import PhysicianTake from "../../components/guides/PhysicianTake";
 import SymptomComparison from "../../components/guides/SymptomComparison";
-import { formatDate, slugify } from "../../lib/utils/formatDate";
+import { slugify } from "../../lib/utils/formatDate";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 const PAGE_BG = "#030712";
 const TEXT_PRIMARY = "#f1f5f9";
 const TEXT_BODY = "#cbd5e1";
 const TEXT_MUTED = "#94a3b8";
-const TEXT_DIM = "#64748b";
 const TEXT_FAINT = "#475569";
 const ACCENT = "#38bdf8";
 const ACCENT_BRIGHT = "#7dd3fc";
@@ -81,7 +81,7 @@ export default function GuideArticlePage() {
     if (!article.symptomComparison) return [article.content];
     const parts = article.content.split(SYMPTOM_MARKER_RE);
     return parts;
-  }, [article?.content, article?.symptomComparison]);
+  }, [article]);
 
   if (!article) {
     return (
@@ -94,7 +94,7 @@ export default function GuideArticlePage() {
             Article not found
           </h1>
           <p style={{ color: TEXT_MUTED, fontSize: "16px", marginTop: "12px" }}>
-            We couldn't find that guide. Browse all guides to find what you're looking for.
+            We couldn&apos;t find that guide. Browse all guides to find what you&apos;re looking for.
           </p>
         </article>
       </main>
@@ -111,18 +111,18 @@ export default function GuideArticlePage() {
 
   // Markdown component overrides — defined inside render so h2 can close
   // over `headingNumbers`. Reused across all content segments.
-  const markdownComponents = {
-    h1: ({ children }: any) => (
+  const markdownComponents: Components = {
+    h1: ({ children }) => (
       <h1 style={{ fontSize: "30px", fontWeight: 800, color: TEXT_PRIMARY, letterSpacing: "-0.02em", margin: "48px 0 16px", lineHeight: 1.2 }}>
         {children}
       </h1>
     ),
-    h2: ({ children }: any) => {
+    h2: ({ children }) => {
       const text =
         typeof children === "string"
           ? children
           : Array.isArray(children)
-          ? children.map((c: any) => (typeof c === "string" ? c : "")).join("")
+          ? children.map((c) => (typeof c === "string" ? c : "")).join("")
           : "";
       const id = slugify(text);
       const num = headingNumbers.get(id);
@@ -159,18 +159,18 @@ export default function GuideArticlePage() {
         </h2>
       );
     },
-    h3: ({ children }: any) => (
+    h3: ({ children }) => (
       <h3 style={{ fontSize: "19px", fontWeight: 700, color: TEXT_PRIMARY, letterSpacing: "-0.01em", margin: "32px 0 12px" }}>
         {children}
       </h3>
     ),
-    p: ({ children }: any) => <p style={{ margin: "0 0 18px", lineHeight: 1.75 }}>{children}</p>,
-    ul: ({ children }: any) => <ul style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ul>,
-    ol: ({ children }: any) => <ol style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ol>,
-    li: ({ children }: any) => <li style={{ margin: "0 0 6px" }}>{children}</li>,
-    strong: ({ children }: any) => <strong style={{ color: TEXT_PRIMARY, fontWeight: 700 }}>{children}</strong>,
-    em: ({ children }: any) => <em style={{ color: TEXT_PRIMARY, fontStyle: "italic" }}>{children}</em>,
-    a: ({ children, href }: any) => (
+    p: ({ children }) => <p style={{ margin: "0 0 18px", lineHeight: 1.75 }}>{children}</p>,
+    ul: ({ children }) => <ul style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ul>,
+    ol: ({ children }) => <ol style={{ margin: "0 0 18px", paddingLeft: "20px", lineHeight: 1.75 }}>{children}</ol>,
+    li: ({ children }) => <li style={{ margin: "0 0 6px" }}>{children}</li>,
+    strong: ({ children }) => <strong style={{ color: TEXT_PRIMARY, fontWeight: 700 }}>{children}</strong>,
+    em: ({ children }) => <em style={{ color: TEXT_PRIMARY, fontStyle: "italic" }}>{children}</em>,
+    a: ({ children, href }) => (
       <a
         href={href}
         target={href?.startsWith("http") ? "_blank" : undefined}
@@ -180,30 +180,30 @@ export default function GuideArticlePage() {
         {children}
       </a>
     ),
-    blockquote: ({ children }: any) => (
+    blockquote: ({ children }) => (
       <blockquote style={{ borderLeft: `3px solid ${ACCENT}`, padding: "4px 0 4px 20px", margin: "24px 0", color: TEXT_PRIMARY, fontStyle: "italic" }}>
         {children}
       </blockquote>
     ),
-    code: ({ children }: any) => (
+    code: ({ children }) => (
       <code style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: "4px", padding: "1px 6px", fontSize: "0.92em", fontFamily: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace", color: TEXT_PRIMARY }}>
         {children}
       </code>
     ),
-    table: ({ children }: any) => (
+    table: ({ children }) => (
       <div style={{ overflowX: "auto", margin: "24px 0" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>{children}</table>
       </div>
     ),
-    thead: ({ children }: any) => <thead>{children}</thead>,
-    tbody: ({ children }: any) => <tbody>{children}</tbody>,
-    tr: ({ children }: any) => <tr style={{ borderBottom: `1px solid ${BORDER}` }}>{children}</tr>,
-    th: ({ children }: any) => (
+    thead: ({ children }) => <thead>{children}</thead>,
+    tbody: ({ children }) => <tbody>{children}</tbody>,
+    tr: ({ children }) => <tr style={{ borderBottom: `1px solid ${BORDER}` }}>{children}</tr>,
+    th: ({ children }) => (
       <th style={{ textAlign: "left", padding: "10px 12px", fontWeight: 700, color: TEXT_PRIMARY, background: SURFACE, borderBottom: `1px solid ${BORDER}` }}>
         {children}
       </th>
     ),
-    td: ({ children }: any) => <td style={{ padding: "10px 12px", verticalAlign: "top", color: TEXT_BODY }}>{children}</td>,
+    td: ({ children }) => <td style={{ padding: "10px 12px", verticalAlign: "top", color: TEXT_BODY }}>{children}</td>,
     hr: () => <hr style={{ border: 0, height: "1px", background: BORDER, margin: "40px 0" }} />,
   };
 

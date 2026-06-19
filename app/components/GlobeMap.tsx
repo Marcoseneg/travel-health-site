@@ -1,13 +1,15 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   malariaRiskByCountry,
   MALARIA_COLORS,
   MALARIA_LEGEND,
   type MalariaRisk,
 } from "../lib/malariaData";
+
+import type { GlobeMethods } from "react-globe.gl";
 
 const Globe = dynamic(() => import("react-globe.gl"), {
   ssr: false,
@@ -40,7 +42,7 @@ function useGlobeSize() {
 }
 
 export default function GlobeMap() {
-  const globeRef = useRef<any>(null);
+  const globeRef = useRef<GlobeMethods>(undefined);
   const [allCountries, setAllCountries] = useState<Feature[]>([]);
   const [hoveredName, setHoveredName] = useState("");
   const [hoveredRisk, setHoveredRisk] = useState<MalariaRisk | null>(null);

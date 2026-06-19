@@ -4,6 +4,8 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SUPPORTED_COUNTRIES, type CountrySlug } from "../app//lib/travelData";
 
+import type { GlobeMethods } from "react-globe.gl";
+
 const Globe = dynamic(() => import("react-globe.gl"), {
   ssr: false,
 });
@@ -41,7 +43,7 @@ type Props = {
 };
 
 export default function GlobeHero({ selectedCountries, onToggleCountry }: Props) {
-  const globeRef = useRef<any>(null);
+  const globeRef = useRef<GlobeMethods>(undefined);
   const [countries, setCountries] = useState<Feature[]>([]);
   const [hovered, setHovered] = useState<Feature | null>(null);
   const [hoveredName, setHoveredName] = useState("");

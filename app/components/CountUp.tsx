@@ -41,6 +41,8 @@ export default function CountUp({
       window.matchMedia &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReducedMotion) {
+      // One-time sync to the final value; intentional, no cascading animation.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setValue(end);
       startedRef.current = true;
       return;

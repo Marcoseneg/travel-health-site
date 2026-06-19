@@ -57,7 +57,7 @@ export default function AboutPage() {
             margin: "0 0 48px",
           }}
         >
-          I'm an infectious diseases physician with a passion for travel,
+          I&apos;m an infectious diseases physician with a passion for travel,
           prevention, and global health. I built TravelMed to make
           evidence-based travel health advice easier to understand, more
           practical, and accessible to everyone — without paywalls or
@@ -103,7 +103,7 @@ export default function AboutPage() {
             }}
           >
             Too often, travelers either get no pre-trip health advice at all, or
-            they get a generic printout from a clinic that doesn't account for
+            they get a generic printout from a clinic that doesn&apos;t account for
             their specific itinerary. Meanwhile, the best information is
             scattered across CDC pages, WHO advisories, and medical journals that
             most people will never read.
@@ -141,7 +141,7 @@ export default function AboutPage() {
             margin: "0 0 28px",
           }}
         >
-          What you'll find here
+          What you&apos;ll find here
         </h2>
         <div
           style={{

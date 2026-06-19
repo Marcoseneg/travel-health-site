@@ -46,6 +46,8 @@ export default function FeaturedHero({ articles }: Props) {
   // ── Detect reduced motion preference ──────────────────────────────────
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Client-only initial read of the media query; runs once on mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setPrefersReducedMotion(mq.matches);
     const onChange = () => setPrefersReducedMotion(mq.matches);
     mq.addEventListener("change", onChange);

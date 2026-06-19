@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   DESTINATION_LIST,
   SUPPORTED_COUNTRIES,
-  type CountrySlug,
 } from "../app/lib/travelData";
 
 import { diseases, DISEASE_LIST } from "../app/lib/diseaseData";
@@ -82,10 +82,10 @@ export default function SiteHeader() {
           padding: "0 24px",
         }}
       >
-        <a href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flexShrink: 0 }}>
+        <Link href="/" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none", flexShrink: 0 }}>
           <div style={{ width: "30px", height: "30px", borderRadius: "9px", background: "linear-gradient(135deg, #38bdf8, #0ea5e9)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", boxShadow: "0 4px 16px rgba(56,189,248,0.32)" }}>✈</div>
           <span style={{ fontWeight: 800, fontSize: "16px", letterSpacing: "-0.03em", color: "#f8fafc" }}>TravelMed</span>
-        </a>
+        </Link>
 
         <div style={{ flex: 1, display: "flex", justifyContent: "center", minWidth: 0 }}>
           <div style={{ position: "relative", width: "100%", maxWidth: "460px" }}>

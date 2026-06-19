@@ -783,14 +783,6 @@ function PeakRiskCard({
   );
 }
 
-type Enriched = {
-  slug: string;
-  label: string;
-  flag: string;
-  region: string;
-  health: CountryInfo | undefined;
-};
-
 // ── Itinerary vaccine table ─────────────────────────────────────────────────
 // Slate reference card on dark page (matches country page style).
 // Three columns: Vaccine | Recommendation (per-country, merged when notes

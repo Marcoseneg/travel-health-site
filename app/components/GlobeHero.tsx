@@ -26,6 +26,8 @@ import {
 import DiseaseFilterBar, { type FilterMode } from "./DiseaseFilterBar";
 import { CAPITALS } from "../lib/capitalsData";
 
+import type { GlobeMethods } from "react-globe.gl";
+
 const Globe = dynamic(() => import("react-globe.gl"), {
   ssr: false,
 });
@@ -38,7 +40,7 @@ type Feature = {
   };
   geometry?: {
     type: string;
-    coordinates: any;
+    coordinates: number[] | number[][] | number[][][] | number[][][][];
   };
 };
 
@@ -65,7 +67,7 @@ function useGlobeSize() {
 // (e.g. coastal capitals near a neighbouring country).
 type LngLat = { lat: number; lng: number };
 
-function computeFeatureCenter(feat: any): LngLat | null {
+function computeFeatureCenter(feat: Feature): LngLat | null {
   const geom = feat?.geometry;
   if (!geom) return null;
 
@@ -83,10 +85,10 @@ function computeFeatureCenter(feat: any): LngLat | null {
   };
 
   if (geom.type === "Polygon") {
-    geom.coordinates.forEach((ring: number[][]) => evaluate(ring));
+    (geom.coordinates as number[][][]).forEach((ring) => evaluate(ring));
   } else if (geom.type === "MultiPolygon") {
-    geom.coordinates.forEach((poly: number[][][]) => {
-      poly.forEach((ring: number[][]) => evaluate(ring));
+    (geom.coordinates as number[][][][]).forEach((poly) => {
+      poly.forEach((ring) => evaluate(ring));
     });
   }
 
@@ -120,11 +122,10 @@ type Props = {
 };
 
 export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFilter }: Props) {
-  const globeRef = useRef<any>(null);
+  const globeRef = useRef<GlobeMethods>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   const [allCountries, setAllCountries] = useState<Feature[]>([]);
   const [hovered, setHovered] = useState<Feature | null>(null);
-  const [hoveredName, setHoveredName] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterMode>(fixedFilter ?? "none");
   const globeSize = useGlobeSize();
 
@@ -273,7 +274,8 @@ export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFil
   // Defined outside JSX (via useCallback) so its reference doesn't change on
   // every render — critical to avoid react-globe.gl re-creating all markers
   // on every hover event.
-  const renderCountryLabel = useCallback((d: any) => {
+  const renderCountryLabel = useCallback((datum: object) => {
+    const d = datum as CountryLabel;
     const isSelected = d.state === "selected";
 
     // Style tokens — selected (cyan, persistent) vs hovered (white, prominent).
@@ -711,11 +713,6 @@ export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFil
           onPolygonHover={(polygon: object | null) => {
             const feat = polygon as Feature | null;
             setHovered(feat);
-            if (!feat) {
-              setHoveredName("");
-              return;
-            }
-            setHoveredName(getCountryName(feat));
           }}
           onPolygonClick={(polygon: object) => {
             const feat = polygon as Feature;

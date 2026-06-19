@@ -79,6 +79,7 @@ export default function CdcMapImage({
             e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
           }}
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
             alt={alt}
@@ -207,6 +208,7 @@ export default function CdcMapImage({
           </button>
 
           {/* Image — clicking it should NOT close the modal */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={src}
             alt={alt}

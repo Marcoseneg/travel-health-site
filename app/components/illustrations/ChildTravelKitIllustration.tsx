@@ -152,7 +152,7 @@ export default function ChildTravelKitIllustration() {
           fill="#ffffff"
           letterSpacing="0.04em"
         >
-          CHILDREN'S
+          CHILDREN&apos;S
         </text>
         <text
           x="35"

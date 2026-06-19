@@ -1,11 +1,11 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import {
   DESTINATION_LIST,
   SUPPORTED_COUNTRIES,
-  type CountrySlug,
 } from "../lib/travelData";
 import { diseases, DISEASE_LIST } from "../lib/diseaseData";
 
@@ -79,7 +79,12 @@ export default function SiteHeader() {
   }, [query]);
 
   // Reset active index when results change
-  useEffect(() => setActiveIdx(-1), [results]);
+  useEffect(() => {
+    // Highlight must clear whenever the result set changes so a stale index
+    // never points past the new list; this setState is the effect's purpose.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setActiveIdx(-1);
+  }, [results]);
 
   // Keyboard shortcut: "/" to focus search
   useEffect(() => {
@@ -157,7 +162,7 @@ export default function SiteHeader() {
         }}
       >
         {/* ── Logo ─────────────────────────────────────────────────── */}
-        <a
+        <Link
           href="/"
           style={{
             display: "flex",
@@ -243,7 +248,7 @@ export default function SiteHeader() {
             Travel
             <span style={{ color: "var(--accent)", fontWeight: 400 }}>Med</span>
           </span>
-        </a>
+        </Link>
 
         {/* ── Divider between logo and search ──────────────────────── */}
         <div
@@ -314,6 +319,7 @@ export default function SiteHeader() {
               placeholder="Search countries, diseases, vaccines…"
               aria-label="Search countries and diseases"
               role="combobox"
+              aria-controls="site-search-listbox"
               aria-expanded={focused && !!query.trim()}
               aria-autocomplete="list"
               style={{
@@ -348,6 +354,7 @@ export default function SiteHeader() {
           {/* Dropdown (widens beyond input so results are readable) */}
           {focused && query.trim() && (
             <div
+              id="site-search-listbox"
               role="listbox"
               style={{
                 position: "absolute",

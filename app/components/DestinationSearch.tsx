@@ -35,6 +35,9 @@ export default function DestinationSearch({
     }).slice(0, 8);
   }, [query, selectedCountries]);
 
+  // Reset the highlighted option whenever the result set changes. This is a
+  // deliberate one-time sync tied to `filtered`, not a render cascade.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setActiveIdx(-1), [filtered]);
 
   const selectItem = (country: string) => {
@@ -111,6 +114,7 @@ export default function DestinationSearch({
           aria-label="Search and add destinations"
           role="combobox"
           aria-expanded={focused && !!query.trim()}
+          aria-controls="destination-search-listbox"
           aria-autocomplete="list"
           style={{
             background: "transparent",
@@ -127,6 +131,7 @@ export default function DestinationSearch({
 
       {focused && query.trim() && (
         <div
+          id="destination-search-listbox"
           role="listbox"
           style={{
             position: "absolute",
