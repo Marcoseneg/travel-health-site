@@ -91,7 +91,7 @@ export function tagCountries(alert: {
   _tagText?: string; // optional longer body text (WHO entries set this)
 }): string[] {
   // Manual overrides take full precedence
-  const ov = (overrides as Record<string, { add?: string[]; remove?: string[]; replace?: string[] }>)[alert.id];
+  const ov = (overrides as unknown as Record<string, { add?: string[]; remove?: string[]; replace?: string[] }>)[alert.id];
   if (ov?.replace) return ov.replace;
 
   // Build the body haystack from summary + _tagText. Either may be

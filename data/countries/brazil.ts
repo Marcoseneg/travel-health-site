@@ -25,7 +25,7 @@ export const brazil: CountryInfo = {
     "Chikungunya",
     "Dengue (selective)",
   ],
-  malariaRisk: "moderate",
+  malariaRisk: "present",
   yellowFever: "required-or-recommended",
   foodWater:
     "Standard food and water precautions, particularly outside major cities and resort areas. Bottled or filtered water for drinking and brushing teeth, especially in the Amazon and rural northeast. Street food in tourist hubs is generally safer than in remote regions.",

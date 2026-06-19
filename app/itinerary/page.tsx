@@ -96,7 +96,7 @@ export default async function ItineraryPage({ searchParams }: Props) {
         health: healthData[slug],
       };
     })
-    .filter((x): x is Enriched => x !== null);
+    .filter((x): x is NonNullable<typeof x> => x !== null);
 
   // ── Empty / invalid state ────────────────────────────────────────────────
   if (enriched.length === 0) {

@@ -29,9 +29,9 @@ function getCountryRisks(label: string): RiskChip[] {
 
   if (malaria === "high") {
     chips.push({ short: "M", full: "Malaria — high", color: "#fca5a5", background: "rgba(239,68,68,0.16)", border: "rgba(239,68,68,0.32)" });
-  } else if (malaria === "present") {
+  } else if (malaria === "moderate") {
     chips.push({ short: "M", full: "Malaria — present", color: "#fbbf24", background: "rgba(245,158,11,0.16)", border: "rgba(245,158,11,0.3)" });
-  } else if (malaria === "limited") {
+  } else if (malaria === "low") {
     chips.push({ short: "M", full: "Malaria — limited areas", color: "#fde68a", background: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.2)" });
   }
 

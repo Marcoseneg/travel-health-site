@@ -1,6 +1,6 @@
 "use client";
 
-import { SUPPORTED_COUNTRIES, type CountrySlug } from "../app/lib/diseaseData";
+import { SUPPORTED_COUNTRIES, type CountrySlug } from "../app/lib/travelData";
 
 type Props = {
   slug: CountrySlug;

@@ -27,7 +27,7 @@ export const colombia: CountryInfo = {
     "Chikungunya",
     "Dengue (selective)",
   ],
-  malariaRisk: "moderate",
+  malariaRisk: "present",
   yellowFever: "required-or-recommended",
   foodWater:
     "Standard food and water precautions, particularly outside major cities and resort areas. Bottled or filtered water for drinking and brushing teeth in rural regions and the Amazon. Tap water in Bogotá and Medellín is generally safe but bottled remains the safer choice for most travelers.",

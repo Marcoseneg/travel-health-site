@@ -99,6 +99,9 @@ export default async function CountryPage({ params }: Props) {
   const dengue = riskBadge(dengueRiskByCountry[label]);
   const yf = riskBadge(yellowFeverByCountry[label]);
   const chik = riskBadge(chikungunyaRiskByCountry[label]);
+  // Zika has no per-country risk dataset; surface as "present" wherever a
+  // country supplies an authored zika summary.
+  const zika = riskBadge(health?.diseases?.zika ? "present" : undefined);
 
   const hasDetailed = !!health;
   const hasRichVaccines = !!health?.vaccinesDetail?.length;
@@ -232,6 +235,9 @@ export default async function CountryPage({ params }: Props) {
                   )}
                   {health!.diseases!.chikungunya && (
                     <DiseaseCard title="Chikungunya" slug="chikungunya" badge={chik} summary={health!.diseases!.chikungunya} />
+                  )}
+                  {health!.diseases!.zika && (
+                    <DiseaseCard title="Zika" slug="zika" badge={zika} summary={health!.diseases!.zika} />
                   )}
                 </div>
               </>

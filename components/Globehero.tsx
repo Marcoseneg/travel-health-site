@@ -77,7 +77,7 @@ export default function GlobeHero({ selectedCountries, onToggleCountry }: Props)
     ) as Record<string, CountrySlug>;
   }, []);
 
-  const supportedCountryNames = useMemo(
+  const supportedCountryNames = useMemo<string[]>(
     () => Object.values(SUPPORTED_COUNTRIES).map((c) => c.label),
     []
   );

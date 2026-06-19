@@ -54,6 +54,7 @@ export type CountryInfo = {
     yellowFever?: DiseaseSummary;
     dengue?: DiseaseSummary;
     chikungunya?: DiseaseSummary;
+    zika?: DiseaseSummary;
   };
 };
 
