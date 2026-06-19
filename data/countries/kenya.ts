@@ -71,12 +71,18 @@ export const kenya: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/kenya",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/kenya.jpg",
+      mapCaption: "Malaria risk areas in Kenya (CDC).",
     },
     yellowFever: {
       riskSummary:
         "Yellow fever vaccination is recommended for most travelers visiting Kenya. The vaccine is generally NOT recommended if your itinerary is limited to Nairobi city, the coastal regions (Mombasa, Malindi, Kilifi, Kwale, Lamu), or the northeast (Wajir, Mandera). A vaccination certificate is required at entry for travelers ≥1 year old arriving from countries with yellow fever risk.",
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/kenya",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/kenya.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in Kenya (CDC).",
     },
     dengue: {
       riskSummary:

@@ -126,6 +126,9 @@ export const suriname: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/suriname",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/americas.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in the Americas (CDC).",
     },
     malaria: {
       riskSummary:

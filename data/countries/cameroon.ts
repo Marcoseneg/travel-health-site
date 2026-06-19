@@ -115,6 +115,9 @@ export const cameroon: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/cameroon",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/yellow-fever/africa.jpg",
+      mapCaption: "Yellow fever vaccine recommendation areas in Africa (CDC).",
     },
     dengue: {
       riskSummary:

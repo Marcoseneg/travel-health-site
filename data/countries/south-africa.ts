@@ -60,6 +60,9 @@ export const southAfrica: CountryInfo = {
       ],
       cdcMapUrl:
         "https://wwwnc.cdc.gov/travel/yellowbook/2024/preparing/yellow-fever-vaccine-malaria-prevention-by-country/south-africa",
+      cdcMapImageUrl:
+        "https://www.cdc.gov/yellow-book/media/images/malaria/south-africa.jpg",
+      mapCaption: "Malaria risk areas in South Africa (CDC).",
     },
     yellowFever: {
       riskSummary:
