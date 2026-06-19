@@ -165,6 +165,33 @@ export default async function CountryPage({ params }: Props) {
           </div>
         </div>
 
+        {/* ── Draft notice — AI-sourced brief awaiting clinician sign-off ── */}
+        {health?.reviewStatus === "draft" && (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "flex-start",
+              gap: "10px",
+              padding: "12px 16px",
+              borderRadius: "12px",
+              background: "rgba(148,163,184,0.06)",
+              border: "1px solid rgba(148,163,184,0.18)",
+              marginBottom: "32px",
+              fontSize: "12.5px",
+              lineHeight: 1.5,
+              color: "#94a3b8",
+            }}
+          >
+            <span style={{ fontSize: "14px", lineHeight: 1.2 }}>📝</span>
+            <span>
+              <strong style={{ color: "#cbd5e1", fontWeight: 600 }}>Draft — pending physician review.</strong>{" "}
+              This brief was compiled from CDC, WHO, and EKRM/HealthyTravel sources
+              {health.lastReviewed ? ` (${health.lastReviewed})` : ""} and has not yet been
+              verified by a clinician. Confirm specifics with a travel-medicine professional before relying on it.
+            </span>
+          </div>
+        )}
+
         {/* ── Alerts zone — manual + live, all above the risk row ──────── */}
         {(hasAlerts || outbreakAlerts.length > 0) && (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px" }}>

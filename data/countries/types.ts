@@ -45,6 +45,13 @@ export type CountryInfo = {
   foodWater: string;
   mosquito: string;
 
+  // ── Provenance / editorial review ───────────────────────────────────────────
+  // New AI-drafted briefs are marked "draft" until a clinician signs off, so the
+  // UI can surface a "pending physician review" notice and keep the
+  // physician-built promise honest. lastReviewed is a human date like "June 2026".
+  reviewStatus?: "draft" | "reviewed";
+  lastReviewed?: string;
+
   // ── Optional CDC-aligned detail fields ──────────────────────────────────────
   cdcCountryUrl?: string;
   countryAlerts?: CountryAlert[];
