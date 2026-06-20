@@ -176,9 +176,8 @@ export default function SiteHeader() {
               width: "34px",
               height: "34px",
               borderRadius: "10px",
-              background:
-                "linear-gradient(135deg, var(--c-accent-soft), var(--c-surface))",
-              border: "1px solid var(--c-accent-border)",
+              background: "var(--c-surface)",
+              border: "1px solid var(--c-border)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -186,16 +185,17 @@ export default function SiteHeader() {
               overflow: "hidden",
             }}
           >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 32 32"
-              fill="none"
-              aria-hidden="true"
-            >
-              <circle cx="16" cy="16" r="9" stroke="var(--c-accent)" strokeWidth="1.4" fill="none" />
-              <ellipse cx="16" cy="16" rx="9" ry="3.5" stroke="var(--c-accent)" strokeWidth="1" fill="none" />
-              <line x1="7" y1="16" x2="25" y2="16" stroke="var(--c-accent)" strokeWidth="1" />
+            {/* "Living Globe" mark — globe with a pulse line, cyan→teal duotone */}
+            <svg width="24" height="24" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="tmGlobe" x1="6" y1="6" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+                  <stop offset="0" stopColor="#0891b2" />
+                  <stop offset="1" stopColor="#14b8a6" />
+                </linearGradient>
+              </defs>
+              <circle cx="20" cy="20" r="15" fill="url(#tmGlobe)" />
+              <ellipse cx="20" cy="20" rx="15" ry="6" stroke="#ffffff" strokeWidth="1.3" fill="none" opacity="0.5" />
+              <path d="M7 20.5H15L17.5 14.5L21 26L23.5 20.5H33" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
           <span

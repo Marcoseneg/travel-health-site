@@ -48,13 +48,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      // Inline SVG favicon: tilted-globe glyph in cyan on transparent
-      // — matches the header logo. Keeps the bundle small (no PNG).
+      // Inline SVG favicon: the "Living Globe" mark — globe with a pulse line,
+      // cyan→teal duotone — matching the header logo. No PNG, tiny bundle.
       {
         url:
           "data:image/svg+xml;utf8," +
           encodeURIComponent(
-            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="9" stroke="%237dd3fc" stroke-width="1.6" fill="none"/><ellipse cx="16" cy="16" rx="9" ry="3.5" stroke="%237dd3fc" stroke-width="1.2" fill="none"/><line x1="7" y1="16" x2="25" y2="16" stroke="%237dd3fc" stroke-width="1.2"/></svg>`
+            `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="6" y1="6" x2="34" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#0891b2"/><stop offset="1" stop-color="#14b8a6"/></linearGradient></defs><circle cx="20" cy="20" r="16" fill="url(#g)"/><ellipse cx="20" cy="20" rx="16" ry="6.5" stroke="#ffffff" stroke-width="1.5" fill="none" opacity="0.5"/><path d="M5 20.5H15L17.5 14L21 27L23.5 20.5H35" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`
           ),
       },
     ],
