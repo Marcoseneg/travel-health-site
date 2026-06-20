@@ -464,11 +464,12 @@ export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFil
     }
     if (activeFilter === "yellow-fever") {
       const risk = getYFRisk(countryLabel);
+      // Congruent with the other filters' High/Moderate/Low/None wording.
       const labels: Record<YellowFeverRisk, string> = {
-        required: "Required",
-        recommended: "Recommended",
-        "generally-not": "Generally not required",
-        none: "Not applicable",
+        required: "High risk",
+        recommended: "Moderate risk",
+        "generally-not": "Low risk",
+        none: "No yellow fever",
       };
       return { risk, label: labels[risk] };
     }

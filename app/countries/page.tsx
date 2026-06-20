@@ -42,9 +42,9 @@ function getCountryRisks(label: string): RiskChip[] {
   }
 
   if (yf === "required") {
-    chips.push({ short: "YF", full: "Yellow fever — required", color: "#fcd34d", background: "rgba(234,179,8,0.16)", border: "rgba(234,179,8,0.3)" });
+    chips.push({ short: "YF", full: "Yellow fever — high", color: "#fcd34d", background: "rgba(234,179,8,0.16)", border: "rgba(234,179,8,0.3)" });
   } else if (yf === "recommended") {
-    chips.push({ short: "YF", full: "Yellow fever — recommended", color: "#fde68a", background: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.2)" });
+    chips.push({ short: "YF", full: "Yellow fever — moderate", color: "#fde68a", background: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.2)" });
   }
 
   return chips;

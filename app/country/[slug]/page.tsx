@@ -55,16 +55,16 @@ type RiskBadge = {
 function riskBadge(level: string | undefined): RiskBadge {
   const map: Record<string, RiskBadge> = {
     high: { label: "High", color: "#fca5a5", background: "rgba(239,68,68,0.14)", border: "rgba(239,68,68,0.3)" },
-    required: { label: "Required", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)" },
-    "required-or-recommended": { label: "Required / recommended", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)" },
+    required: { label: "High", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)" },
+    "required-or-recommended": { label: "High", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)" },
     moderate: { label: "Moderate", color: "#fbbf24", background: "rgba(245,158,11,0.14)", border: "rgba(245,158,11,0.28)" },
-    recommended: { label: "Recommended", color: "#fcd34d", background: "rgba(234,179,8,0.12)", border: "rgba(234,179,8,0.26)" },
+    recommended: { label: "Moderate", color: "#fcd34d", background: "rgba(234,179,8,0.12)", border: "rgba(234,179,8,0.26)" },
     present: { label: "Present", color: "#fbbf24", background: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.26)" },
     limited: { label: "Limited", color: "#bae6fd", background: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.24)" },
     possible: { label: "Possible", color: "#bae6fd", background: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.24)" },
     low: { label: "Low", color: "#bae6fd", background: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)" },
     sporadic: { label: "Sporadic", color: "#bae6fd", background: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)" },
-    "generally-not": { label: "Not required", color: "#94a3b8", background: "rgba(148,163,184,0.06)", border: "rgba(148,163,184,0.14)" },
+    "generally-not": { label: "Low", color: "#fef08a", background: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.18)" },
     none: { label: "None", color: "#64748b", background: "rgba(100,116,139,0.06)", border: "rgba(100,116,139,0.14)" },
   };
   return map[level ?? "none"] ?? map.none;

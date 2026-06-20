@@ -65,9 +65,14 @@ export const YELLOW_FEVER_COLORS: Record<YellowFeverRisk, string> = {
   none: "rgba(0, 0, 0, 0)",
 };
 
+// Labels use the same High / Moderate / Low / None gradient as the other
+// disease filters for visual congruence. Yellow fever risk maps to vaccination
+// guidance: High = endemic, vaccine required/strongly advised; Moderate =
+// vaccine recommended; Low = generally not recommended. The precise
+// entry-certificate rules live in each country's brief.
 export const YELLOW_FEVER_LEGEND = [
-  { level: "required", label: "Required for entry", color: "rgba(245, 158, 11, 0.9)" },
-  { level: "recommended", label: "Recommended", color: "rgba(251, 191, 36, 0.75)" },
-  { level: "generally-not", label: "Generally not required", color: "rgba(253, 224, 71, 0.55)" },
-  { level: "none", label: "Not applicable", color: "rgba(100, 116, 139, 0.3)" },
+  { level: "required", label: "High risk", color: "rgba(245, 158, 11, 0.9)" },
+  { level: "recommended", label: "Moderate risk", color: "rgba(251, 191, 36, 0.75)" },
+  { level: "generally-not", label: "Low risk", color: "rgba(253, 224, 71, 0.55)" },
+  { level: "none", label: "No risk", color: "rgba(100, 116, 139, 0.3)" },
 ];
