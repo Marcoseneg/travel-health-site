@@ -20,9 +20,9 @@ export default function PhysicianTake({ quote }: Props) {
     <div
       style={{
         padding: "28px 32px 26px",
-        borderRadius: "16px",
-        background: "rgba(125,211,252,0.04)",
-        border: "1px solid rgba(125,211,252,0.18)",
+        borderRadius: "var(--c-radius-md)",
+        background: "var(--c-accent-soft)",
+        border: "1px solid var(--c-accent-border)",
         marginBottom: "40px",
         position: "relative",
         overflow: "hidden",
@@ -35,7 +35,7 @@ export default function PhysicianTake({ quote }: Props) {
           top: "8px",
           left: "20px",
           fontSize: "72px",
-          color: "rgba(125,211,252,0.16)",
+          color: "var(--c-accent-border)",
           fontFamily: "Georgia, 'Times New Roman', serif",
           lineHeight: 1,
           pointerEvents: "none",
@@ -47,11 +47,9 @@ export default function PhysicianTake({ quote }: Props) {
       </div>
 
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#7dd3fc",
-          textTransform: "uppercase",
+          color: "var(--c-accent)",
           letterSpacing: "0.12em",
           marginBottom: "14px",
           marginLeft: "44px",
@@ -63,7 +61,7 @@ export default function PhysicianTake({ quote }: Props) {
       <p
         style={{
           fontSize: "16px",
-          color: "#f1f5f9",
+          color: "var(--c-text)",
           lineHeight: 1.65,
           marginTop: 0,
           marginRight: 0,

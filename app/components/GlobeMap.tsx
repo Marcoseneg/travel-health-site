@@ -84,26 +84,59 @@ export default function GlobeMap() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "24px" }}>
-      {/* Globe */}
+      {/* Contained dark stage — keeps the dark globe imagery legible on the
+          light page; reads as a hero object framed by the light UI around it. */}
       <div
         style={{
-          width: `${globeSize}px`,
-          height: `${globeSize}px`,
           position: "relative",
+          borderRadius: "var(--c-radius-lg)",
+          border: "1px solid var(--c-border)",
+          background: "linear-gradient(180deg, #0b1220 0%, #030712 100%)",
+          padding: "24px",
+          boxShadow: "0 12px 40px rgba(8,12,24,0.18)",
+          overflow: "hidden",
         }}
       >
-        {/* Glow */}
+        {/* Starfield — scoped to the dark stage */}
         <div
           style={{
             position: "absolute",
-            inset: "-15%",
-            borderRadius: "9999px",
-            background:
-              "radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(56,189,248,0.05) 35%, transparent 65%)",
+            inset: 0,
+            backgroundImage: `
+              radial-gradient(1px 1px at 10% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+              radial-gradient(1px 1px at 80% 10%, rgba(255,255,255,0.3) 0%, transparent 100%),
+              radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.25) 0%, transparent 100%),
+              radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.35) 0%, transparent 100%),
+              radial-gradient(1px 1px at 50% 40%, rgba(255,255,255,0.2) 0%, transparent 100%),
+              radial-gradient(1.5px 1.5px at 25% 35%, rgba(255,255,255,0.5) 0%, transparent 100%),
+              radial-gradient(1.5px 1.5px at 75% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+              radial-gradient(0.5px 0.5px at 85% 25%, rgba(255,255,255,0.3) 0%, transparent 100%),
+              radial-gradient(0.5px 0.5px at 45% 55%, rgba(255,255,255,0.2) 0%, transparent 100%)
+            `,
             pointerEvents: "none",
-            zIndex: 0,
           }}
         />
+
+        {/* Globe */}
+        <div
+          style={{
+            width: `${globeSize}px`,
+            height: `${globeSize}px`,
+            position: "relative",
+          }}
+        >
+          {/* Glow */}
+          <div
+            style={{
+              position: "absolute",
+              inset: "-15%",
+              borderRadius: "9999px",
+              background:
+                "radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(56,189,248,0.05) 35%, transparent 65%)",
+              pointerEvents: "none",
+              zIndex: 0,
+            }}
+          />
 
         {/* Tooltip */}
         {hoveredName && (
@@ -224,6 +257,7 @@ export default function GlobeMap() {
             }}
           />
         </div>
+        </div>
       </div>
 
       {/* Filter toggle + legend */}
@@ -232,16 +266,16 @@ export default function GlobeMap() {
         <div style={{ display: "flex", gap: "8px" }}>
           <button
             onClick={() => setFilterActive(false)}
+            className="t-label"
             style={{
               padding: "9px 20px",
               borderRadius: "999px",
-              fontSize: "14px",
-              fontWeight: 600,
               cursor: "pointer",
-              border: `1px solid ${!filterActive ? "rgba(56,189,248,0.5)" : "rgba(255,255,255,0.1)"}`,
-              background: !filterActive ? "rgba(56,189,248,0.12)" : "rgba(255,255,255,0.04)",
-              color: !filterActive ? "#7dd3fc" : "#94a3b8",
+              border: `1px solid ${!filterActive ? "var(--c-accent-border)" : "var(--c-border)"}`,
+              background: !filterActive ? "var(--c-accent-soft)" : "var(--c-surface)",
+              color: !filterActive ? "var(--c-accent)" : "var(--c-text-2)",
               fontFamily: "inherit",
+              fontWeight: 600,
               transition: "all 0.2s",
             }}
           >
@@ -249,16 +283,16 @@ export default function GlobeMap() {
           </button>
           <button
             onClick={() => setFilterActive(true)}
+            className="t-label"
             style={{
               padding: "9px 20px",
               borderRadius: "999px",
-              fontSize: "14px",
-              fontWeight: 600,
               cursor: "pointer",
-              border: `1px solid ${filterActive ? "rgba(239,68,68,0.4)" : "rgba(255,255,255,0.1)"}`,
-              background: filterActive ? "rgba(239,68,68,0.12)" : "rgba(255,255,255,0.04)",
-              color: filterActive ? "#fca5a5" : "#94a3b8",
+              border: `1px solid ${filterActive ? "var(--c-danger-border)" : "var(--c-border)"}`,
+              background: filterActive ? "var(--c-danger-soft)" : "var(--c-surface)",
+              color: filterActive ? "var(--c-danger)" : "var(--c-text-2)",
               fontFamily: "inherit",
+              fontWeight: 600,
               transition: "all 0.2s",
               display: "flex",
               alignItems: "center",
@@ -270,7 +304,7 @@ export default function GlobeMap() {
                 width: "8px",
                 height: "8px",
                 borderRadius: "50%",
-                background: filterActive ? "#ef4444" : "#64748b",
+                background: filterActive ? "var(--c-danger)" : "var(--c-text-3)",
                 display: "inline-block",
               }}
             />
@@ -291,12 +325,13 @@ export default function GlobeMap() {
             {MALARIA_LEGEND.map((item) => (
               <div
                 key={item.level}
+                className="t-label"
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: "6px",
-                  fontSize: "13px",
-                  color: "#94a3b8",
+                  color: "var(--c-text-2)",
+                  fontWeight: 500,
                 }}
               >
                 <span
@@ -306,7 +341,7 @@ export default function GlobeMap() {
                     borderRadius: "3px",
                     background: item.color,
                     display: "inline-block",
-                    border: "1px solid rgba(255,255,255,0.1)",
+                    border: "1px solid var(--c-border)",
                   }}
                 />
                 {item.label}

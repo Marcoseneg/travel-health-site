@@ -160,9 +160,9 @@ export default function Home() {
           [data-card="lift"]:hover {
             transform: translateY(-4px);
             box-shadow:
-              0 12px 32px rgba(56, 189, 248, 0.12),
-              0 2px 8px rgba(0, 0, 0, 0.18) !important;
-            border-color: rgba(125, 211, 252, 0.22) !important;
+              0 12px 32px rgba(8, 145, 178, 0.12),
+              0 2px 8px rgba(15, 23, 42, 0.08) !important;
+            border-color: var(--c-accent-border) !important;
           }
         }
       `}</style>

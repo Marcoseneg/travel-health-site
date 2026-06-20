@@ -35,20 +35,20 @@ export type SymptomComparisonData = {
 type Props = SymptomComparisonData;
 
 // Tokens
-const TEXT_BODY = "#cbd5e1";
-const TEXT_MUTED = "#94a3b8";
+const TEXT_BODY = "var(--c-text-2)";
+const TEXT_MUTED = "var(--c-text-3)";
 
-// Mild (green)
-const MILD_ACCENT = "#4ade80";
-const MILD_TINT = "rgba(74, 222, 128, 0.05)";
-const MILD_BORDER = "rgba(74, 222, 128, 0.22)";
-const MILD_DOT = "#22c55e";
+// Mild (green / trust)
+const MILD_ACCENT = "var(--c-trust)";
+const MILD_TINT = "var(--c-trust-soft)";
+const MILD_BORDER = "var(--c-trust-border)";
+const MILD_DOT = "var(--c-trust)";
 
-// Severe (red)
-const SEVERE_ACCENT = "#f87171";
-const SEVERE_TINT = "rgba(248, 113, 113, 0.05)";
-const SEVERE_BORDER = "rgba(248, 113, 113, 0.22)";
-const SEVERE_DOT = "#ef4444";
+// Severe (red / danger)
+const SEVERE_ACCENT = "var(--c-danger)";
+const SEVERE_TINT = "var(--c-danger-soft)";
+const SEVERE_BORDER = "var(--c-danger-border)";
+const SEVERE_DOT = "var(--c-danger)";
 
 type CardProps = {
   data: SymptomCard;
@@ -63,7 +63,7 @@ function Card({ data, accent, tint, border, dot }: CardProps) {
     <div
       style={{
         padding: "22px 22px 18px",
-        borderRadius: "14px",
+        borderRadius: "var(--c-radius-md)",
         background: tint,
         border: `1px solid ${border}`,
         display: "flex",

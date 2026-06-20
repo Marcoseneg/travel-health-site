@@ -59,16 +59,13 @@ function RowVariant({ candidates }: { candidates: Article[] }) {
       style={{
         marginTop: "56px",
         paddingTop: "32px",
-        borderTop: "1px solid rgba(255,255,255,0.07)",
+        borderTop: "1px solid var(--c-border)",
       }}
     >
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#7dd3fc",
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          color: "var(--c-accent)",
           marginBottom: "20px",
         }}
       >
@@ -88,23 +85,23 @@ function RowVariant({ candidates }: { candidates: Article[] }) {
             <Link
               key={a.id}
               href={`/guides/${a.id}`}
+              className="card-hover"
               style={{
                 display: "flex",
                 flexDirection: "column",
                 gap: "10px",
                 padding: "18px",
-                borderRadius: "12px",
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.07)",
+                borderRadius: "var(--c-radius-sm)",
+                background: "var(--c-surface)",
+                border: "1px solid var(--c-border)",
                 textDecoration: "none",
-                transition: "background 0.15s ease, border-color 0.15s ease",
               }}
             >
               <div
                 style={{
                   fontSize: "10px",
                   fontWeight: 700,
-                  color: cat?.color ?? "#7dd3fc",
+                  color: cat?.color ?? "var(--c-accent)",
                   textTransform: "uppercase",
                   letterSpacing: "0.08em",
                 }}
@@ -115,7 +112,7 @@ function RowVariant({ candidates }: { candidates: Article[] }) {
                 style={{
                   fontSize: "15px",
                   fontWeight: 600,
-                  color: "#f1f5f9",
+                  color: "var(--c-text)",
                   lineHeight: 1.35,
                   letterSpacing: "-0.01em",
                 }}
@@ -125,7 +122,7 @@ function RowVariant({ candidates }: { candidates: Article[] }) {
               <div
                 style={{
                   fontSize: "12px",
-                  color: "#94a3b8",
+                  color: "var(--c-text-3)",
                   marginTop: "auto",
                 }}
               >
@@ -150,18 +147,15 @@ function SidebarVariant({ candidates }: { candidates: Article[] }) {
       aria-label="Related guides"
       style={{
         padding: "20px 22px",
-        borderRadius: "14px",
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.06)",
+        borderRadius: "var(--c-radius-md)",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-border)",
       }}
     >
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#7dd3fc",
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          color: "var(--c-accent)",
           marginBottom: "14px",
         }}
       >
@@ -181,7 +175,7 @@ function SidebarVariant({ candidates }: { candidates: Article[] }) {
                   padding: "12px 0",
                   borderBottom: isLast
                     ? "none"
-                    : "1px solid rgba(255,255,255,0.04)",
+                    : "1px solid var(--c-border)",
                   textDecoration: "none",
                 }}
               >
@@ -189,7 +183,7 @@ function SidebarVariant({ candidates }: { candidates: Article[] }) {
                   style={{
                     fontSize: "10px",
                     fontWeight: 700,
-                    color: cat?.color ?? "#7dd3fc",
+                    color: cat?.color ?? "var(--c-accent)",
                     textTransform: "uppercase",
                     letterSpacing: "0.08em",
                     marginBottom: "4px",
@@ -201,7 +195,7 @@ function SidebarVariant({ candidates }: { candidates: Article[] }) {
                   style={{
                     fontSize: "14px",
                     fontWeight: 600,
-                    color: "#f1f5f9",
+                    color: "var(--c-text)",
                     lineHeight: 1.35,
                     letterSpacing: "-0.005em",
                     marginBottom: "4px",
@@ -209,7 +203,7 @@ function SidebarVariant({ candidates }: { candidates: Article[] }) {
                 >
                   {a.title}
                 </div>
-                <div style={{ fontSize: "12px", color: "#94a3b8" }}>
+                <div style={{ fontSize: "12px", color: "var(--c-text-3)" }}>
                   {a.readingTime} min read
                 </div>
               </Link>

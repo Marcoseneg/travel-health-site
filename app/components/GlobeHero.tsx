@@ -408,25 +408,19 @@ export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFil
   // inline in the countryLabels memo via getRiskInfoForCountry)
 
   const getRiskBadgeStyle = (risk: string): { background: string; color: string } => {
+    // Map each risk level to the semantic light-theme tokens so the hover
+    // labels/badges stay legible on the light page:
+    //   high → danger, moderate → warning, low → info, none → neutral;
+    //   required → danger, recommended → warning, generally-not → info.
     const base: Record<string, { background: string; color: string }> = {
-      high: { background: "rgba(239,68,68,0.2)", color: "#fca5a5" },
-      moderate: { background: "rgba(245,158,11,0.2)", color: "#fcd34d" },
-      low: { background: "rgba(250,204,21,0.2)", color: "#fef08a" },
-      none: { background: "rgba(100,116,139,0.15)", color: "#94a3b8" },
-      required: { background: "rgba(245,158,11,0.25)", color: "#fcd34d" },
-      recommended: { background: "rgba(251,191,36,0.2)", color: "#fde68a" },
-      "generally-not": { background: "rgba(253,224,71,0.15)", color: "#fef9c3" },
+      high: { background: "var(--c-danger-soft)", color: "var(--c-danger)" },
+      moderate: { background: "var(--c-warning-soft)", color: "var(--c-warning)" },
+      low: { background: "var(--c-info-soft)", color: "var(--c-info)" },
+      none: { background: "var(--c-surface-2)", color: "var(--c-text-3)" },
+      required: { background: "var(--c-danger-soft)", color: "var(--c-danger)" },
+      recommended: { background: "var(--c-warning-soft)", color: "var(--c-warning)" },
+      "generally-not": { background: "var(--c-info-soft)", color: "var(--c-info)" },
     };
-    if (activeFilter === "chikungunya") {
-      if (risk === "high") return { background: "rgba(168,85,247,0.25)", color: "#c4b5fd" };
-      if (risk === "moderate") return { background: "rgba(192,132,252,0.2)", color: "#d8b4fe" };
-      if (risk === "low") return { background: "rgba(216,180,254,0.15)", color: "#e9d5ff" };
-    }
-    if (activeFilter === "dengue") {
-      if (risk === "high") return { background: "rgba(239,68,68,0.2)", color: "#fca5a5" };
-      if (risk === "moderate") return { background: "rgba(251,146,60,0.2)", color: "#fdba74" };
-      if (risk === "low") return { background: "rgba(253,224,71,0.2)", color: "#fef08a" };
-    }
     return base[risk] || base.none;
   };
 

@@ -25,19 +25,16 @@ export default function QuickFacts({ facts }: Props) {
     <div
       style={{
         padding: "24px 28px",
-        borderRadius: "16px",
-        background: "rgba(251,191,36,0.04)",
-        border: "1px solid rgba(251,191,36,0.18)",
+        borderRadius: "var(--c-radius-md)",
+        background: "var(--c-warning-soft)",
+        border: "1px solid var(--c-warning-border)",
         marginBottom: "32px",
       }}
     >
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#fcd34d",
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          color: "var(--c-warning)",
           marginBottom: "18px",
         }}
       >
@@ -75,7 +72,7 @@ export default function QuickFacts({ facts }: Props) {
               <div
                 style={{
                   fontSize: "12px",
-                  color: "#94a3b8",
+                  color: "var(--c-text-2)",
                   marginBottom: "2px",
                   fontWeight: 500,
                   letterSpacing: "-0.005em",
@@ -86,7 +83,7 @@ export default function QuickFacts({ facts }: Props) {
               <div
                 style={{
                   fontSize: "14px",
-                  color: "#f1f5f9",
+                  color: "var(--c-text)",
                   fontWeight: 600,
                   lineHeight: 1.4,
                   letterSpacing: "-0.01em",

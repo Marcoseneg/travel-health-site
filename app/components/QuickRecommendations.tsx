@@ -33,19 +33,16 @@ export default function QuickRecommendations({
     <div
       style={{
         padding: "24px",
-        borderRadius: "16px",
-        background: "rgba(56,189,248,0.04)",
-        border: "1px solid rgba(56,189,248,0.12)",
+        borderRadius: "var(--c-radius-md)",
+        background: "var(--c-accent-soft)",
+        border: "1px solid var(--c-accent-border)",
         marginBottom: "40px",
       }}
     >
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#7dd3fc",
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          color: "var(--c-accent)",
           marginBottom: "20px",
         }}
       >
@@ -64,9 +61,9 @@ export default function QuickRecommendations({
             key={i}
             style={{
               padding: "16px 14px",
-              borderRadius: "12px",
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: "var(--c-radius-sm)",
+              background: "var(--c-surface)",
+              border: "1px solid var(--c-border)",
               display: "flex",
               flexDirection: "column",
               gap: "10px",
@@ -77,8 +74,8 @@ export default function QuickRecommendations({
                 width: "32px",
                 height: "32px",
                 borderRadius: "50%",
-                background: "rgba(255,255,255,0.04)",
-                border: "1px solid rgba(255,255,255,0.05)",
+                background: "var(--c-surface-2)",
+                border: "1px solid var(--c-border)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -93,7 +90,7 @@ export default function QuickRecommendations({
                 style={{
                   fontSize: "10px",
                   fontWeight: 600,
-                  color: "#94a3b8",
+                  color: "var(--c-text-3)",
                   textTransform: "uppercase",
                   letterSpacing: "0.05em",
                   marginBottom: "4px",
@@ -105,7 +102,7 @@ export default function QuickRecommendations({
                 style={{
                   fontSize: "14px",
                   fontWeight: 700,
-                  color: "#f1f5f9",
+                  color: "var(--c-text)",
                   letterSpacing: "-0.01em",
                   lineHeight: 1.3,
                 }}
@@ -116,7 +113,7 @@ export default function QuickRecommendations({
                 <div
                   style={{
                     fontSize: "11px",
-                    color: "#64748b",
+                    color: "var(--c-text-3)",
                     marginTop: "3px",
                     lineHeight: 1.4,
                   }}

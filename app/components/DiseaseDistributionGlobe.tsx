@@ -90,13 +90,14 @@ export default function DiseaseDistributionGlobe({ disease }: Props) {
         {legend.map((item) => (
           <div
             key={item.level}
+            className="t-micro"
             style={{
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontSize: "12px",
-              color: "#cbd5e1",
-              fontWeight: 500,
+              color: "var(--c-text-2)",
+              letterSpacing: "normal",
+              textTransform: "none",
             }}
           >
             <span
@@ -106,7 +107,7 @@ export default function DiseaseDistributionGlobe({ disease }: Props) {
                 borderRadius: "3px",
                 background: item.color,
                 display: "inline-block",
-                border: "1px solid rgba(255,255,255,0.1)",
+                border: "1px solid var(--c-border)",
                 flexShrink: 0,
               }}
             />
@@ -116,13 +117,16 @@ export default function DiseaseDistributionGlobe({ disease }: Props) {
       </div>
 
       <p
+        className="t-micro"
         style={{
-          fontSize: "11.5px",
-          color: "#475569",
+          color: "var(--c-text-3)",
           marginTop: "10px",
           marginBottom: 0,
           fontStyle: "italic",
           textAlign: "center",
+          letterSpacing: "normal",
+          textTransform: "none",
+          fontWeight: 400,
         }}
       >
         Drag to rotate · hover a country for its risk level

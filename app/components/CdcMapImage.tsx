@@ -65,18 +65,18 @@ export default function CdcMapImage({
             display: "block",
             width: "100%",
             padding: 0,
-            border: "1px solid rgba(255,255,255,0.06)",
-            borderRadius: "10px",
-            background: "rgba(255,255,255,0.02)",
+            border: "1px solid var(--c-border)",
+            borderRadius: "var(--c-radius-sm)",
+            background: "var(--c-surface)",
             cursor: "zoom-in",
             position: "relative",
             overflow: "hidden",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(125,211,252,0.4)";
+            e.currentTarget.style.borderColor = "var(--c-accent-border)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+            e.currentTarget.style.borderColor = "var(--c-border)";
           }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -130,12 +130,15 @@ export default function CdcMapImage({
         </button>
         {caption && (
           <figcaption
+            className="t-micro"
             style={{
-              fontSize: "10.5px",
-              color: "#64748b",
+              color: "var(--c-text-3)",
               margin: 0,
               lineHeight: 1.4,
               textAlign: "center",
+              letterSpacing: "normal",
+              textTransform: "none",
+              fontWeight: 400,
             }}
           >
             {caption}
@@ -175,10 +178,10 @@ export default function CdcMapImage({
               right: "16px",
               width: "40px",
               height: "40px",
-              borderRadius: "10px",
-              background: "rgba(255,255,255,0.06)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "#e2e8f0",
+              borderRadius: "var(--c-radius-sm)",
+              background: "rgba(255,255,255,0.12)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              color: "#ffffff",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -186,10 +189,10 @@ export default function CdcMapImage({
               transition: "all 0.15s",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.22)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+              e.currentTarget.style.background = "rgba(255,255,255,0.12)";
             }}
           >
             <svg
@@ -235,8 +238,8 @@ export default function CdcMapImage({
                 left: "50%",
                 transform: "translateX(-50%)",
                 fontSize: "12px",
-                color: "#94a3b8",
-                background: "rgba(3, 7, 18, 0.65)",
+                color: "#e2e8f0",
+                background: "rgba(3, 7, 18, 0.72)",
                 padding: "6px 14px",
                 borderRadius: "999px",
                 margin: 0,

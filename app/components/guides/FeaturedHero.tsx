@@ -130,9 +130,9 @@ export default function FeaturedHero({ articles }: Props) {
         style={{
           position: "relative",
           height: isDesktop ? "340px" : "320px",
-          borderRadius: "24px",
+          borderRadius: "var(--c-radius-lg)",
           overflow: "hidden",
-          border: "1px solid rgba(255,255,255,0.07)",
+          border: "1px solid var(--c-border)",
         }}
       >
         {articles.map((article, i) => {
@@ -264,9 +264,9 @@ export default function FeaturedHero({ articles }: Props) {
                     letterSpacing: "0.1em",
                     padding: "5px 12px",
                     borderRadius: "6px",
-                    background: "rgba(251,191,36,0.15)",
-                    border: "1px solid rgba(251,191,36,0.35)",
-                    color: "#fcd34d",
+                    background: "var(--c-accent)",
+                    border: "1px solid var(--c-accent)",
+                    color: "var(--c-on-accent)",
                     marginBottom: "18px",
                   }}
                 >
@@ -388,7 +388,7 @@ export default function FeaturedHero({ articles }: Props) {
                   height: "8px",
                   borderRadius: "999px",
                   border: "none",
-                  background: active ? "#7dd3fc" : "rgba(255,255,255,0.18)",
+                  background: active ? "var(--c-accent)" : "var(--c-border-strong)",
                   cursor: "pointer",
                   padding: 0,
                   transition: "all 0.25s ease",

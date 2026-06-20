@@ -65,9 +65,8 @@ export default function DestinationSearch({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      {/* Brighter "Option C" search bar — it carries a persistent cyan ring
-          and soft glow even when not focused, so it reads as the clear
-          primary action without a surrounding card. Focus deepens it. */}
+      {/* Search bar — light surface with an accent ring that deepens on focus,
+          so it reads as the clear primary action without a surrounding card. */}
       <div
         style={{
           display: "flex",
@@ -76,15 +75,13 @@ export default function DestinationSearch({
           borderRadius: "15px",
           padding: "0 22px",
           height: "60px",
-          background: focused
-            ? "rgba(56,189,248,0.07)"
-            : "rgba(255,255,255,0.07)",
+          background: "var(--c-surface)",
           border: `1.5px solid ${
-            focused ? "rgba(56,189,248,0.7)" : "rgba(56,189,248,0.45)"
+            focused ? "var(--c-accent)" : "var(--c-border-strong)"
           }`,
           boxShadow: focused
-            ? "0 0 0 5px rgba(56,189,248,0.12), 0 0 40px rgba(56,189,248,0.14), inset 0 1px 0 rgba(255,255,255,0.06)"
-            : "0 0 0 4px rgba(56,189,248,0.08), 0 0 32px rgba(56,189,248,0.10), inset 0 1px 0 rgba(255,255,255,0.05)",
+            ? "0 0 0 4px var(--c-accent-soft)"
+            : "none",
           transition: "all 0.25s ease",
         }}
       >
@@ -93,7 +90,7 @@ export default function DestinationSearch({
           height="20"
           viewBox="0 0 24 24"
           fill="none"
-          stroke="#7dd3fc"
+          stroke="var(--c-accent)"
           strokeWidth="2"
           strokeLinecap="round"
           aria-hidden="true"
@@ -120,7 +117,7 @@ export default function DestinationSearch({
             background: "transparent",
             border: "none",
             outline: "none",
-            color: "var(--foreground)",
+            color: "var(--c-text)",
             width: "100%",
             fontSize: "16px",
             fontWeight: 500,
@@ -139,11 +136,10 @@ export default function DestinationSearch({
             right: 0,
             top: "calc(100% + 8px)",
             zIndex: 30,
-            background: "rgba(10,16,31,0.97)",
-            border: "1px solid var(--border)",
+            background: "var(--c-surface)",
+            border: "1px solid var(--c-border)",
             borderRadius: "14px",
-            boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-            backdropFilter: "blur(20px)",
+            boxShadow: "0 20px 60px rgba(15,23,42,0.15)",
             overflow: "hidden",
           }}
         >
@@ -166,9 +162,9 @@ export default function DestinationSearch({
                     border: "none",
                     background:
                       i === activeIdx
-                        ? "rgba(255,255,255,0.05)"
+                        ? "var(--c-surface-2)"
                         : "transparent",
-                    color: "#e2e8f0",
+                    color: "var(--c-text)",
                     cursor: "pointer",
                     fontFamily: "inherit",
                     fontSize: "14px",
@@ -177,7 +173,7 @@ export default function DestinationSearch({
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.background =
-                      "rgba(255,255,255,0.04)";
+                      "var(--c-surface-2)";
                     setActiveIdx(i);
                   }}
                   onMouseLeave={(e) => {
@@ -190,7 +186,7 @@ export default function DestinationSearch({
                     <div
                       style={{
                         fontSize: "12px",
-                        color: "var(--text-dim)",
+                        color: "var(--c-text-3)",
                         marginTop: "1px",
                       }}
                     >
@@ -203,8 +199,8 @@ export default function DestinationSearch({
                       fontWeight: 700,
                       letterSpacing: "0.06em",
                       textTransform: "uppercase",
-                      color: "var(--accent)",
-                      background: "var(--accent-glow)",
+                      color: "var(--c-accent)",
+                      background: "var(--c-accent-soft)",
                       padding: "4px 10px",
                       borderRadius: "6px",
                     }}
@@ -218,7 +214,7 @@ export default function DestinationSearch({
             <div
               style={{
                 padding: "20px",
-                color: "var(--text-dim)",
+                color: "var(--c-text-3)",
                 fontSize: "14px",
                 textAlign: "center",
               }}

@@ -8,6 +8,7 @@ import {
   SUPPORTED_COUNTRIES,
 } from "../lib/travelData";
 import { diseases, DISEASE_LIST } from "../lib/diseaseData";
+import ThemeToggle from "./ThemeToggle";
 
 type SearchItem = {
   type: "country" | "disease";
@@ -144,10 +145,8 @@ export default function SiteHeader() {
         top: 0,
         zIndex: 1000,
         width: "100%",
-        borderBottom: "1px solid var(--border)",
-        background: "rgba(3, 7, 18, 0.85)",
-        backdropFilter: "blur(24px) saturate(1.4)",
-        WebkitBackdropFilter: "blur(24px) saturate(1.4)",
+        borderBottom: "1px solid var(--c-border)",
+        background: "var(--c-surface)",
       }}
     >
       <div
@@ -178,15 +177,13 @@ export default function SiteHeader() {
               height: "34px",
               borderRadius: "10px",
               background:
-                "linear-gradient(135deg, rgba(125,211,252,0.18), rgba(56,189,248,0.06))",
-              border: "1px solid rgba(125,211,252,0.25)",
+                "linear-gradient(135deg, var(--c-accent-soft), var(--c-surface))",
+              border: "1px solid var(--c-accent-border)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               position: "relative",
               overflow: "hidden",
-              boxShadow:
-                "0 6px 18px rgba(56,189,248,0.18), inset 0 1px 0 rgba(255,255,255,0.06)",
             }}
           >
             <svg
@@ -196,57 +193,21 @@ export default function SiteHeader() {
               fill="none"
               aria-hidden="true"
             >
-              <circle
-                cx="16"
-                cy="16"
-                r="9"
-                stroke="#7dd3fc"
-                strokeWidth="1.4"
-                fill="none"
-              />
-              <ellipse
-                cx="16"
-                cy="16"
-                rx="9"
-                ry="3.5"
-                stroke="#7dd3fc"
-                strokeWidth="1"
-                fill="none"
-              />
-              <line
-                x1="7"
-                y1="16"
-                x2="25"
-                y2="16"
-                stroke="#7dd3fc"
-                strokeWidth="1"
-              />
+              <circle cx="16" cy="16" r="9" stroke="var(--c-accent)" strokeWidth="1.4" fill="none" />
+              <ellipse cx="16" cy="16" rx="9" ry="3.5" stroke="var(--c-accent)" strokeWidth="1" fill="none" />
+              <line x1="7" y1="16" x2="25" y2="16" stroke="var(--c-accent)" strokeWidth="1" />
             </svg>
-            {/* Subtle top-half highlight for glassmorphism */}
-            <span
-              aria-hidden="true"
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: "50%",
-                background:
-                  "linear-gradient(180deg, rgba(255,255,255,0.08), transparent)",
-                pointerEvents: "none",
-              }}
-            />
           </div>
           <span
             style={{
-              fontWeight: 600,
+              fontWeight: 700,
               fontSize: "18px",
               letterSpacing: "-0.025em",
-              color: "var(--foreground)",
+              color: "var(--c-text)",
             }}
           >
             Travel
-            <span style={{ color: "var(--accent)", fontWeight: 400 }}>Med</span>
+            <span style={{ color: "var(--c-accent)", fontWeight: 500 }}>Med</span>
           </span>
         </Link>
 
@@ -257,7 +218,7 @@ export default function SiteHeader() {
           style={{
             width: "1px",
             height: "24px",
-            background: "rgba(255, 255, 255, 0.1)",
+            background: "var(--c-border)",
             flexShrink: 0,
             marginLeft: "6px",
             marginRight: "6px",
@@ -281,12 +242,8 @@ export default function SiteHeader() {
               borderRadius: "12px",
               padding: "0 14px",
               height: "40px",
-              background: focused
-                ? "rgba(255,255,255,0.08)"
-                : "rgba(255,255,255,0.04)",
-              border: `1px solid ${
-                focused ? "rgba(56,189,248,0.4)" : "rgba(255,255,255,0.07)"
-              }`,
+              background: focused ? "var(--c-surface)" : "var(--c-surface-2)",
+              border: `1px solid ${focused ? "var(--c-accent)" : "var(--c-border)"}`,
               transition: "all 0.25s ease",
             }}
           >
@@ -295,11 +252,7 @@ export default function SiteHeader() {
               height="14"
               viewBox="0 0 24 24"
               fill="none"
-              stroke={
-                focused
-                  ? "rgba(125,211,252,0.95)"
-                  : "rgba(148,163,184,0.7)"
-              }
+              stroke={focused ? "var(--c-accent)" : "var(--c-text-3)"}
               strokeWidth="2.2"
               strokeLinecap="round"
               style={{ flexShrink: 0 }}
@@ -326,7 +279,7 @@ export default function SiteHeader() {
                 background: "transparent",
                 border: "none",
                 outline: "none",
-                color: "#e2e8f0",
+                color: "var(--c-text)",
                 width: "100%",
                 fontSize: "14px",
                 fontFamily: "inherit",
@@ -337,12 +290,12 @@ export default function SiteHeader() {
               <kbd
                 style={{
                   fontSize: "10.5px",
-                  color: "var(--text-dim)",
-                  background: "rgba(255,255,255,0.05)",
+                  color: "var(--c-text-3)",
+                  background: "var(--c-surface)",
                   borderRadius: "4px",
                   padding: "2px 6px",
                   fontFamily: "inherit",
-                  border: "1px solid var(--border)",
+                  border: "1px solid var(--c-border)",
                   flexShrink: 0,
                 }}
               >
@@ -362,11 +315,10 @@ export default function SiteHeader() {
                 left: 0,
                 zIndex: 2000,
                 minWidth: "380px",
-                background: "rgba(10, 18, 36, 0.98)",
-                border: "1px solid var(--border)",
+                background: "var(--c-surface)",
+                border: "1px solid var(--c-border)",
                 borderRadius: "14px",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
-                backdropFilter: "blur(20px)",
+                boxShadow: "0 24px 64px rgba(15, 23, 42, 0.12)",
                 overflow: "hidden",
               }}
             >
@@ -385,11 +337,8 @@ export default function SiteHeader() {
                       width: "100%",
                       padding: "12px 18px",
                       border: "none",
-                      background:
-                        i === activeIdx
-                          ? "rgba(255,255,255,0.06)"
-                          : "transparent",
-                      color: "#e2e8f0",
+                      background: i === activeIdx ? "var(--c-surface-2)" : "transparent",
+                      color: "var(--c-text)",
                       cursor: "pointer",
                       fontFamily: "inherit",
                       fontSize: "14px",
@@ -397,8 +346,7 @@ export default function SiteHeader() {
                       transition: "background 0.1s",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "rgba(255,255,255,0.05)";
+                      e.currentTarget.style.background = "var(--c-surface-2)";
                       setActiveIdx(i);
                     }}
                     onMouseLeave={(e) => {
@@ -421,7 +369,7 @@ export default function SiteHeader() {
                       <div
                         style={{
                           fontSize: "12px",
-                          color: "var(--text-dim)",
+                          color: "var(--c-text-3)",
                           marginTop: "2px",
                         }}
                       >
@@ -435,13 +383,9 @@ export default function SiteHeader() {
                         letterSpacing: "0.06em",
                         textTransform: "uppercase",
                         color:
-                          item.type === "country"
-                            ? "#7dd3fc"
-                            : "var(--text-muted)",
+                          item.type === "country" ? "var(--c-accent-strong)" : "var(--c-text-2)",
                         background:
-                          item.type === "country"
-                            ? "var(--accent-glow)"
-                            : "rgba(255,255,255,0.05)",
+                          item.type === "country" ? "var(--c-accent-soft)" : "var(--c-surface-2)",
                         padding: "4px 10px",
                         borderRadius: "6px",
                       }}
@@ -454,7 +398,7 @@ export default function SiteHeader() {
                 <div
                   style={{
                     padding: "18px",
-                    color: "var(--text-dim)",
+                    color: "var(--c-text-3)",
                     fontSize: "14px",
                     textAlign: "center",
                   }}
@@ -489,12 +433,12 @@ export default function SiteHeader() {
                   padding: "8px 14px",
                   fontSize: "14px",
                   fontWeight: 600,
-                  color: active ? "#7dd3fc" : "#cbd5e1",
+                  color: active ? "var(--c-accent-strong)" : "var(--c-text-2)",
                   textDecoration: "none",
                   borderRadius: "8px",
                   whiteSpace: "nowrap",
                   letterSpacing: "-0.01em",
-                  background: active ? "rgba(56,189,248,0.1)" : "transparent",
+                  background: active ? "var(--c-accent-soft)" : "transparent",
                 }}
               >
                 {item.label}
@@ -503,19 +447,24 @@ export default function SiteHeader() {
           })}
         </nav>
 
-        {/* ── Divider between nav and language selector ────────────── */}
+        {/* ── Divider between nav and controls ─────────────────────── */}
         <div
           aria-hidden="true"
           className="hidden-mobile"
           style={{
             width: "1px",
             height: "24px",
-            background: "rgba(255, 255, 255, 0.1)",
+            background: "var(--c-border)",
             flexShrink: 0,
             marginLeft: "6px",
             marginRight: "6px",
           }}
         />
+
+        {/* ── Theme toggle (desktop) ───────────────────────────────── */}
+        <div className="hidden-mobile" style={{ flexShrink: 0 }}>
+          <ThemeToggle />
+        </div>
 
         {/* ── Language selector (far right) ────────────────────────── */}
         <div
@@ -534,27 +483,15 @@ export default function SiteHeader() {
               padding: "0 12px",
               height: "40px",
               borderRadius: "10px",
-              background: langOpen
-                ? "rgba(255,255,255,0.06)"
-                : "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "#cbd5e1",
+              background: langOpen ? "var(--c-surface)" : "var(--c-surface-2)",
+              border: "1px solid var(--c-border)",
+              color: "var(--c-text-2)",
               fontFamily: "inherit",
               fontSize: "13px",
               fontWeight: 600,
               letterSpacing: "0.02em",
               cursor: "pointer",
               transition: "all 0.15s ease",
-            }}
-            onMouseEnter={(e) => {
-              if (!langOpen) {
-                e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!langOpen) {
-                e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-              }
             }}
           >
             {/* Globe icon */}
@@ -602,11 +539,10 @@ export default function SiteHeader() {
                 right: 0,
                 zIndex: 2000,
                 minWidth: "180px",
-                background: "rgba(10, 18, 36, 0.98)",
-                border: "1px solid var(--border)",
+                background: "var(--c-surface)",
+                border: "1px solid var(--c-border)",
                 borderRadius: "12px",
-                boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
-                backdropFilter: "blur(20px)",
+                boxShadow: "0 24px 64px rgba(15, 23, 42, 0.12)",
                 overflow: "hidden",
                 padding: "4px",
               }}
@@ -630,10 +566,8 @@ export default function SiteHeader() {
                       padding: "10px 12px",
                       border: "none",
                       borderRadius: "8px",
-                      background: isActive
-                        ? "rgba(56,189,248,0.1)"
-                        : "transparent",
-                      color: isActive ? "#7dd3fc" : "#cbd5e1",
+                      background: isActive ? "var(--c-accent-soft)" : "transparent",
+                      color: isActive ? "var(--c-accent-strong)" : "var(--c-text-2)",
                       fontFamily: "inherit",
                       fontSize: "13px",
                       fontWeight: 600,
@@ -643,8 +577,7 @@ export default function SiteHeader() {
                     }}
                     onMouseEnter={(e) => {
                       if (!isActive) {
-                        e.currentTarget.style.background =
-                          "rgba(255,255,255,0.05)";
+                        e.currentTarget.style.background = "var(--c-surface-2)";
                       }
                     }}
                     onMouseLeave={(e) => {
@@ -659,7 +592,7 @@ export default function SiteHeader() {
                           fontSize: "10px",
                           fontWeight: 700,
                           letterSpacing: "0.05em",
-                          color: isActive ? "#7dd3fc" : "#64748b",
+                          color: isActive ? "var(--c-accent-strong)" : "var(--c-text-3)",
                           minWidth: "20px",
                         }}
                       >
@@ -688,9 +621,9 @@ export default function SiteHeader() {
                 style={{
                   marginTop: "4px",
                   padding: "8px 12px",
-                  borderTop: "1px solid rgba(255,255,255,0.06)",
+                  borderTop: "1px solid var(--c-border)",
                   fontSize: "11px",
-                  color: "#475569",
+                  color: "var(--c-text-3)",
                   lineHeight: 1.4,
                 }}
               >
@@ -709,7 +642,7 @@ export default function SiteHeader() {
             display: "none",
             background: "none",
             border: "none",
-            color: "var(--text-muted)",
+            color: "var(--c-text-2)",
             cursor: "pointer",
             padding: "8px",
             marginLeft: "auto",
@@ -748,7 +681,7 @@ export default function SiteHeader() {
             display: "none",
             flexDirection: "column",
             padding: "8px 28px 16px",
-            borderTop: "1px solid var(--border)",
+            borderTop: "1px solid var(--c-border)",
           }}
         >
           {NAV_LINKS.map((item) => {
@@ -763,24 +696,26 @@ export default function SiteHeader() {
                   padding: "12px 0",
                   fontSize: "15px",
                   fontWeight: active ? 700 : 500,
-                  color: active ? "#7dd3fc" : "var(--text-muted)",
+                  color: active ? "var(--c-accent-strong)" : "var(--c-text-2)",
                   textDecoration: "none",
-                  borderBottom: "1px solid var(--border)",
+                  borderBottom: "1px solid var(--c-border)",
                 }}
               >
                 {item.label}
               </a>
             );
           })}
-          {/* Language options in mobile menu */}
+          {/* Theme + language options in mobile menu */}
           <div
             style={{
               display: "flex",
+              alignItems: "center",
               gap: "6px",
               flexWrap: "wrap",
               paddingTop: "12px",
             }}
           >
+            <ThemeToggle />
             {LANGUAGES.map((lang) => {
               const isActive = lang.code === activeLang;
               return (
@@ -796,13 +731,9 @@ export default function SiteHeader() {
                     fontSize: "12px",
                     fontWeight: 700,
                     letterSpacing: "0.04em",
-                    border: `1px solid ${
-                      isActive ? "rgba(56,189,248,0.3)" : "rgba(255,255,255,0.08)"
-                    }`,
-                    background: isActive
-                      ? "rgba(56,189,248,0.1)"
-                      : "rgba(255,255,255,0.03)",
-                    color: isActive ? "#7dd3fc" : "#94a3b8",
+                    border: `1px solid ${isActive ? "var(--c-accent-border)" : "var(--c-border)"}`,
+                    background: isActive ? "var(--c-accent-soft)" : "var(--c-surface-2)",
+                    color: isActive ? "var(--c-accent-strong)" : "var(--c-text-2)",
                     fontFamily: "inherit",
                     cursor: "pointer",
                   }}

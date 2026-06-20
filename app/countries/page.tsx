@@ -27,24 +27,28 @@ function getCountryRisks(label: string): RiskChip[] {
   const dengue = dengueRiskByCountry[label];
   const yf = yellowFeverByCountry[label];
 
+  const danger = { color: "var(--c-danger)", background: "var(--c-danger-soft)", border: "var(--c-danger-border)" };
+  const warning = { color: "var(--c-warning)", background: "var(--c-warning-soft)", border: "var(--c-warning-border)" };
+  const info = { color: "var(--c-info)", background: "var(--c-info-soft)", border: "var(--c-info-border)" };
+
   if (malaria === "high") {
-    chips.push({ short: "M", full: "Malaria — high", color: "#fca5a5", background: "rgba(239,68,68,0.16)", border: "rgba(239,68,68,0.32)" });
+    chips.push({ short: "M", full: "Malaria — high", ...danger });
   } else if (malaria === "moderate") {
-    chips.push({ short: "M", full: "Malaria — present", color: "#fbbf24", background: "rgba(245,158,11,0.16)", border: "rgba(245,158,11,0.3)" });
+    chips.push({ short: "M", full: "Malaria — present", ...warning });
   } else if (malaria === "low") {
-    chips.push({ short: "M", full: "Malaria — limited areas", color: "#fde68a", background: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.2)" });
+    chips.push({ short: "M", full: "Malaria — limited areas", ...info });
   }
 
   if (dengue === "high") {
-    chips.push({ short: "D", full: "Dengue — high", color: "#fdba74", background: "rgba(249,115,22,0.16)", border: "rgba(249,115,22,0.3)" });
+    chips.push({ short: "D", full: "Dengue — high", ...danger });
   } else if (dengue === "moderate") {
-    chips.push({ short: "D", full: "Dengue — moderate", color: "#fed7aa", background: "rgba(249,115,22,0.1)", border: "rgba(249,115,22,0.2)" });
+    chips.push({ short: "D", full: "Dengue — moderate", ...warning });
   }
 
   if (yf === "required") {
-    chips.push({ short: "YF", full: "Yellow fever — high", color: "#fcd34d", background: "rgba(234,179,8,0.16)", border: "rgba(234,179,8,0.3)" });
+    chips.push({ short: "YF", full: "Yellow fever — high", ...danger });
   } else if (yf === "recommended") {
-    chips.push({ short: "YF", full: "Yellow fever — moderate", color: "#fde68a", background: "rgba(234,179,8,0.1)", border: "rgba(234,179,8,0.2)" });
+    chips.push({ short: "YF", full: "Yellow fever — moderate", ...warning });
   }
 
   return chips;
@@ -191,50 +195,45 @@ export default function CountriesPage() {
     <main
       style={{
         minHeight: "100vh",
-        background: "#030712",
-        color: "#f1f5f9",
+        background: "var(--c-bg)",
+        color: "var(--c-text)",
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
       {/* ── Hero / search ────────────────────────────────────────────── */}
       <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "56px 24px 0" }}>
         <div
+          className="t-micro"
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "8px",
             padding: "6px 14px",
             borderRadius: "999px",
-            background: "rgba(56,189,248,0.08)",
-            border: "1px solid rgba(56,189,248,0.2)",
+            background: "var(--c-accent-soft)",
+            border: "1px solid var(--c-accent-border)",
             marginBottom: "20px",
-            fontSize: "11px",
             fontWeight: 700,
-            color: "#7dd3fc",
-            letterSpacing: "0.06em",
-            textTransform: "uppercase",
+            color: "var(--c-accent-strong)",
           }}
         >
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#38bdf8", boxShadow: "0 0 6px rgba(56,189,248,0.6)" }} />
+          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--c-accent)" }} />
           {DESTINATION_LIST.length} destinations
         </div>
         <h1
+          className="t-display"
           style={{
-            fontSize: "clamp(36px, 4.5vw, 56px)",
-            fontWeight: 800,
-            letterSpacing: "-0.04em",
-            lineHeight: 1.05,
             margin: "0 0 14px",
+            color: "var(--c-text)",
           }}
         >
           Where are you traveling?
         </h1>
         <p
+          className="t-body"
           style={{
-            fontSize: "16px",
-            color: "#94a3b8",
+            color: "var(--c-text-2)",
             maxWidth: "560px",
-            lineHeight: 1.6,
             margin: "0 0 36px",
           }}
         >
@@ -249,15 +248,15 @@ export default function CountriesPage() {
             gap: "12px",
             padding: "0 22px",
             height: "60px",
-            borderRadius: "16px",
-            background: "rgba(255,255,255,0.04)",
-            border: search ? "1px solid rgba(56,189,248,0.4)" : "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "var(--c-radius-lg)",
+            background: "var(--c-surface)",
+            border: search ? "1px solid var(--c-accent)" : "1px solid var(--c-border)",
             marginBottom: "28px",
-            transition: "border-color 0.2s",
-            boxShadow: search ? "0 8px 30px rgba(56,189,248,0.08)" : "none",
+            transition: "border-color 0.2s, box-shadow 0.2s",
+            boxShadow: search ? "0 4px 16px var(--c-accent-soft)" : "none",
           }}
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={search ? "#7dd3fc" : "#64748b"} strokeWidth="2.2" strokeLinecap="round">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke={search ? "var(--c-accent)" : "var(--c-text-3)"} strokeWidth="2.2" strokeLinecap="round">
             <circle cx="10.5" cy="10.5" r="7.5" />
             <path d="m21 21-5-5" />
           </svg>
@@ -271,7 +270,7 @@ export default function CountriesPage() {
               background: "transparent",
               border: "none",
               outline: "none",
-              color: "#f1f5f9",
+              color: "var(--c-text)",
               flex: 1,
               fontSize: "16px",
               fontFamily: "inherit",
@@ -282,15 +281,15 @@ export default function CountriesPage() {
             <button
               onClick={() => setSearch("")}
               aria-label="Clear search"
+              className="t-label"
               style={{
-                background: "rgba(255,255,255,0.05)",
-                border: "1px solid rgba(255,255,255,0.08)",
-                color: "#94a3b8",
+                background: "var(--c-surface-2)",
+                border: "1px solid var(--c-border)",
+                color: "var(--c-text-2)",
                 cursor: "pointer",
-                fontSize: "14px",
                 lineHeight: 1,
                 padding: "6px 10px",
-                borderRadius: "8px",
+                borderRadius: "var(--c-radius-sm)",
                 fontFamily: "inherit",
               }}
             >
@@ -316,9 +315,9 @@ export default function CountriesPage() {
               alignItems: "center",
               gap: "2px",
               padding: "3px",
-              borderRadius: "10px",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              borderRadius: "var(--c-radius-md)",
+              background: "var(--c-surface-2)",
+              border: "1px solid var(--c-border)",
             }}
           >
             <ViewToggleButton active={view === "alpha"} onClick={() => setView("alpha")}>
@@ -328,7 +327,7 @@ export default function CountriesPage() {
               By continent
             </ViewToggleButton>
           </div>
-          <span style={{ fontSize: "13px", color: "#64748b", fontWeight: 500 }}>
+          <span className="t-label" style={{ color: "var(--c-text-3)" }}>
             {totalShown === DESTINATION_LIST.length
               ? `Showing all ${totalShown}`
               : `${totalShown} ${totalShown === 1 ? "match" : "matches"}`}
@@ -363,14 +362,14 @@ export default function CountriesPage() {
                     style={{ marginBottom: "32px", scrollMarginTop: "100px" }}
                   >
                     <h2
+                      className="t-label"
                       style={{
-                        fontSize: "13px",
                         fontWeight: 700,
-                        color: "#475569",
+                        color: "var(--c-text-3)",
                         letterSpacing: "0.1em",
                         margin: "0 0 12px",
                         paddingBottom: "10px",
-                        borderBottom: "1px solid rgba(255,255,255,0.06)",
+                        borderBottom: "1px solid var(--c-border)",
                       }}
                     >
                       {letter}
@@ -388,9 +387,9 @@ export default function CountriesPage() {
                   flexDirection: "column",
                   gap: "2px",
                   padding: "8px 4px",
-                  borderRadius: "10px",
-                  background: "rgba(255,255,255,0.02)",
-                  border: "1px solid rgba(255,255,255,0.04)",
+                  borderRadius: "var(--c-radius-md)",
+                  background: "var(--c-surface)",
+                  border: "1px solid var(--c-border)",
                 }}
               >
                 {allLetters.map((letter) => {
@@ -415,9 +414,10 @@ export default function CountriesPage() {
                         fontSize: "11px",
                         fontWeight: 700,
                         textDecoration: "none",
-                        color: isActive ? "#7dd3fc" : hasResults ? "#94a3b8" : "rgba(100,116,139,0.4)",
-                        background: isActive ? "rgba(56,189,248,0.12)" : "transparent",
-                        borderRadius: "5px",
+                        color: isActive ? "var(--c-accent-strong)" : hasResults ? "var(--c-text-2)" : "var(--c-text-3)",
+                        opacity: hasResults ? 1 : 0.45,
+                        background: isActive ? "var(--c-accent-soft)" : "transparent",
+                        borderRadius: "var(--c-radius-sm)",
                         transition: "all 0.15s",
                         pointerEvents: hasResults ? "auto" : "none",
                         cursor: hasResults ? "pointer" : "default",
@@ -446,20 +446,22 @@ export default function CountriesPage() {
                       alignItems: "center",
                       gap: "12px",
                       padding: "16px 20px",
-                      borderRadius: "12px",
-                      background: "rgba(255,255,255,0.025)",
-                      border: "1px solid rgba(255,255,255,0.06)",
-                      color: "#f1f5f9",
+                      borderRadius: "var(--c-radius-md)",
+                      background: "var(--c-surface)",
+                      border: "1px solid var(--c-border)",
+                      color: "var(--c-text)",
                       cursor: "pointer",
                       fontFamily: "inherit",
                       textAlign: "left",
-                      transition: "background 0.15s",
+                      transition: "background 0.15s, border-color 0.15s",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                      e.currentTarget.style.background = "var(--c-surface-2)";
+                      e.currentTarget.style.borderColor = "var(--c-border-strong)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.025)";
+                      e.currentTarget.style.background = "var(--c-surface)";
+                      e.currentTarget.style.borderColor = "var(--c-border)";
                     }}
                   >
                     <svg
@@ -467,7 +469,7 @@ export default function CountriesPage() {
                       height="14"
                       viewBox="0 0 24 24"
                       fill="none"
-                      stroke="#94a3b8"
+                      stroke="var(--c-text-3)"
                       strokeWidth="2.4"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -478,18 +480,20 @@ export default function CountriesPage() {
                     >
                       <path d="m9 18 6-6-6-6" />
                     </svg>
-                    <h2 style={{ fontSize: "16px", fontWeight: 700, margin: 0, letterSpacing: "-0.02em", flex: 1 }}>
+                    <h2 className="t-h3" style={{ margin: 0, flex: 1, color: "var(--c-text)" }}>
                       {continent}
                     </h2>
                     <span
+                      className="t-micro"
                       style={{
-                        fontSize: "12px",
                         fontWeight: 600,
-                        color: "#64748b",
-                        background: "rgba(255,255,255,0.04)",
+                        color: "var(--c-text-3)",
+                        background: "var(--c-surface-2)",
                         padding: "3px 10px",
                         borderRadius: "999px",
-                        border: "1px solid rgba(255,255,255,0.06)",
+                        border: "1px solid var(--c-border)",
+                        letterSpacing: "normal",
+                        textTransform: "none",
                       }}
                     >
                       {slugs.length}
@@ -533,18 +537,17 @@ function ViewToggleButton({
   return (
     <button
       onClick={onClick}
+      className="t-label"
       style={{
         padding: "8px 16px",
-        fontSize: "13px",
         fontWeight: 600,
-        borderRadius: "7px",
-        background: active ? "rgba(56,189,248,0.12)" : "transparent",
-        color: active ? "#7dd3fc" : "#94a3b8",
+        borderRadius: "var(--c-radius-sm)",
+        background: active ? "var(--c-accent-soft)" : "transparent",
+        color: active ? "var(--c-accent-strong)" : "var(--c-text-2)",
         border: "none",
         cursor: "pointer",
         fontFamily: "inherit",
         transition: "all 0.15s",
-        letterSpacing: "-0.01em",
       }}
     >
       {children}
@@ -581,26 +584,26 @@ function CountryCard({ slug }: { slug: CountrySlug }) {
         alignItems: "center",
         gap: "14px",
         padding: "14px 16px 14px 18px",
-        borderRadius: "12px",
+        borderRadius: "var(--c-radius-md)",
         textDecoration: "none",
-        color: "#f1f5f9",
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.05)",
+        color: "var(--c-text)",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-border)",
         position: "relative",
         overflow: "hidden",
         transition: "all 0.18s ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-        e.currentTarget.style.borderColor = "rgba(125,211,252,0.25)";
+        e.currentTarget.style.background = "var(--c-surface-2)";
+        e.currentTarget.style.borderColor = "var(--c-accent-border)";
         e.currentTarget.style.transform = "translateY(-1px)";
         // Reveal the cyan accent stripe (rendered via ::before below)
         const stripe = e.currentTarget.querySelector(".accent-stripe") as HTMLElement;
         if (stripe) stripe.style.opacity = "1";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(255,255,255,0.02)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.05)";
+        e.currentTarget.style.background = "var(--c-surface)";
+        e.currentTarget.style.borderColor = "var(--c-border)";
         e.currentTarget.style.transform = "none";
         const stripe = e.currentTarget.querySelector(".accent-stripe") as HTMLElement;
         if (stripe) stripe.style.opacity = "0";
@@ -616,7 +619,7 @@ function CountryCard({ slug }: { slug: CountrySlug }) {
           bottom: "12%",
           width: "3px",
           borderRadius: "0 3px 3px 0",
-          background: "linear-gradient(to bottom, #38bdf8, rgba(56,189,248,0.3))",
+          background: "linear-gradient(to bottom, var(--c-accent), var(--c-accent-soft))",
           opacity: 0,
           transition: "opacity 0.18s",
         }}
@@ -657,14 +660,13 @@ function CountryCard({ slug }: { slug: CountrySlug }) {
                 width: "6px",
                 height: "6px",
                 borderRadius: "50%",
-                background: "#38bdf8",
-                boxShadow: "0 0 6px rgba(56,189,248,0.7)",
+                background: "var(--c-accent)",
                 flexShrink: 0,
               }}
             />
           )}
         </div>
-        <div style={{ fontSize: "12px", color: "#64748b", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <div style={{ fontSize: "12px", color: "var(--c-text-3)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
           {c.region}
         </div>
       </div>
@@ -701,7 +703,7 @@ function CountryCard({ slug }: { slug: CountrySlug }) {
         height="14"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#475569"
+        stroke="var(--c-text-3)"
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -719,28 +721,28 @@ function EmptyState({ search, onClear }: { search: string; onClear: () => void }
       style={{
         textAlign: "center",
         padding: "80px 20px",
-        borderRadius: "16px",
-        border: "1px dashed rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.01)",
+        borderRadius: "var(--c-radius-lg)",
+        border: "1px dashed var(--c-border-strong)",
+        background: "var(--c-surface)",
       }}
     >
-      <div style={{ fontSize: "32px", marginBottom: "12px", opacity: 0.5 }}>🔍</div>
-      <p style={{ fontSize: "16px", color: "#cbd5e1", margin: "0 0 8px", fontWeight: 600 }}>
+      <div style={{ fontSize: "32px", marginBottom: "12px", opacity: 0.6 }}>🔍</div>
+      <p className="t-h3" style={{ color: "var(--c-text)", margin: "0 0 8px", fontWeight: 600 }}>
         No countries match &ldquo;{search}&rdquo;
       </p>
-      <p style={{ fontSize: "13px", color: "#64748b", margin: "0 0 18px" }}>
+      <p className="t-label" style={{ color: "var(--c-text-3)", margin: "0 0 18px" }}>
         Try a different spelling, or browse the full list.
       </p>
       <button
         onClick={onClear}
+        className="t-label"
         style={{
           padding: "10px 20px",
-          fontSize: "13px",
           fontWeight: 600,
-          borderRadius: "8px",
-          background: "rgba(56,189,248,0.1)",
-          border: "1px solid rgba(56,189,248,0.25)",
-          color: "#7dd3fc",
+          borderRadius: "var(--c-radius-sm)",
+          background: "var(--c-accent-soft)",
+          border: "1px solid var(--c-accent-border)",
+          color: "var(--c-accent-strong)",
           cursor: "pointer",
           fontFamily: "inherit",
         }}

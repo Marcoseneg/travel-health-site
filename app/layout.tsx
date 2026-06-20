@@ -110,10 +110,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Apply the saved theme before first paint to avoid a flash.
+            Light is the default; dark is opt-in via the header toggle. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}})();",
+          }}
+        />
+      </head>
       <body
         style={{
-          background: "var(--background)",
-          color: "var(--foreground)",
+          background: "var(--c-bg)",
+          color: "var(--c-text)",
           fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
         }}
       >

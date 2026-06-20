@@ -24,19 +24,27 @@ type RiskBadge = {
   weight: number; // for sorting: higher = more severe
 };
 
+// Severity tones mapped to semantic light-theme tokens (mirrors country page):
+//   high/required → danger, moderate/recommended/present → warning,
+//   low/limited/possible/sporadic → info, none/generally-not → neutral.
+const dangerTone = { color: "var(--c-danger)", background: "var(--c-danger-soft)", border: "var(--c-danger-border)" };
+const warningTone = { color: "var(--c-warning)", background: "var(--c-warning-soft)", border: "var(--c-warning-border)" };
+const infoTone = { color: "var(--c-info)", background: "var(--c-info-soft)", border: "var(--c-info-border)" };
+const neutralTone = { color: "var(--c-text-3)", background: "var(--c-surface-2)", border: "var(--c-border)" };
+
 const BADGE_MAP: Record<string, RiskBadge> = {
-  high: { label: "High", color: "#fca5a5", background: "rgba(239,68,68,0.14)", border: "rgba(239,68,68,0.3)", weight: 4 },
-  required: { label: "Required", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)", weight: 4 },
-  "required-or-recommended": { label: "Required / recommended", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)", weight: 4 },
-  moderate: { label: "Moderate", color: "#fbbf24", background: "rgba(245,158,11,0.14)", border: "rgba(245,158,11,0.28)", weight: 3 },
-  recommended: { label: "Recommended", color: "#fcd34d", background: "rgba(234,179,8,0.12)", border: "rgba(234,179,8,0.26)", weight: 3 },
-  present: { label: "Present", color: "#fbbf24", background: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.26)", weight: 3 },
-  limited: { label: "Limited", color: "#bae6fd", background: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.24)", weight: 2 },
-  possible: { label: "Possible", color: "#bae6fd", background: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.24)", weight: 2 },
-  low: { label: "Low", color: "#bae6fd", background: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)", weight: 1 },
-  sporadic: { label: "Sporadic", color: "#bae6fd", background: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)", weight: 1 },
-  "generally-not": { label: "Not required", color: "#94a3b8", background: "rgba(148,163,184,0.06)", border: "rgba(148,163,184,0.14)", weight: 0 },
-  none: { label: "None", color: "#64748b", background: "rgba(100,116,139,0.06)", border: "rgba(100,116,139,0.14)", weight: 0 },
+  high: { label: "High", ...dangerTone, weight: 4 },
+  required: { label: "Required", ...dangerTone, weight: 4 },
+  "required-or-recommended": { label: "Required / recommended", ...dangerTone, weight: 4 },
+  moderate: { label: "Moderate", ...warningTone, weight: 3 },
+  recommended: { label: "Recommended", ...warningTone, weight: 3 },
+  present: { label: "Present", ...warningTone, weight: 3 },
+  limited: { label: "Limited", ...infoTone, weight: 2 },
+  possible: { label: "Possible", ...infoTone, weight: 2 },
+  low: { label: "Low", ...infoTone, weight: 1 },
+  sporadic: { label: "Sporadic", ...infoTone, weight: 1 },
+  "generally-not": { label: "Not required", ...neutralTone, weight: 0 },
+  none: { label: "None", ...neutralTone, weight: 0 },
 };
 
 function badge(level: string | undefined): RiskBadge {
@@ -103,10 +111,10 @@ export default async function ItineraryPage({ searchParams }: Props) {
     return (
       <main style={pageBg}>
         <section style={{ maxWidth: "720px", margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
-          <h1 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.03em", margin: "0 0 12px" }}>
+          <h1 className="t-h1" style={{ margin: "0 0 12px", color: "var(--c-text)" }}>
             No destinations selected
           </h1>
-          <p style={{ color: "#94a3b8", fontSize: "15px", marginBottom: "28px" }}>
+          <p className="t-body" style={{ color: "var(--c-text-2)", marginBottom: "28px" }}>
             Build an itinerary by selecting destinations on the homepage.
           </p>
           <Link href="/" style={primaryBtnStyle}>
@@ -318,15 +326,7 @@ export default async function ItineraryPage({ searchParams }: Props) {
         {/* ── Header ──────────────────────────────────────────────── */}
         <div style={{ marginBottom: "32px" }}>
           <p style={eyebrowStyle}>Combined itinerary brief</p>
-          <h1
-            style={{
-              fontSize: "clamp(36px, 4.5vw, 56px)",
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
-              lineHeight: 1,
-              margin: "0 0 20px",
-            }}
-          >
+          <h1 className="t-display" style={{ margin: "0 0 20px", color: "var(--c-text)" }}>
             Your trip health brief
           </h1>
 
@@ -336,16 +336,16 @@ export default async function ItineraryPage({ searchParams }: Props) {
               <Link
                 key={c.slug}
                 href={`/country/${c.slug}`}
+                className="t-label"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "8px",
                   padding: "6px 14px 6px 10px",
                   borderRadius: "999px",
-                  background: "rgba(56,189,248,0.08)",
-                  border: "1px solid rgba(56,189,248,0.22)",
-                  color: "#bae6fd",
-                  fontSize: "13px",
+                  background: "var(--c-accent-soft)",
+                  border: "1px solid var(--c-accent-border)",
+                  color: "var(--c-accent)",
                   fontWeight: 600,
                   textDecoration: "none",
                   transition: "all 0.15s",
@@ -355,7 +355,7 @@ export default async function ItineraryPage({ searchParams }: Props) {
                 {c.label}
               </Link>
             ))}
-            <span style={{ fontSize: "12px", color: "#64748b", marginLeft: "6px" }}>
+            <span className="t-micro" style={{ color: "var(--c-text-3)", marginLeft: "6px", letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>
               {enriched.length} destinations
             </span>
           </div>
@@ -379,14 +379,14 @@ export default async function ItineraryPage({ searchParams }: Props) {
         {/* ── Missing data notice ─────────────────────────────────── */}
         {missingData.length > 0 && (
           <div
+            className="t-label"
             style={{
-              borderRadius: "12px",
-              border: "1px solid rgba(250,204,21,0.18)",
-              background: "rgba(250,204,21,0.05)",
+              borderRadius: "var(--c-radius-sm)",
+              border: "1px solid var(--c-warning-border)",
+              background: "var(--c-warning-soft)",
               padding: "12px 16px",
               marginBottom: "24px",
-              fontSize: "13px",
-              color: "#fde68a",
+              color: "var(--c-warning)",
               lineHeight: 1.55,
             }}
           >
@@ -404,7 +404,7 @@ export default async function ItineraryPage({ searchParams }: Props) {
               consider={considerList}
             />
           ) : (
-            <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>
+            <p className="t-label" style={{ color: "var(--c-text-3)", margin: 0 }}>
               No vaccine recommendations identified for this itinerary.
             </p>
           )}
@@ -543,10 +543,10 @@ export default async function ItineraryPage({ searchParams }: Props) {
               >
                 <span style={{ fontSize: "20px" }}>{c.flag}</span>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: "14px", fontWeight: 600, color: "#f1f5f9" }}>{c.label}</div>
-                  <div style={{ fontSize: "12px", color: "#64748b" }}>View full brief</div>
+                  <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--c-text)" }}>{c.label}</div>
+                  <div style={{ fontSize: "12px", color: "var(--c-text-3)" }}>View full brief</div>
                 </div>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--c-text-3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="m9 18 6-6-6-6" />
                 </svg>
               </Link>
@@ -558,9 +558,9 @@ export default async function ItineraryPage({ searchParams }: Props) {
         <div
           style={{
             position: "relative",
-            borderRadius: "20px",
-            border: "1px solid rgba(167,139,250,0.18)",
-            background: "linear-gradient(135deg, rgba(167,139,250,0.06), rgba(56,189,248,0.03))",
+            borderRadius: "var(--c-radius-lg)",
+            border: "1px solid var(--c-accent-border)",
+            background: "linear-gradient(135deg, var(--c-accent-soft), var(--c-surface))",
             padding: "24px 28px",
             marginBottom: "32px",
             display: "flex",
@@ -573,40 +573,37 @@ export default async function ItineraryPage({ searchParams }: Props) {
               flexShrink: 0,
               width: "44px",
               height: "44px",
-              borderRadius: "12px",
-              background: "rgba(167,139,250,0.12)",
-              border: "1px solid rgba(167,139,250,0.24)",
+              borderRadius: "var(--c-radius-sm)",
+              background: "var(--c-accent-soft)",
+              border: "1px solid var(--c-accent-border)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--c-accent)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
             </svg>
           </div>
           <div style={{ flex: 1 }}>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
-              <p style={{ fontSize: "15px", fontWeight: 700, color: "#f1f5f9", margin: 0 }}>
+              <p className="t-h3" style={{ fontWeight: 700, color: "var(--c-text)", margin: 0 }}>
                 Need region-specific details?
               </p>
               <span
+                className="t-micro"
                 style={{
-                  fontSize: "10px",
-                  fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
                   padding: "2px 7px",
-                  borderRadius: "4px",
-                  background: "rgba(167,139,250,0.12)",
-                  color: "#c4b5fd",
-                  border: "1px solid rgba(167,139,250,0.22)",
+                  borderRadius: "var(--c-radius-sm)",
+                  background: "var(--c-accent-soft)",
+                  color: "var(--c-accent)",
+                  border: "1px solid var(--c-accent-border)",
                 }}
               >
                 Coming soon
               </span>
             </div>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0, lineHeight: 1.55 }}>
+            <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0, lineHeight: 1.55 }}>
               Tell us your exact cities, activities, and travel season — we&apos;ll refine recommendations
               based on regional malaria resistance, seasonal outbreaks, and activity-specific risks.
             </p>
@@ -615,11 +612,14 @@ export default async function ItineraryPage({ searchParams }: Props) {
 
         {/* ── Disclaimer ──────────────────────────────────────────── */}
         <p
+          className="t-micro"
           style={{
-            fontSize: "11px",
-            color: "#475569",
+            color: "var(--c-text-3)",
             textAlign: "center",
             lineHeight: 1.6,
+            letterSpacing: "normal",
+            textTransform: "none",
+            fontWeight: 400,
           }}
         >
           This brief is for informational purposes and does not replace personalized medical advice.
@@ -634,15 +634,15 @@ export default async function ItineraryPage({ searchParams }: Props) {
 // ── Shared styles ───────────────────────────────────────────────────────────
 const pageBg: React.CSSProperties = {
   minHeight: "100vh",
-  background: "#030712",
-  color: "#f1f5f9",
+  background: "var(--c-bg)",
+  color: "var(--c-text)",
   fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
 };
 
 const eyebrowStyle: React.CSSProperties = {
   fontSize: "11px",
   fontWeight: 700,
-  color: "#64748b",
+  color: "var(--c-text-3)",
   letterSpacing: "0.12em",
   textTransform: "uppercase",
   margin: "0 0 8px",
@@ -653,7 +653,7 @@ const backLinkStyle: React.CSSProperties = {
   alignItems: "center",
   gap: "6px",
   fontSize: "13px",
-  color: "#64748b",
+  color: "var(--c-text-3)",
   marginBottom: "24px",
   textDecoration: "none",
 };
@@ -661,16 +661,16 @@ const backLinkStyle: React.CSSProperties = {
 const proseStyle: React.CSSProperties = {
   fontSize: "14px",
   lineHeight: 1.65,
-  color: "#cbd5e1",
+  color: "var(--c-text-2)",
   margin: 0,
 };
 
 const footnoteStyle: React.CSSProperties = {
   fontSize: "13px",
-  color: "#64748b",
+  color: "var(--c-text-3)",
   marginTop: "24px",
   paddingTop: "20px",
-  borderTop: "1px solid rgba(255,255,255,0.05)",
+  borderTop: "1px solid var(--c-border)",
   lineHeight: 1.6,
   margin: "24px 0 0",
 };
@@ -680,9 +680,9 @@ const primaryBtnStyle: React.CSSProperties = {
   alignItems: "center",
   gap: "8px",
   padding: "10px 20px",
-  borderRadius: "12px",
-  background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
-  color: "#02131d",
+  borderRadius: "var(--c-radius-sm)",
+  background: "var(--c-accent)",
+  color: "var(--c-on-accent)",
   fontSize: "14px",
   fontWeight: 700,
   textDecoration: "none",
@@ -693,10 +693,10 @@ const destLinkStyle: React.CSSProperties = {
   alignItems: "center",
   gap: "12px",
   padding: "12px 14px",
-  borderRadius: "12px",
-  background: "rgba(255,255,255,0.02)",
-  border: "1px solid rgba(255,255,255,0.06)",
-  color: "#f1f5f9",
+  borderRadius: "var(--c-radius-sm)",
+  background: "var(--c-surface)",
+  border: "1px solid var(--c-border)",
+  color: "var(--c-text)",
   textDecoration: "none",
   transition: "all 0.15s",
 };
@@ -714,22 +714,14 @@ function Section({
   return (
     <div
       style={{
-        borderRadius: "16px",
-        border: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.02)",
+        borderRadius: "var(--c-radius-md)",
+        border: "1px solid var(--c-border)",
+        background: "var(--c-surface)",
         padding: compact ? "20px 24px" : "24px 28px",
         marginBottom: "16px",
       }}
     >
-      <h2
-        style={{
-          fontSize: "17px",
-          fontWeight: 700,
-          letterSpacing: "-0.02em",
-          margin: "0 0 18px",
-          color: "#f8fafc",
-        }}
-      >
+      <h2 className="t-h3" style={{ margin: "0 0 18px", color: "var(--c-text)", fontWeight: 700 }}>
         {title}
       </h2>
       {children}
@@ -751,33 +743,24 @@ function PeakRiskCard({
   return (
     <div
       style={{
-        borderRadius: "14px",
+        borderRadius: "var(--c-radius-md)",
         border: `1px solid ${peak.border}`,
         background: peak.background,
         padding: "14px 16px",
       }}
     >
-      <p
-        style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#94a3b8",
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
-          margin: "0 0 6px",
-        }}
-      >
+      <p className="t-micro" style={{ color: "var(--c-text-2)", margin: "0 0 6px" }}>
         {name}
       </p>
       <p style={{ fontSize: "15px", fontWeight: 700, color: peak.color, margin: "0 0 2px" }}>
         {peak.label}
       </p>
       {count > 0 ? (
-        <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+        <p style={{ fontSize: "11px", color: "var(--c-text-3)", margin: 0 }}>
           {count} of {total} destination{total !== 1 ? "s" : ""}
         </p>
       ) : (
-        <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>No risk identified</p>
+        <p style={{ fontSize: "11px", color: "var(--c-text-3)", margin: 0 }}>No risk identified</p>
       )}
     </div>
   );
@@ -826,9 +809,9 @@ function lookupItineraryResource(name: string): ExternalResource | null {
 }
 
 const itineraryTableShellStyle: React.CSSProperties = {
-  borderRadius: "12px",
-  border: "1px solid rgba(255,255,255,0.06)",
-  background: "rgba(255,255,255,0.02)",
+  borderRadius: "var(--c-radius-md)",
+  border: "1px solid var(--c-border)",
+  background: "var(--c-surface)",
   overflow: "hidden",
 };
 
@@ -837,7 +820,7 @@ const itineraryTableHeaderStyle: React.CSSProperties = {
   fontWeight: 600,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
-  color: "#94a3b8",
+  color: "var(--c-text-2)",
 };
 
 type AggregatedVaccine = {
@@ -901,8 +884,8 @@ function ItineraryTableHeader() {
         display: "grid",
         gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
         padding: "13px 22px",
-        background: "rgba(255,255,255,0.025)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        background: "var(--c-surface-2)",
+        borderBottom: "1px solid var(--c-border)",
         gap: "20px",
       }}
     >
@@ -924,8 +907,8 @@ function ItineraryRoutineRow({
   const rowBorderBottom = isLast
     ? "none"
     : isRoutineBoundary
-      ? "1.5px solid rgba(255,255,255,0.1)"
-      : "1px solid rgba(255,255,255,0.05)";
+      ? "1.5px solid var(--c-border-strong)"
+      : "1px solid var(--c-border)";
   const paddingBottom = isRoutineBoundary ? "20px" : "14px";
 
   return (
@@ -940,16 +923,16 @@ function ItineraryRoutineRow({
       }}
     >
       <div style={{ minWidth: 0, paddingTop: "2px" }}>
-        <span style={{ fontSize: "14.5px", fontWeight: 600, color: "#e2e8f0", letterSpacing: "-0.005em" }}>
+        <span style={{ fontSize: "14.5px", fontWeight: 600, color: "var(--c-text)", letterSpacing: "-0.005em" }}>
           Routine vaccines
         </span>
       </div>
       <div>
-        <p style={{ fontSize: "13.5px", color: "#cbd5e1", lineHeight: 1.6, margin: "0 0 8px" }}>
+        <p style={{ fontSize: "13.5px", color: "var(--c-text-2)", lineHeight: 1.6, margin: "0 0 8px" }}>
           Make sure you are up-to-date on all routine vaccines before every trip
           — per the Swiss BAG schedule. These include:
         </p>
-        <ul style={{ listStyle: "disc", paddingLeft: "20px", margin: 0, fontSize: "13.5px", lineHeight: 1.7, color: "#cbd5e1" }}>
+        <ul style={{ listStyle: "disc", paddingLeft: "20px", margin: 0, fontSize: "13.5px", lineHeight: 1.7, color: "var(--c-text-2)" }}>
           {ROUTINE_VACCINE_LIST.map((v) => (
             <li key={v.name} style={{ marginBottom: "2px" }}>
               {v.slug ? (
@@ -1005,7 +988,7 @@ function ItineraryVaccineRow({
         gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
         gap: "20px",
         padding: "14px 22px",
-        borderBottom: isLast ? "none" : "1px solid rgba(255,255,255,0.05)",
+        borderBottom: isLast ? "none" : "1px solid var(--c-border)",
         alignItems: "baseline",
       }}
     >
@@ -1020,7 +1003,7 @@ function ItineraryVaccineRow({
             style={{
               fontSize: "14.5px",
               fontWeight: 600,
-              color: muted ? "#94a3b8" : "#e2e8f0",
+              color: muted ? "var(--c-text-2)" : "var(--c-text)",
               letterSpacing: "-0.005em",
             }}
           >
@@ -1037,7 +1020,7 @@ function ItineraryVaccineRow({
             key={gi}
             style={{
               fontSize: "13.5px",
-              color: muted ? "#94a3b8" : "#cbd5e1",
+              color: muted ? "var(--c-text-3)" : "var(--c-text-2)",
               lineHeight: 1.6,
               margin: gi === 0 ? "0" : "8px 0 0",
             }}
@@ -1069,7 +1052,7 @@ function ItineraryVaccineRow({
             <ExternalArrow />
           </a>
         ) : (
-          <span style={{ fontSize: "12.5px", color: "#64748b" }}>—</span>
+          <span style={{ fontSize: "12.5px", color: "var(--c-text-3)" }}>—</span>
         )}
       </div>
     </div>
@@ -1079,25 +1062,25 @@ function ItineraryVaccineRow({
 const vaccineNameLinkStyle: React.CSSProperties = {
   fontSize: "14.5px",
   fontWeight: 600,
-  color: "#7dd3fc",
+  color: "var(--c-accent)",
   textDecoration: "underline",
-  textDecorationColor: "rgba(125, 211, 252, 0.3)",
+  textDecorationColor: "var(--c-accent-border)",
   textUnderlineOffset: "3px",
   letterSpacing: "-0.005em",
 };
 
 const routineLinkStyle: React.CSSProperties = {
-  color: "#7dd3fc",
+  color: "var(--c-accent)",
   textDecoration: "underline",
-  textDecorationColor: "rgba(125, 211, 252, 0.3)",
+  textDecorationColor: "var(--c-accent-border)",
   textUnderlineOffset: "3px",
 };
 
 const refLinkStyle: React.CSSProperties = {
   fontSize: "12.5px",
-  color: "#38bdf8",
+  color: "var(--c-accent)",
   textDecoration: "underline",
-  textDecorationColor: "rgba(56, 189, 248, 0.3)",
+  textDecorationColor: "var(--c-accent-border)",
   textUnderlineOffset: "3px",
   fontWeight: 500,
   display: "inline-flex",
@@ -1142,16 +1125,16 @@ function PerCountryRow({
         alignItems: "center",
         gap: "14px",
         padding: "12px 14px",
-        borderRadius: "12px",
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.04)",
+        borderRadius: "var(--c-radius-sm)",
+        background: "var(--c-surface-2)",
+        border: "1px solid var(--c-border)",
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
         <span style={{ fontSize: "20px", lineHeight: 1 }}>{flag}</span>
-        <span style={{ fontSize: "14px", fontWeight: 600, color: "#f1f5f9" }}>{label}</span>
+        <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--c-text)" }}>{label}</span>
       </div>
-      <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0, lineHeight: 1.55 }}>{prose}</p>
+      <p style={{ fontSize: "13px", color: "var(--c-text-2)", margin: 0, lineHeight: 1.55 }}>{prose}</p>
       <span
         style={{
           fontSize: "11px",
@@ -1202,10 +1185,11 @@ function CombinedDiseaseCard({
 
   return (
     <div
+      className="card-hover"
       style={{
-        borderRadius: "14px",
-        border: "1px solid rgba(255,255,255,0.05)",
-        background: "rgba(255,255,255,0.015)",
+        borderRadius: "var(--c-radius-md)",
+        border: "1px solid var(--c-border)",
+        background: "var(--c-surface)",
         padding: "20px 22px",
       }}
     >
@@ -1223,11 +1207,10 @@ function CombinedDiseaseCard({
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           <Link
             href={`/diseases/${diseaseSlug}`}
+            className="t-h3"
             style={{
-              fontSize: "16px",
               fontWeight: 700,
-              color: "#f8fafc",
-              letterSpacing: "-0.02em",
+              color: "var(--c-text)",
               textDecoration: "none",
               display: "inline-flex",
               alignItems: "center",
@@ -1240,7 +1223,7 @@ function CombinedDiseaseCard({
               height="12"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#475569"
+              stroke="var(--c-text-3)"
               strokeWidth="2.2"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -1255,9 +1238,9 @@ function CombinedDiseaseCard({
               fontWeight: 600,
               padding: "3px 10px",
               borderRadius: "999px",
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.06)",
-              color: "#94a3b8",
+              background: "var(--c-surface-2)",
+              border: "1px solid var(--c-border)",
+              color: "var(--c-text-2)",
               letterSpacing: "0.02em",
             }}
           >
@@ -1299,9 +1282,9 @@ function CombinedDiseaseCard({
                 flex: "1 1 280px",
                 minWidth: "240px",
                 maxWidth: "360px",
-                borderRadius: "12px",
-                background: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.04)",
+                borderRadius: "var(--c-radius-sm)",
+                background: "var(--c-surface-2)",
+                border: "1px solid var(--c-border)",
                 padding: "14px 16px",
                 display: "flex",
                 flexDirection: "column",
@@ -1323,7 +1306,7 @@ function CombinedDiseaseCard({
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "8px",
-                    color: "#f1f5f9",
+                    color: "var(--c-text)",
                     textDecoration: "none",
                     minWidth: 0,
                   }}
@@ -1355,7 +1338,7 @@ function CombinedDiseaseCard({
               <p
                 style={{
                   fontSize: "12.5px",
-                  color: "#cbd5e1",
+                  color: "var(--c-text-2)",
                   lineHeight: 1.55,
                   margin: 0,
                 }}

@@ -84,22 +84,17 @@ export default function OnThisPageNav({ content }: Props) {
       aria-label="On this page"
       style={{
         padding: "20px 22px",
-        borderRadius: "14px",
-        background: "rgba(2, 6, 23, 0.85)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        border: "1px solid rgba(255,255,255,0.08)",
+        borderRadius: "var(--c-radius-md)",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-border)",
         maxHeight: "calc(100vh - 140px)",
         overflowY: "auto",
       }}
     >
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#7dd3fc",
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          color: "var(--c-accent)",
           marginBottom: "14px",
         }}
       >
@@ -128,10 +123,10 @@ export default function OnThisPageNav({ content }: Props) {
                   gap: "10px",
                   padding: "7px 0 7px 14px",
                   borderLeft: `2px solid ${
-                    isActive ? "#7dd3fc" : "rgba(255,255,255,0.06)"
+                    isActive ? "var(--c-accent)" : "var(--c-border)"
                   }`,
                   fontSize: "13px",
-                  color: isActive ? "#f1f5f9" : "#94a3b8",
+                  color: isActive ? "var(--c-text)" : "var(--c-text-2)",
                   textDecoration: "none",
                   lineHeight: 1.4,
                   fontWeight: isActive ? 600 : 400,
@@ -141,7 +136,7 @@ export default function OnThisPageNav({ content }: Props) {
               >
                 <span
                   style={{
-                    color: isActive ? "#7dd3fc" : "#64748b",
+                    color: isActive ? "var(--c-accent)" : "var(--c-text-3)",
                     flexShrink: 0,
                     fontWeight: 600,
                     fontVariantNumeric: "tabular-nums",

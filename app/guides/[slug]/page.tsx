@@ -19,15 +19,16 @@ import SymptomComparison from "../../components/guides/SymptomComparison";
 import { slugify } from "../../lib/utils/formatDate";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
-const PAGE_BG = "#030712";
-const TEXT_PRIMARY = "#f1f5f9";
-const TEXT_BODY = "#cbd5e1";
-const TEXT_MUTED = "#94a3b8";
-const TEXT_FAINT = "#475569";
-const ACCENT = "#38bdf8";
-const ACCENT_BRIGHT = "#7dd3fc";
-const SURFACE = "rgba(255,255,255,0.025)";
-const BORDER = "rgba(255,255,255,0.07)";
+// Mapped to the shared light-theme --c-* tokens defined in globals.css.
+const PAGE_BG = "var(--c-bg)";
+const TEXT_PRIMARY = "var(--c-text)";
+const TEXT_BODY = "var(--c-text-2)";
+const TEXT_MUTED = "var(--c-text-2)";
+const TEXT_FAINT = "var(--c-text-3)";
+const ACCENT = "var(--c-accent)";
+const ACCENT_BRIGHT = "var(--c-accent)";
+const SURFACE = "var(--c-surface-2)";
+const BORDER = "var(--c-border)";
 
 const SIDEBAR_BREAKPOINT = 1000;
 
@@ -175,7 +176,7 @@ export default function GuideArticlePage() {
         href={href}
         target={href?.startsWith("http") ? "_blank" : undefined}
         rel={href?.startsWith("http") ? "noreferrer noopener" : undefined}
-        style={{ color: ACCENT_BRIGHT, textDecoration: "underline", textDecorationColor: "rgba(125,211,252,0.3)", textUnderlineOffset: "3px" }}
+        style={{ color: ACCENT_BRIGHT, textDecoration: "underline", textDecorationColor: "var(--c-accent-border)", textUnderlineOffset: "3px" }}
       >
         {children}
       </a>

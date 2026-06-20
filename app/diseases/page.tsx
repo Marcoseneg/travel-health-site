@@ -100,18 +100,17 @@ export default function DiseasesPage() {
   const activeFilterCount = (transmissionFilter !== "all" ? 1 : 0) + (vaccineOnly ? 1 : 0);
 
   return (
-    <main style={{ minHeight: "100vh", background: "#030712", color: "#f1f5f9", fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif" }}>
+    <main style={{ minHeight: "100vh", background: "var(--c-bg)", color: "var(--c-text)", fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif" }}>
       <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "48px 24px 0" }}>
-        <div style={{
+        <div className="t-micro" style={{
           display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px",
-          borderRadius: "999px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-          marginBottom: "16px", fontSize: "12px", fontWeight: 600, color: "#64748b",
-          letterSpacing: "0.04em", textTransform: "uppercase",
+          borderRadius: "999px", background: "var(--c-surface)", border: "1px solid var(--c-border)",
+          marginBottom: "16px", color: "var(--c-text-3)",
         }}>Reference</div>
-        <h1 style={{ fontSize: "clamp(32px, 4vw, 52px)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.1, margin: "0 0 12px" }}>
+        <h1 className="t-display" style={{ margin: "0 0 12px", color: "var(--c-text)" }}>
           Diseases & risks
         </h1>
-        <p style={{ fontSize: "16px", color: "#64748b", maxWidth: "600px", lineHeight: 1.6, margin: "0 0 32px" }}>
+        <p className="t-body" style={{ color: "var(--c-text-2)", maxWidth: "600px", margin: "0 0 32px" }}>
           Travel-relevant infectious diseases with physician-reviewed prevention guidance.
         </p>
 
@@ -120,11 +119,11 @@ export default function DiseasesPage() {
           {TRANSMISSION_FILTERS.map((f) => {
             const isActive = transmissionFilter === f.value;
             return (
-              <button key={f.value} onClick={() => setTransmissionFilter(f.value)} style={{
-                padding: "7px 16px", borderRadius: "999px", fontSize: "13px", fontWeight: 600, cursor: "pointer",
-                border: `1px solid ${isActive ? "rgba(56,189,248,0.3)" : "rgba(255,255,255,0.07)"}`,
-                background: isActive ? "rgba(56,189,248,0.1)" : "rgba(255,255,255,0.03)",
-                color: isActive ? "#7dd3fc" : "#94a3b8", fontFamily: "inherit", transition: "all 0.2s",
+              <button key={f.value} onClick={() => setTransmissionFilter(f.value)} className="t-label" style={{
+                padding: "7px 16px", borderRadius: "999px", cursor: "pointer",
+                border: `1px solid ${isActive ? "var(--c-accent-border)" : "var(--c-border)"}`,
+                background: isActive ? "var(--c-accent-soft)" : "var(--c-surface)",
+                color: isActive ? "var(--c-accent-strong)" : "var(--c-text-2)", fontFamily: "inherit", transition: "all 0.2s",
                 display: "flex", alignItems: "center", gap: "6px",
               }}>
                 {f.icon && <span style={{ fontSize: "14px" }}>{f.icon}</span>}{f.label}
@@ -134,21 +133,22 @@ export default function DiseasesPage() {
 
           {/* Right side: vaccine toggle + count */}
           <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
-            <button onClick={() => setVaccineOnly(!vaccineOnly)} style={{
-              padding: "7px 16px", borderRadius: "999px", fontSize: "13px", fontWeight: 600, cursor: "pointer",
-              border: `1px solid ${vaccineOnly ? "rgba(52,211,153,0.3)" : "rgba(255,255,255,0.07)"}`,
-              background: vaccineOnly ? "rgba(52,211,153,0.1)" : "rgba(255,255,255,0.03)",
-              color: vaccineOnly ? "#34d399" : "#94a3b8", fontFamily: "inherit", transition: "all 0.2s",
+            <button onClick={() => setVaccineOnly(!vaccineOnly)} className="t-label" style={{
+              padding: "7px 16px", borderRadius: "999px", cursor: "pointer",
+              border: `1px solid ${vaccineOnly ? "var(--c-trust-border)" : "var(--c-border)"}`,
+              background: vaccineOnly ? "var(--c-trust-soft)" : "var(--c-surface)",
+              color: vaccineOnly ? "var(--c-trust)" : "var(--c-text-2)", fontFamily: "inherit", transition: "all 0.2s",
               display: "flex", alignItems: "center", gap: "6px",
             }}>💉 Vaccine available</button>
             {activeFilterCount > 0 && (
-              <button onClick={() => { setTransmissionFilter("all"); setVaccineOnly(false); }} style={{
-                padding: "7px 14px", borderRadius: "999px", fontSize: "12px", fontWeight: 600, cursor: "pointer",
-                border: "none", background: "transparent", color: "#64748b", fontFamily: "inherit",
+              <button onClick={() => { setTransmissionFilter("all"); setVaccineOnly(false); }} className="t-micro" style={{
+                padding: "7px 14px", borderRadius: "999px", cursor: "pointer",
+                border: "none", background: "transparent", color: "var(--c-text-3)", fontFamily: "inherit",
+                textTransform: "none", letterSpacing: "normal", fontWeight: 600,
                 textDecoration: "underline", textUnderlineOffset: "2px",
               }}>Clear ({activeFilterCount})</button>
             )}
-            <span style={{ fontSize: "13px", color: "#475569" }}>{filtered.length} of {DISEASE_LIST.length}</span>
+            <span className="t-label" style={{ color: "var(--c-text-3)" }}>{filtered.length} of {DISEASE_LIST.length}</span>
           </div>
         </div>
       </section>
@@ -175,23 +175,23 @@ export default function DiseasesPage() {
                 style={{
                   display: "flex", flexDirection: "column", padding: "24px 24px 20px 26px",
                   borderRadius: "16px", textDecoration: "none",
-                  background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)",
-                  borderLeft: `3px solid ${accentColor}`, color: "#f1f5f9", transition: "all 0.2s",
+                  background: "var(--c-surface)", border: "1px solid var(--c-border)",
+                  borderLeft: `3px solid ${accentColor}`, color: "var(--c-text)", transition: "all 0.2s",
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.borderLeftColor = accentColor; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.02)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderLeftColor = accentColor; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = "var(--c-surface-2)"; e.currentTarget.style.borderColor = "var(--c-border-strong)"; e.currentTarget.style.borderLeftColor = accentColor; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "var(--c-surface)"; e.currentTarget.style.borderColor = "var(--c-border)"; e.currentTarget.style.borderLeftColor = accentColor; }}
               >
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                  <div style={{ fontSize: "17px", fontWeight: 700, letterSpacing: "-0.02em" }}>{d.label}</div>
-                  <span style={{ fontSize: "12px", color: "#475569" }}>{d.category}</span>
+                  <div className="t-h3" style={{ fontWeight: 700, color: "var(--c-text)" }}>{d.label}</div>
+                  <span className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{d.category}</span>
                 </div>
-                <p style={{ fontSize: "13.5px", color: "#94a3b8", lineHeight: 1.55, margin: "0 0 14px", flex: 1 }}>{desc}</p>
+                <p className="t-body" style={{ color: "var(--c-text-2)", margin: "0 0 14px", flex: 1 }}>{desc}</p>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
                   {tags.map((tag) => (
-                    <span key={tag} style={{
-                      fontSize: "11px", fontWeight: 600, color: "#64748b",
-                      background: "rgba(255,255,255,0.03)", padding: "3px 9px", borderRadius: "6px",
-                      border: "1px solid rgba(255,255,255,0.05)",
+                    <span key={tag} className="t-micro" style={{
+                      color: "var(--c-text-2)", textTransform: "none", letterSpacing: "normal",
+                      background: "var(--c-surface-2)", padding: "3px 9px", borderRadius: "6px",
+                      border: "1px solid var(--c-border)",
                     }}>{tag}</span>
                   ))}
                 </div>

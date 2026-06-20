@@ -14,11 +14,11 @@ const FILTER_BUTTONS: {
   bgActive: string;
   colorActive: string;
 }[] = [
-  { mode: "none", label: "Standard", dotActive: "", bgActive: "rgba(56,189,248,0.18)", colorActive: "#7dd3fc" },
-  { mode: "malaria", label: "Malaria", dotActive: "#ef4444", bgActive: "rgba(239,68,68,0.15)", colorActive: "#fca5a5" },
-  { mode: "dengue", label: "Dengue", dotActive: "#f97316", bgActive: "rgba(249,115,22,0.15)", colorActive: "#fdba74" },
-  { mode: "yellow-fever", label: "Yellow Fever", dotActive: "#f59e0b", bgActive: "rgba(245,158,11,0.15)", colorActive: "#fcd34d" },
-  { mode: "chikungunya", label: "Chikungunya", dotActive: "#a855f7", bgActive: "rgba(168,85,247,0.15)", colorActive: "#c4b5fd" },
+  { mode: "none", label: "Standard", dotActive: "", bgActive: "var(--c-accent-soft)", colorActive: "var(--c-accent-strong)" },
+  { mode: "malaria", label: "Malaria", dotActive: "#ef4444", bgActive: "rgba(239,68,68,0.12)", colorActive: "#b91c1c" },
+  { mode: "dengue", label: "Dengue", dotActive: "#f97316", bgActive: "rgba(249,115,22,0.12)", colorActive: "#c2410c" },
+  { mode: "yellow-fever", label: "Yellow Fever", dotActive: "#f59e0b", bgActive: "rgba(245,158,11,0.12)", colorActive: "#b45309" },
+  { mode: "chikungunya", label: "Chikungunya", dotActive: "#a855f7", bgActive: "rgba(168,85,247,0.12)", colorActive: "#7e22ce" },
 ];
 
 function getLegend(mode: FilterMode) {
@@ -57,10 +57,9 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
           gap: "3px",
           padding: "4px",
           borderRadius: "16px",
-          background: "rgba(8,12,24,0.7)",
-          backdropFilter: "blur(16px) saturate(1.4)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+          background: "var(--c-surface)",
+          border: "1px solid var(--c-border)",
+          boxShadow: "0 8px 24px rgba(15,23,42,0.06)",
         }}
       >
         {FILTER_BUTTONS.map((btn) => {
@@ -77,7 +76,7 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
                 cursor: "pointer",
                 border: "none",
                 background: isActive ? btn.bgActive : "transparent",
-                color: isActive ? btn.colorActive : "#94a3b8",
+                color: isActive ? btn.colorActive : "var(--c-text-2)",
                 fontFamily: "inherit",
                 transition: "all 0.2s",
                 display: "flex",
@@ -118,13 +117,14 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
           {legend.map((item) => (
             <div
               key={item.level}
+              className="t-micro"
               style={{
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
-                fontSize: "12px",
-                color: "#cbd5e1",
-                fontWeight: 500,
+                color: "var(--c-text-2)",
+                letterSpacing: "normal",
+                textTransform: "none",
               }}
             >
               <span
@@ -134,7 +134,7 @@ export default function DiseaseFilterBar({ activeFilter, onFilterChange }: Props
                   borderRadius: "3px",
                   background: item.color,
                   display: "inline-block",
-                  border: "1px solid rgba(255,255,255,0.1)",
+                  border: "1px solid var(--c-border)",
                   flexShrink: 0,
                 }}
               />

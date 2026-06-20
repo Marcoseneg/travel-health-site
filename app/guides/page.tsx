@@ -145,30 +145,28 @@ export default function GuidesPage() {
     <main
       style={{
         minHeight: "100vh",
-        background: "#030712",
-        color: "#f1f5f9",
+        background: "var(--c-bg)",
+        color: "var(--c-text)",
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
       {/* ── Page header ─────────────────────────────────────────────── */}
       <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "56px 24px 0" }}>
         <h1
+          className="t-display"
           style={{
-            fontSize: "clamp(36px, 4.5vw, 56px)",
-            fontWeight: 800,
-            letterSpacing: "-0.04em",
-            lineHeight: 1.05,
             margin: "0 0 18px",
+            color: "var(--c-text)",
           }}
         >
           Guides & articles
         </h1>
         <p
+          className="t-body"
           style={{
             fontSize: "16px",
-            color: "#64748b",
+            color: "var(--c-text-2)",
             maxWidth: "600px",
-            lineHeight: 1.6,
             margin: "0 0 44px",
           }}
         >
@@ -193,7 +191,7 @@ export default function GuidesPage() {
             flexWrap: "wrap",
             marginBottom: "32px",
             paddingBottom: "24px",
-            borderBottom: "1px solid rgba(255,255,255,0.06)",
+            borderBottom: "1px solid var(--c-border)",
           }}
         >
           {categories.map((c) => {
@@ -209,10 +207,10 @@ export default function GuidesPage() {
                   fontWeight: 600,
                   cursor: "pointer",
                   border: `1px solid ${
-                    isActive ? "rgba(56,189,248,0.3)" : "rgba(255,255,255,0.07)"
+                    isActive ? "var(--c-accent-border)" : "var(--c-border)"
                   }`,
-                  background: isActive ? "rgba(56,189,248,0.1)" : "rgba(255,255,255,0.03)",
-                  color: isActive ? "#7dd3fc" : "#94a3b8",
+                  background: isActive ? "var(--c-accent-soft)" : "var(--c-surface)",
+                  color: isActive ? "var(--c-accent)" : "var(--c-text-2)",
                   fontFamily: "inherit",
                   transition: "all 0.2s",
                 }}
@@ -222,7 +220,7 @@ export default function GuidesPage() {
             );
           })}
 
-          <span style={{ fontSize: "13px", color: "#475569", marginLeft: "auto" }}>
+          <span style={{ fontSize: "13px", color: "var(--c-text-3)", marginLeft: "auto" }}>
             {filtered.length} article{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
@@ -231,7 +229,7 @@ export default function GuidesPage() {
       {/* ── Unified article grid ────────────────────────────────────── */}
       <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 24px 80px" }}>
         {filtered.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "64px 0", color: "#475569" }}>
+          <div style={{ textAlign: "center", padding: "64px 0", color: "var(--c-text-3)" }}>
             No articles in this category yet.
           </div>
         ) : (
@@ -258,24 +256,24 @@ export default function GuidesPage() {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    borderRadius: "20px",
+                    borderRadius: "var(--c-radius-lg)",
                     overflow: "hidden",
                     textDecoration: "none",
-                    color: "#f1f5f9",
-                    background: "#0a101f",
-                    border: "1px solid rgba(255,255,255,0.07)",
+                    color: "var(--c-text)",
+                    background: "var(--c-surface)",
+                    border: "1px solid var(--c-border)",
                     transition: "all 0.2s",
                     opacity: isPlaceholder ? 0.62 : 1,
                   }}
                   onMouseEnter={(e) => {
                     e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow = "0 16px 48px rgba(0,0,0,0.35)";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+                    e.currentTarget.style.boxShadow = "0 16px 44px rgba(15,23,42,0.12)";
+                    e.currentTarget.style.borderColor = "var(--c-border-strong)";
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.transform = "translateY(0)";
                     e.currentTarget.style.boxShadow = "none";
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.07)";
+                    e.currentTarget.style.borderColor = "var(--c-border)";
                   }}
                 >
                   {/* ── Cover area: photo if coverImage is set, else gradient + SVG ── */}
@@ -385,6 +383,7 @@ export default function GuidesPage() {
                         letterSpacing: "-0.02em",
                         lineHeight: 1.32,
                         margin: "0 0 10px",
+                        color: "var(--c-text)",
                       }}
                     >
                       {article.title}
@@ -392,7 +391,7 @@ export default function GuidesPage() {
                     <p
                       style={{
                         fontSize: "14px",
-                        color: "#94a3b8",
+                        color: "var(--c-text-2)",
                         lineHeight: 1.55,
                         margin: "0 0 18px",
                         flex: 1,
@@ -406,7 +405,7 @@ export default function GuidesPage() {
                         alignItems: "center",
                         gap: "10px",
                         fontSize: "12px",
-                        color: "#475569",
+                        color: "var(--c-text-3)",
                       }}
                     >
                       <span>{formatDate(article.date)}</span>
@@ -428,20 +427,19 @@ export default function GuidesPage() {
             maxWidth: "1100px",
             margin: "0 auto",
             padding: "48px clamp(20px, 4vw, 48px)",
-            borderRadius: "24px",
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: "var(--c-radius-lg)",
+            background: "var(--c-surface)",
+            border: "1px solid var(--c-border)",
           }}
         >
           <div style={{ textAlign: "center", marginBottom: "44px" }}>
             <h2
+              className="t-h1"
               style={{
                 fontSize: "clamp(22px, 2.6vw, 30px)",
-                fontWeight: 700,
-                letterSpacing: "-0.025em",
                 margin: "0 0 14px",
                 lineHeight: 1.2,
-                color: "#f1f5f9",
+                color: "var(--c-text)",
               }}
             >
               Independent. Physician-written. Kept current.
@@ -449,7 +447,7 @@ export default function GuidesPage() {
             <p
               style={{
                 fontSize: "15px",
-                color: "#94a3b8",
+                color: "var(--c-text-2)",
                 margin: 0,
                 lineHeight: 1.55,
                 maxWidth: "640px",
@@ -485,7 +483,7 @@ export default function GuidesPage() {
                       display: "flex",
                       justifyContent: "center",
                       marginBottom: "14px",
-                      color: "#7dd3fc",
+                      color: "var(--c-accent)",
                     }}
                   >
                     <Icon />
@@ -495,7 +493,7 @@ export default function GuidesPage() {
                       fontSize: "15px",
                       fontWeight: 700,
                       margin: "0 0 8px",
-                      color: "#f1f5f9",
+                      color: "var(--c-text)",
                       letterSpacing: "-0.01em",
                     }}
                   >
@@ -504,7 +502,7 @@ export default function GuidesPage() {
                   <p
                     style={{
                       fontSize: "13.5px",
-                      color: "#94a3b8",
+                      color: "var(--c-text-2)",
                       lineHeight: 1.5,
                       margin: 0,
                     }}

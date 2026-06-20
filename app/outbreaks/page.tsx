@@ -54,16 +54,16 @@ export default async function OutbreaksPage() {
     <main style={pageStyle}>
       <div style={containerStyle}>
         <header style={{ marginBottom: "48px" }}>
-          <p style={kickerStyle}>Live alerts</p>
-          <h1 style={titleStyle}>Outbreak monitor</h1>
-          <p style={subtitleStyle}>
+          <p className="t-label" style={kickerStyle}>Live alerts</p>
+          <h1 className="t-display" style={titleStyle}>Outbreak monitor</h1>
+          <p className="t-body" style={subtitleStyle}>
             Aggregated from ECDC, WHO, and CDC. Refreshed every 6 hours.
           </p>
         </header>
 
         <div style={legendStyle}>
           {OUTBREAK_SOURCES.map((s) => (
-            <span key={s.id} style={legendItemStyle}>
+            <span key={s.id} className="t-micro" style={{ ...legendItemStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 500 }}>
               <SourceDot sourceId={s.id} />
               {s.shortName}
             </span>
@@ -71,7 +71,7 @@ export default async function OutbreaksPage() {
         </div>
 
         {sorted.length === 0 ? (
-          <p style={{ color: "#64748b", fontSize: "14px" }}>
+          <p className="t-body" style={{ color: "var(--c-text-3)" }}>
             No alerts available. Check back soon.
           </p>
         ) : (
@@ -82,7 +82,7 @@ export default async function OutbreaksPage() {
           </div>
         )}
 
-        <footer style={footerStyle}>
+        <footer className="t-label" style={{ ...footerStyle, fontWeight: 400, letterSpacing: "normal" }}>
           <p style={{ margin: "0 0 8px" }}>
             {usingFallback
               ? "Showing cached fallback data. Live feeds will resume on next refresh."
@@ -120,20 +120,20 @@ function AlertCard({ alert }: { alert: OutbreakAlert }) {
     <article style={cardStyle}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "8px" }}>
         {source && (
-          <span style={sourceBadgeStyle}>
+          <span className="t-micro" style={sourceBadgeStyle}>
             <SourceDot sourceId={source.id} />
             {source.shortName}
           </span>
         )}
-        <span style={dateStyle}>{dateLabel}</span>
+        <span className="t-micro" style={{ ...dateStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>{dateLabel}</span>
       </div>
 
-      <a href={alert.url} target="_blank" rel="noopener noreferrer" style={titleLinkStyle}>
+      <a href={alert.url} target="_blank" rel="noopener noreferrer" className="t-h3" style={titleLinkStyle}>
         {alert.title}
         <ExternalArrow />
       </a>
 
-      {alert.summary && <p style={summaryStyle}>{alert.summary}</p>}
+      {alert.summary && <p className="t-body" style={summaryStyle}>{alert.summary}</p>}
 
       {alert.countries && alert.countries.length > 0 && (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", marginTop: "10px" }}>
@@ -141,14 +141,17 @@ function AlertCard({ alert }: { alert: OutbreakAlert }) {
             <Link
               key={slug}
               href={`/country/${slug}`}
+              className="t-micro"
               style={{
-                fontSize: "11.5px",
-                color: "#94a3b8",
+                color: "var(--c-text-2)",
                 textDecoration: "none",
-                padding: "2px 9px",
+                padding: "3px 10px",
                 borderRadius: "999px",
-                background: "rgba(255,255,255,0.025)",
-                border: "1px solid rgba(255,255,255,0.06)",
+                background: "var(--c-surface-2)",
+                border: "1px solid var(--c-border)",
+                letterSpacing: "normal",
+                textTransform: "none",
+                fontWeight: 500,
               }}
             >
               {countryLabel(slug)}
@@ -214,30 +217,22 @@ function ExternalArrow() {
 const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
   padding: "60px 24px 80px",
-  color: "#e2e8f0",
+  background: "var(--c-bg)",
+  color: "var(--c-text)",
+  fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
 };
 const containerStyle: React.CSSProperties = { maxWidth: "880px", margin: "0 auto" };
 const kickerStyle: React.CSSProperties = {
-  fontSize: "11px",
-  fontWeight: 600,
-  letterSpacing: "0.12em",
-  textTransform: "uppercase",
-  color: "#94a3b8",
+  color: "var(--c-accent)",
   margin: "0 0 12px",
 };
 const titleStyle: React.CSSProperties = {
-  fontSize: "44px",
-  fontWeight: 700,
-  letterSpacing: "-0.025em",
-  color: "#f8fafc",
+  color: "var(--c-text)",
   margin: "0 0 14px",
-  lineHeight: 1.05,
 };
 const subtitleStyle: React.CSSProperties = {
-  fontSize: "16px",
-  color: "#94a3b8",
+  color: "var(--c-text-2)",
   margin: 0,
-  lineHeight: 1.55,
 };
 const legendStyle: React.CSSProperties = {
   display: "flex",
@@ -245,65 +240,53 @@ const legendStyle: React.CSSProperties = {
   gap: "6px 16px",
   marginBottom: "32px",
   paddingBottom: "20px",
-  borderBottom: "1px solid rgba(255,255,255,0.04)",
+  borderBottom: "1px solid var(--c-border)",
 };
 const legendItemStyle: React.CSSProperties = {
-  fontSize: "12px",
-  color: "#94a3b8",
+  color: "var(--c-text-2)",
   display: "inline-flex",
   alignItems: "center",
   gap: "6px",
 };
 const cardStyle: React.CSSProperties = {
   padding: "18px 22px",
-  borderRadius: "12px",
-  border: "1px solid rgba(255,255,255,0.06)",
-  background: "rgba(255,255,255,0.02)",
+  borderRadius: "var(--c-radius-md)",
+  border: "1px solid var(--c-border)",
+  background: "var(--c-surface)",
 };
 const sourceBadgeStyle: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   gap: "6px",
-  fontSize: "10.5px",
-  fontWeight: 600,
-  letterSpacing: "0.08em",
-  textTransform: "uppercase",
-  color: "#cbd5e1",
+  color: "var(--c-text-2)",
   padding: "3px 10px",
   borderRadius: "999px",
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.06)",
+  background: "var(--c-surface-2)",
+  border: "1px solid var(--c-border)",
 };
-const dateStyle: React.CSSProperties = { fontSize: "12.5px", color: "#64748b" };
+const dateStyle: React.CSSProperties = { color: "var(--c-text-3)" };
 const titleLinkStyle: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "baseline",
   gap: "4px",
-  fontSize: "16px",
-  fontWeight: 600,
-  color: "#7dd3fc",
+  color: "var(--c-accent)",
   textDecoration: "none",
-  letterSpacing: "-0.01em",
-  lineHeight: 1.4,
 };
 const summaryStyle: React.CSSProperties = {
   marginTop: "8px",
   marginBottom: 0,
-  fontSize: "13.5px",
-  color: "#cbd5e1",
-  lineHeight: 1.6,
+  color: "var(--c-text-2)",
 };
 const footerStyle: React.CSSProperties = {
   marginTop: "60px",
   paddingTop: "24px",
-  borderTop: "1px solid rgba(255,255,255,0.04)",
-  fontSize: "12px",
-  color: "#64748b",
+  borderTop: "1px solid var(--c-border)",
+  color: "var(--c-text-3)",
   lineHeight: 1.6,
 };
 const footerLinkStyle: React.CSSProperties = {
-  color: "#94a3b8",
+  color: "var(--c-accent)",
   textDecoration: "underline",
-  textDecorationColor: "rgba(148, 163, 184, 0.25)",
+  textDecorationColor: "var(--c-accent-border)",
   textUnderlineOffset: "2px",
 };

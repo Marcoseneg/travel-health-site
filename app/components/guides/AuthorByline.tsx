@@ -36,13 +36,13 @@ export default function AuthorByline({ date, readingTime }: Props) {
           width: "44px",
           height: "44px",
           borderRadius: "50%",
-          background: "linear-gradient(135deg, #7dd3fc 0%, #0284c7 100%)",
+          background: "linear-gradient(135deg, var(--c-accent-bright) 0%, var(--c-accent-strong) 100%)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           fontSize: "15px",
           fontWeight: 700,
-          color: "#0c4a6e",
+          color: "var(--c-on-accent)",
           flexShrink: 0,
           letterSpacing: "-0.01em",
         }}
@@ -52,16 +52,16 @@ export default function AuthorByline({ date, readingTime }: Props) {
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        <div style={{ fontSize: "14px", color: "#cbd5e1", lineHeight: 1.4 }}>
+        <div className="t-label" style={{ color: "var(--c-text-2)", lineHeight: 1.4 }}>
           By{" "}
-          <span style={{ color: "#f1f5f9", fontWeight: 600 }}>
+          <span style={{ color: "var(--c-text)", fontWeight: 600 }}>
             Dr. Marco Seneghini
           </span>
         </div>
         <div
+          className="t-label"
           style={{
-            fontSize: "13px",
-            color: "#94a3b8",
+            color: "var(--c-text-3)",
             display: "flex",
             alignItems: "center",
             gap: "8px",
@@ -69,9 +69,9 @@ export default function AuthorByline({ date, readingTime }: Props) {
           }}
         >
           <span>Infectious diseases physician</span>
-          <span style={{ color: "#475569" }}>·</span>
+          <span style={{ color: "var(--c-border-strong)" }}>·</span>
           <span>Updated {formatDate(date)}</span>
-          <span style={{ color: "#475569" }}>·</span>
+          <span style={{ color: "var(--c-border-strong)" }}>·</span>
           <span>{readingTime} min read</span>
         </div>
       </div>

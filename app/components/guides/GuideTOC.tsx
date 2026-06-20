@@ -53,19 +53,16 @@ export default function GuideTOC({ content }: Props) {
     <div
       style={{
         padding: "24px 28px",
-        borderRadius: "16px",
-        background: "rgba(125,211,252,0.04)",
-        border: "1px solid rgba(125,211,252,0.12)",
+        borderRadius: "var(--c-radius-md)",
+        background: "var(--c-accent-soft)",
+        border: "1px solid var(--c-accent-border)",
         marginBottom: "40px",
       }}
     >
       <div
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#7dd3fc",
-          textTransform: "uppercase",
-          letterSpacing: "0.1em",
+          color: "var(--c-accent)",
           marginBottom: "16px",
         }}
       >
@@ -91,7 +88,7 @@ export default function GuideTOC({ content }: Props) {
                 alignItems: "flex-start",
                 gap: "10px",
                 fontSize: "14px",
-                color: "#cbd5e1",
+                color: "var(--c-text-2)",
                 textDecoration: "none",
                 padding: "6px 0",
                 lineHeight: 1.4,
@@ -99,7 +96,7 @@ export default function GuideTOC({ content }: Props) {
             >
               <span
                 style={{
-                  color: "#7dd3fc",
+                  color: "var(--c-accent)",
                   flexShrink: 0,
                   fontSize: "13px",
                   fontWeight: 700,
