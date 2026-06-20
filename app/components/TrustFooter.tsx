@@ -51,37 +51,33 @@ export function TrustBanner() {
           position: "absolute",
           inset: 0,
           background:
-            "radial-gradient(ellipse at center, rgba(56,189,248,0.04) 0%, transparent 60%)",
+            "radial-gradient(ellipse at center, var(--c-accent-soft) 0%, transparent 60%)",
           pointerEvents: "none",
         }}
       />
       <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative" }}>
         <div style={{ textAlign: "center", marginBottom: "44px" }}>
           <div
+            className="t-micro"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
               padding: "6px 16px",
               borderRadius: "999px",
-              background: "rgba(255,255,255,0.03)",
-              border: "1px solid rgba(255,255,255,0.06)",
+              background: "var(--c-trust-soft)",
+              border: "1px solid var(--c-trust-border)",
               marginBottom: "16px",
-              fontSize: "12px",
               fontWeight: 600,
-              color: "#64748b",
-              letterSpacing: "0.04em",
-              textTransform: "uppercase",
+              color: "var(--c-trust)",
             }}
           >
             Why trust us
           </div>
           <h2
+            className="t-h1"
             style={{
-              fontSize: "clamp(28px, 3.5vw, 40px)",
-              fontWeight: 800,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
+              color: "var(--c-text)",
               margin: 0,
             }}
           >
@@ -104,51 +100,49 @@ export function TrustBanner() {
               key={pillar.title}
               style={{
                 padding: "24px",
-                borderRadius: "18px",
-                background: "rgba(255,255,255,0.02)",
-                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: "var(--c-radius-lg)",
+                background: "var(--c-surface)",
+                border: "1px solid var(--c-border)",
                 transition: "border-color 0.2s, background 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.035)";
+                e.currentTarget.style.borderColor = "var(--c-border-strong)";
+                e.currentTarget.style.background = "var(--c-surface-2)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
-                e.currentTarget.style.background = "rgba(255,255,255,0.02)";
+                e.currentTarget.style.borderColor = "var(--c-border)";
+                e.currentTarget.style.background = "var(--c-surface)";
               }}
             >
               <div
                 style={{
                   width: "42px",
                   height: "42px",
-                  borderRadius: "12px",
+                  borderRadius: "var(--c-radius-md)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: "rgba(56,189,248,0.08)",
-                  color: "#38bdf8",
+                  background: "var(--c-trust-soft)",
+                  border: "1px solid var(--c-trust-border)",
+                  color: "var(--c-trust)",
                   marginBottom: "16px",
                 }}
               >
                 {pillar.icon}
               </div>
               <h3
+                className="t-h3"
                 style={{
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  letterSpacing: "-0.02em",
                   margin: "0 0 6px",
-                  color: "#f1f5f9",
+                  color: "var(--c-text)",
                 }}
               >
                 {pillar.title}
               </h3>
               <p
+                className="t-body"
                 style={{
-                  fontSize: "13.5px",
-                  color: "#64748b",
-                  lineHeight: 1.6,
+                  color: "var(--c-text-2)",
                   margin: 0,
                 }}
               >
@@ -159,11 +153,14 @@ export function TrustBanner() {
         </div>
 
         <p
+          className="t-micro"
           style={{
-            fontSize: "12px",
-            color: "#475569",
+            color: "var(--c-text-3)",
             textAlign: "center",
             lineHeight: 1.7,
+            letterSpacing: "normal",
+            textTransform: "none",
+            fontWeight: 400,
             maxWidth: "640px",
             margin: "0 auto",
           }}
@@ -229,26 +226,26 @@ function SocialIcon({
       style={{
         width: "30px",
         height: "30px",
-        borderRadius: "8px",
+        borderRadius: "var(--c-radius-sm)",
         display: "inline-flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.06)",
-        color: "#94a3b8",
+        background: "var(--c-surface)",
+        border: "1px solid var(--c-border)",
+        color: "var(--c-text-2)",
         textDecoration: "none",
         transition: "color 160ms ease, background 160ms ease, transform 160ms ease, border-color 160ms ease",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.color = "#7dd3fc";
-        e.currentTarget.style.background = "rgba(56,189,248,0.08)";
-        e.currentTarget.style.borderColor = "rgba(125,211,252,0.25)";
+        e.currentTarget.style.color = "var(--c-accent)";
+        e.currentTarget.style.background = "var(--c-accent-soft)";
+        e.currentTarget.style.borderColor = "var(--c-accent-border)";
         e.currentTarget.style.transform = "translateY(-1px)";
       }}
       onMouseLeave={(e) => {
-        e.currentTarget.style.color = "#94a3b8";
-        e.currentTarget.style.background = "rgba(255,255,255,0.03)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.06)";
+        e.currentTarget.style.color = "var(--c-text-2)";
+        e.currentTarget.style.background = "var(--c-surface)";
+        e.currentTarget.style.borderColor = "var(--c-border)";
         e.currentTarget.style.transform = "translateY(0)";
       }}
     >
@@ -261,8 +258,8 @@ export function SiteFooter() {
   return (
     <footer
       style={{
-        borderTop: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(3, 7, 18, 0.5)",
+        borderTop: "1px solid var(--c-border)",
+        background: "var(--c-surface)",
       }}
     >
       <div
@@ -300,15 +297,13 @@ export function SiteFooter() {
                   height: "30px",
                   borderRadius: "9px",
                   background:
-                    "linear-gradient(135deg, rgba(125,211,252,0.18), rgba(56,189,248,0.06))",
-                  border: "1px solid rgba(125,211,252,0.25)",
+                    "linear-gradient(135deg, var(--c-accent-soft), var(--c-surface-2))",
+                  border: "1px solid var(--c-accent-border)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   position: "relative",
                   overflow: "hidden",
-                  boxShadow:
-                    "0 4px 14px rgba(56,189,248,0.16), inset 0 1px 0 rgba(255,255,255,0.06)",
                 }}
               >
                 <svg
@@ -322,7 +317,7 @@ export function SiteFooter() {
                     cx="16"
                     cy="16"
                     r="9"
-                    stroke="#7dd3fc"
+                    stroke="var(--c-accent)"
                     strokeWidth="1.4"
                     fill="none"
                   />
@@ -331,7 +326,7 @@ export function SiteFooter() {
                     cy="16"
                     rx="9"
                     ry="3.5"
-                    stroke="#7dd3fc"
+                    stroke="var(--c-accent)"
                     strokeWidth="1"
                     fill="none"
                   />
@@ -340,40 +335,27 @@ export function SiteFooter() {
                     y1="16"
                     x2="25"
                     y2="16"
-                    stroke="#7dd3fc"
+                    stroke="var(--c-accent)"
                     strokeWidth="1"
                   />
                 </svg>
-                <span
-                  aria-hidden="true"
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: "50%",
-                    background:
-                      "linear-gradient(180deg, rgba(255,255,255,0.08), transparent)",
-                    pointerEvents: "none",
-                  }}
-                />
               </div>
               <span
                 style={{
                   fontWeight: 600,
                   fontSize: "17px",
                   letterSpacing: "-0.025em",
-                  color: "#f1f5f9",
+                  color: "var(--c-text)",
                 }}
               >
                 Travel
-                <span style={{ color: "#38bdf8", fontWeight: 400 }}>Med</span>
+                <span style={{ color: "var(--c-accent)", fontWeight: 400 }}>Med</span>
               </span>
             </Link>
             <p
+              className="t-body"
               style={{
-                fontSize: "13px",
-                color: "#64748b",
+                color: "var(--c-text-2)",
                 lineHeight: 1.65,
                 margin: "0 0 18px",
                 maxWidth: "280px",
@@ -383,19 +365,17 @@ export function SiteFooter() {
               malaria, and prevention guidance for international travelers.
             </p>
             <div
+              className="t-micro"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "6px",
                 padding: "5px 11px",
                 borderRadius: "999px",
-                background: "rgba(56,189,248,0.08)",
-                border: "1px solid rgba(56,189,248,0.18)",
-                fontSize: "11px",
+                background: "var(--c-accent-soft)",
+                border: "1px solid var(--c-accent-border)",
                 fontWeight: 700,
-                color: "#9edcff",
-                letterSpacing: "0.04em",
-                textTransform: "uppercase",
+                color: "var(--c-accent-strong)",
               }}
             >
               <span
@@ -403,8 +383,7 @@ export function SiteFooter() {
                   width: "5px",
                   height: "5px",
                   borderRadius: "50%",
-                  background: "#38bdf8",
-                  boxShadow: "0 0 8px #38bdf8",
+                  background: "var(--c-accent)",
                 }}
               />
               CDC &amp; WHO aligned
@@ -443,12 +422,10 @@ export function SiteFooter() {
           {Object.entries(FOOTER_LINKS).map(([heading, links]) => (
             <div key={heading}>
               <p
+                className="t-micro"
                 style={{
-                  fontSize: "11px",
                   fontWeight: 700,
-                  letterSpacing: "0.08em",
-                  textTransform: "uppercase",
-                  color: "#64748b",
+                  color: "var(--c-text-3)",
                   margin: "0 0 14px",
                 }}
               >
@@ -468,17 +445,17 @@ export function SiteFooter() {
                   <li key={link.label}>
                     <Link
                       href={link.href}
+                      className="t-label"
                       style={{
-                        fontSize: "13.5px",
-                        color: "#94a3b8",
+                        color: "var(--c-text-2)",
                         textDecoration: "none",
                         transition: "color 0.15s",
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.color = "#e2e8f0";
+                        e.currentTarget.style.color = "var(--c-text)";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.color = "#94a3b8";
+                        e.currentTarget.style.color = "var(--c-text-2)";
                       }}
                     >
                       {link.label}
@@ -492,12 +469,10 @@ export function SiteFooter() {
           {/* Sources column */}
           <div>
             <p
+              className="t-micro"
               style={{
-                fontSize: "11px",
                 fontWeight: 700,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: "#64748b",
+                color: "var(--c-text-3)",
                 margin: "0 0 14px",
               }}
             >
@@ -519,9 +494,9 @@ export function SiteFooter() {
                     href={link.href}
                     target="_blank"
                     rel="noopener noreferrer"
+                    className="t-label"
                     style={{
-                      fontSize: "13.5px",
-                      color: "#94a3b8",
+                      color: "var(--c-text-2)",
                       textDecoration: "none",
                       display: "inline-flex",
                       alignItems: "center",
@@ -529,10 +504,10 @@ export function SiteFooter() {
                       transition: "color 0.15s",
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.color = "#e2e8f0";
+                      e.currentTarget.style.color = "var(--c-text)";
                     }}
                     onMouseLeave={(e) => {
-                      e.currentTarget.style.color = "#94a3b8";
+                      e.currentTarget.style.color = "var(--c-text-2)";
                     }}
                   >
                     {link.label}
@@ -558,18 +533,21 @@ export function SiteFooter() {
 
         {/* ── Medical disclaimer strip ─────────────────────────── */}
         <div
+          className="t-micro"
           style={{
             padding: "16px 20px",
-            borderRadius: "12px",
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.05)",
-            fontSize: "12px",
-            color: "#64748b",
+            borderRadius: "var(--c-radius-md)",
+            background: "var(--c-surface-2)",
+            border: "1px solid var(--c-border)",
+            color: "var(--c-text-3)",
             lineHeight: 1.6,
+            letterSpacing: "normal",
+            textTransform: "none",
+            fontWeight: 400,
             marginBottom: "24px",
           }}
         >
-          <strong style={{ color: "#94a3b8", fontWeight: 700 }}>
+          <strong style={{ color: "var(--c-text-2)", fontWeight: 700 }}>
             Medical disclaimer.
           </strong>{" "}
           Information on TravelMed is for educational purposes only and does
@@ -586,13 +564,13 @@ export function SiteFooter() {
             flexWrap: "wrap",
             gap: "16px",
             paddingTop: "20px",
-            borderTop: "1px solid rgba(255,255,255,0.05)",
+            borderTop: "1px solid var(--c-border)",
           }}
         >
-          <p style={{ fontSize: "12px", color: "#475569", margin: 0 }}>
+          <p className="t-micro" style={{ color: "var(--c-text-3)", margin: 0, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>
             © {new Date().getFullYear()} TravelMed. All rights reserved.
           </p>
-          <p style={{ fontSize: "12px", color: "#475569", margin: 0 }}>
+          <p className="t-micro" style={{ color: "var(--c-text-3)", margin: 0, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>
             Made for travelers, by physicians.
           </p>
         </div>

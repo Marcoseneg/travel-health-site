@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DestinationSearch from "./components/DestinationSearch";
 import GlobeHero from "./components/GlobeHero";
-import CountUp from "./components/CountUp";
-import HowItWorks from "./components/HowItWorks";
+import CurrentAlerts from "./components/CurrentAlerts";
 import PopularDestinations from "./components/PopularDestinations";
-import DiseaseLibrary from "./components/DiseaseLibrary";
+import PlanYourTrip from "./components/PlanYourTrip";
+import GuidesPreview from "./components/GuidesPreview";
 import { TrustBanner, SiteFooter } from "./components/TrustFooter";
 import { SUPPORTED_COUNTRIES, type CountrySlug } from "./lib/travelData";
 
@@ -178,38 +178,14 @@ export default function Home() {
         </span>
       </div>
 
-      {/* ── Stats strip (proof row) ───────────────────────────────────── */}
-      <section className="stats-strip">
-        <div className="stats-strip-inner">
-          <div className="stats-strip-item">
-            <span className="stats-strip-num">
-              <CountUp end={65} suffix="+" />
-            </span>
-            <span className="stats-strip-label">Destinations covered</span>
-          </div>
-          <div className="stats-strip-item">
-            <span className="stats-strip-num">
-              <CountUp end={9} />
-            </span>
-            <span className="stats-strip-label">Diseases tracked</span>
-          </div>
-          <div className="stats-strip-item">
-            <span className="stats-strip-num">CDC</span>
-            <span className="stats-strip-label">Aligned guidance</span>
-          </div>
-        </div>
-      </section>
+      {/* ── Below-the-fold sections (v3 order) ────────────────────────── */}
+      <CurrentAlerts />
 
-      {/* ── Below-the-fold sections ───────────────────────────────────── */}
-      <HowItWorks />
+      <PopularDestinations />
 
-      <PopularDestinations
-        selectedCountries={selectedCountries}
-        onAddCountry={addCountry}
-        onRemoveCountry={removeCountry}
-      />
+      <PlanYourTrip />
 
-      <DiseaseLibrary />
+      <GuidesPreview />
 
       <TrustBanner />
 

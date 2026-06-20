@@ -1,82 +1,145 @@
-"use client";
-
+import Link from "next/link";
 import { SUPPORTED_COUNTRIES, type CountrySlug } from "../lib/travelData";
 
-type DestinationInfo = { slug: CountrySlug; trips: string; alert: string | null };
-
-const POPULAR: DestinationInfo[] = [
-  { slug: "thailand", trips: "2.4M", alert: null },
-  { slug: "india", trips: "1.8M", alert: "Dengue surge — Delhi NCR" },
-  { slug: "kenya", trips: "1.2M", alert: null },
-  { slug: "brazil", trips: "980K", alert: "Yellow fever — Amazonas" },
-  { slug: "peru", trips: "870K", alert: null },
-  { slug: "vietnam", trips: "760K", alert: null },
-];
-
-type Props = {
-  selectedCountries: CountrySlug[];
-  onAddCountry: (slug: CountrySlug) => void;
-  onRemoveCountry: (slug: CountrySlug) => void;
+// ── Featured destinations ──────────────────────────────────────────────────
+// Three large "Netflix-style" cards. Background tints are photo-ready
+// placeholders — these will be swapped for real destination imagery later.
+// `tint`/`tintDark` drive a subtle 160° gradient; `risk` is a short
+// human-readable risk tagline shown under the country name.
+type Featured = {
+  slug: CountrySlug;
+  tint: string;
+  tintDark: string;
+  risk: string;
 };
 
-export default function PopularDestinations({ selectedCountries, onAddCountry, onRemoveCountry }: Props) {
+const FEATURED: Featured[] = [
+  { slug: "thailand", tint: "#4f93a2", tintDark: "#356773", risk: "Dengue, limited malaria" },
+  { slug: "tanzania", tint: "#a3865a", tintDark: "#725d3d", risk: "Yellow fever, malaria" },
+  { slug: "peru", tint: "#5a7f93", tintDark: "#3d5867", risk: "Altitude, Amazon yellow fever" },
+];
+
+export default function PopularDestinations() {
   return (
-    <section style={{ padding: "80px 24px" }}>
+    <section style={{ background: "var(--c-bg)", padding: "64px 24px" }}>
       <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "48px" }}>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: "8px", padding: "6px 16px",
-            borderRadius: "999px", background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
-            marginBottom: "16px", fontSize: "12px", fontWeight: 600, color: "#64748b",
-            letterSpacing: "0.04em", textTransform: "uppercase",
-          }}>Popular routes</div>
-          <h2 style={{ fontSize: "clamp(28px, 3.5vw, 42px)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.1, margin: 0 }}>
-            Where travelers need us most
+        {/* ── Header row ──────────────────────────────────────────── */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "baseline",
+            justifyContent: "space-between",
+            gap: "16px",
+            flexWrap: "wrap",
+            marginBottom: "24px",
+          }}
+        >
+          <h2 className="t-h2" style={{ margin: 0, color: "var(--c-text)" }}>
+            Popular destinations
           </h2>
+          <Link
+            href="/countries"
+            className="t-label"
+            style={{
+              color: "var(--c-accent-strong)",
+              textDecoration: "none",
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
+          >
+            Browse all countries →
+          </Link>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "12px" }}>
-          {POPULAR.map((dest) => {
+        {/* ── Card grid ───────────────────────────────────────────── */}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+            gap: "14px",
+          }}
+        >
+          {FEATURED.map((dest) => {
             const c = SUPPORTED_COUNTRIES[dest.slug];
             if (!c) return null;
-            const isSelected = selectedCountries.includes(dest.slug);
             return (
-              <button
+              <Link
                 key={dest.slug}
-                onClick={() => isSelected ? onRemoveCountry(dest.slug) : onAddCountry(dest.slug)}
+                href={`/country/${dest.slug}`}
+                className="destination-card"
                 style={{
-                  display: "flex", alignItems: "center", gap: "16px", padding: "18px 22px",
-                  borderRadius: "14px",
-                  background: isSelected ? "rgba(56,189,248,0.05)" : "rgba(255,255,255,0.02)",
-                  border: `1px solid ${isSelected ? "rgba(56,189,248,0.15)" : "rgba(255,255,255,0.06)"}`,
-                  cursor: "pointer", textAlign: "left", fontFamily: "inherit", color: "#f1f5f9",
-                  width: "100%", transition: "all 0.2s",
+                  position: "relative",
+                  display: "block",
+                  height: "180px",
+                  borderRadius: "var(--c-radius-lg)",
+                  overflow: "hidden",
+                  textDecoration: "none",
+                  background: `linear-gradient(160deg, ${dest.tint}, ${dest.tintDark})`,
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; e.currentTarget.style.background = "rgba(255,255,255,0.04)"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = isSelected ? "rgba(56,189,248,0.15)" : "rgba(255,255,255,0.06)"; e.currentTarget.style.background = isSelected ? "rgba(56,189,248,0.05)" : "rgba(255,255,255,0.02)"; }}
               >
-                <span style={{ fontSize: "32px" }}>{c.flag}</span>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: "15px", letterSpacing: "-0.01em" }}>{c.label}</div>
-                  <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>{c.region} · {dest.trips} annual travelers</div>
-                  {dest.alert && (
-                    <div style={{
-                      display: "inline-flex", alignItems: "center", gap: "4px", marginTop: "6px",
-                      fontSize: "11px", fontWeight: 600, color: "#fbbf24", background: "rgba(251,191,36,0.08)",
-                      padding: "3px 8px", borderRadius: "6px",
-                    }}>
-                      <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#fbbf24" }} />
-                      {dest.alert}
-                    </div>
-                  )}
+                {/* Bottom veil — keeps the label legible over any future photo */}
+                <div
+                  style={{
+                    position: "absolute",
+                    inset: 0,
+                    zIndex: 1,
+                    background:
+                      "linear-gradient(180deg, transparent 40%, rgba(2,12,24,0.66))",
+                  }}
+                />
+                {/* Foreground caption */}
+                <div
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 2,
+                    padding: "18px 18px 16px",
+                    color: "#fff",
+                  }}
+                >
+                  <div style={{ fontWeight: 700, fontSize: "17px", letterSpacing: "-0.01em" }}>
+                    {c.label}
+                  </div>
+                  <div style={{ fontSize: "12px", opacity: 0.9, marginTop: "2px" }}>
+                    {c.region} · {dest.risk}
+                  </div>
                 </div>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#475569" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ flexShrink: 0 }}>
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
-              </button>
+              </Link>
             );
           })}
         </div>
+
+        {/* ── Placeholder note ────────────────────────────────────── */}
+        <p
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            margin: "12px 0 0",
+            fontSize: "11px",
+            color: "var(--c-text-3)",
+          }}
+        >
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            style={{ flexShrink: 0 }}
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <path d="m21 15-5-5L5 21" />
+          </svg>
+          Photo placeholders — real destination images added soon.
+        </p>
       </div>
     </section>
   );
