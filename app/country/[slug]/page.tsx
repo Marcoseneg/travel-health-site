@@ -192,6 +192,30 @@ export default async function CountryPage({ params }: Props) {
           </div>
         )}
 
+        {/* ── Reviewed badge — signed off by a clinician ──────────────────── */}
+        {health?.reviewStatus === "reviewed" && (
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "8px 14px",
+              borderRadius: "999px",
+              background: "rgba(16,185,129,0.08)",
+              border: "1px solid rgba(16,185,129,0.25)",
+              marginBottom: "32px",
+              fontSize: "12.5px",
+              fontWeight: 600,
+              color: "#6ee7b7",
+            }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            Physician-reviewed{health.lastReviewed ? ` · ${health.lastReviewed}` : ""}
+          </div>
+        )}
+
         {/* ── Alerts zone — manual + live, all above the risk row ──────── */}
         {(hasAlerts || outbreakAlerts.length > 0) && (
           <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px" }}>
