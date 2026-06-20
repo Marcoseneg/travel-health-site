@@ -76,6 +76,16 @@ export const chikungunyaRiskByCountry: Record<string, ChikungunyaRisk> = {
   // ── Western Asia ──
   "Yemen": "low",
   "Saudi Arabia": "low",
+  // ── Synced from country files (2026) ──
+  "Mauritius": "high",
+  "Réunion": "high",
+  "Seychelles": "high",
+  "Djibouti": "moderate",
+  "Belize": "low",
+  "Botswana": "low",
+  "China": "low",
+  "Gambia": "low",
+
 };
 
 export const CHIKUNGUNYA_COLORS: Record<ChikungunyaRisk, string> = {
