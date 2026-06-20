@@ -561,6 +561,24 @@ a {
   margin-top: -8px;
 }
 
+/* Soft cyan halo behind the globe — gives the dark sphere depth so it reads
+   as a premium floating orb on the light hero rather than a hard-edged disc. */
+.hero-globe-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(8, 145, 178, 0.18) 0%,
+    rgba(20, 184, 166, 0.10) 38%,
+    transparent 68%
+  );
+  filter: blur(28px);
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* ── Existing hover extras ───────────────────────────────── */
 
 .dest-card:hover .dest-arrow {
