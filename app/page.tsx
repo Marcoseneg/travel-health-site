@@ -4,13 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DestinationSearch from "./components/DestinationSearch";
 import GlobeHero from "./components/GlobeHero";
-import ItineraryPanel from "./components/ItineraryPanel";
 import CountUp from "./components/CountUp";
 import HowItWorks from "./components/HowItWorks";
 import PopularDestinations from "./components/PopularDestinations";
 import DiseaseLibrary from "./components/DiseaseLibrary";
 import { TrustBanner, SiteFooter } from "./components/TrustFooter";
-import { type CountrySlug } from "./lib/travelData";
+import { SUPPORTED_COUNTRIES, type CountrySlug } from "./lib/travelData";
 
 export default function Home() {
   const router = useRouter();
@@ -36,34 +35,22 @@ export default function Home() {
 
   const clearAll = () => setSelectedCountries([]);
 
-  // Hero search mode — single destination vs. a full multi-stop trip.
-  // "Full Trip" keeps the itinerary builder (TravelMed's differentiator)
-  // visible on the homepage instead of hiding it on /itinerary.
-  const [tripMode, setTripMode] = useState<"destination" | "trip">("destination");
-  const openDestination = (country: CountrySlug) =>
-    router.push(`/country/${country}`);
-
   const goToItinerary = () => {
     if (selectedCountries.length === 0) return;
     router.push(`/itinerary?countries=${selectedCountries.join(",")}`);
   };
 
-  const heroTabStyle = (active: boolean): React.CSSProperties => ({
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "6px",
-    padding: "8px 14px",
-    fontSize: "13px",
-    fontWeight: 700,
-    borderRadius: "9px",
-    cursor: "pointer",
-    fontFamily: "inherit",
-    border: "1px solid",
-    borderColor: active ? "var(--c-accent-border)" : "transparent",
-    background: active ? "var(--c-accent-soft)" : "transparent",
-    color: active ? "var(--c-accent-strong)" : "var(--c-text-3)",
-    transition: "all 0.15s ease",
-  });
+  // Progressive hero search: one search builds a destination list; the CTA
+  // adapts — a single stop opens that country's brief, several open the
+  // multi-stop itinerary summary. No upfront mode choice.
+  const heroPrimaryAction = () => {
+    if (selectedCountries.length === 0) return;
+    if (selectedCountries.length === 1) {
+      router.push(`/country/${selectedCountries[0]}`);
+    } else {
+      goToItinerary();
+    }
+  };
 
   return (
     <>
@@ -90,54 +77,65 @@ export default function Home() {
                   single stop or a full multi-country trip.
                 </p>
 
-                {/* Destination / Full Trip tabs — keeps the itinerary builder
-                    on the homepage as a first-class search mode. */}
-                <div
-                  role="tablist"
-                  aria-label="Search mode"
-                  style={{ display: "inline-flex", gap: "2px", marginBottom: "12px", padding: "3px", borderRadius: "11px", background: "var(--c-surface-2)", border: "1px solid var(--c-border)" }}
-                >
-                  <button
-                    role="tab"
-                    aria-selected={tripMode === "destination"}
-                    onClick={() => setTripMode("destination")}
-                    style={heroTabStyle(tripMode === "destination")}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
-                    Destination
-                  </button>
-                  <button
-                    role="tab"
-                    aria-selected={tripMode === "trip"}
-                    onClick={() => setTripMode("trip")}
-                    style={heroTabStyle(tripMode === "trip")}
-                  >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="19" r="2" /><circle cx="18" cy="5" r="2" /><path d="M8 19h7a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h7" /></svg>
-                    Full Trip
-                  </button>
-                </div>
+                {/* Progressive search — one bar. Picking a destination adds it
+                    to the trip; the CTA below adapts from a single country
+                    brief to a full multi-stop itinerary as stops are added. */}
+                <DestinationSearch
+                  selectedCountries={selectedCountries}
+                  onAddCountry={addCountry}
+                />
 
-                {tripMode === "destination" ? (
-                  <DestinationSearch
-                    selectedCountries={[]}
-                    onAddCountry={openDestination}
-                  />
-                ) : (
-                  <>
-                    <DestinationSearch
-                      selectedCountries={selectedCountries}
-                      onAddCountry={addCountry}
-                    />
-                    {/* Three-zone itinerary row — always rendered; the zones
-                        transform between an instructional empty state and the
-                        populated state. */}
-                    <ItineraryPanel
-                      selectedCountries={selectedCountries}
-                      onRemoveCountry={removeCountry}
-                      onClearAll={clearAll}
-                      onGo={goToItinerary}
-                    />
-                  </>
+                {selectedCountries.length > 0 && (
+                  <div style={{ marginTop: "18px" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                      <span className="t-micro" style={{ color: "var(--c-text-3)" }}>
+                        {selectedCountries.length === 1 ? "Your destination" : `Your trip · ${selectedCountries.length} stops`}
+                      </span>
+                      {selectedCountries.length > 1 && (
+                        <button onClick={clearAll} style={{ background: "none", border: "none", color: "var(--c-text-3)", fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+                      {selectedCountries.map((slug) => {
+                        const c = SUPPORTED_COUNTRIES[slug];
+                        return (
+                          <span
+                            key={slug}
+                            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "7px 8px 7px 12px", borderRadius: "999px", background: "var(--c-surface)", border: "1px solid var(--c-border)", fontSize: "13px", fontWeight: 600, color: "var(--c-text)" }}
+                          >
+                            <span style={{ fontSize: "15px", lineHeight: 1 }}>{c.flag}</span>
+                            {c.label}
+                            <button
+                              onClick={() => removeCountry(slug)}
+                              aria-label={`Remove ${c.label}`}
+                              style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "18px", height: "18px", borderRadius: "50%", border: "none", background: "var(--c-surface-2)", color: "var(--c-text-3)", cursor: "pointer", fontSize: "13px", lineHeight: 1, fontFamily: "inherit" }}
+                            >
+                              ×
+                            </button>
+                          </span>
+                        );
+                      })}
+                    </div>
+
+                    <button
+                      onClick={heroPrimaryAction}
+                      style={{ display: "inline-flex", alignItems: "center", gap: "9px", padding: "13px 22px", borderRadius: "12px", border: "none", background: "var(--c-accent)", color: "#ffffff", fontSize: "14px", fontWeight: 700, fontFamily: "inherit", cursor: "pointer", boxShadow: "0 10px 28px rgba(8,145,178,0.28)" }}
+                    >
+                      {selectedCountries.length === 1
+                        ? `View ${SUPPORTED_COUNTRIES[selectedCountries[0]].label} health guide`
+                        : `View trip summary · ${selectedCountries.length} stops`}
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+                    </button>
+
+                    {selectedCountries.length === 1 && (
+                      <p style={{ margin: "10px 0 0", fontSize: "12px", color: "var(--c-text-3)" }}>
+                        Heading to more than one country? Just search and add another stop.
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
 
