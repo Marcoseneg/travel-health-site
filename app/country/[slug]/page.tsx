@@ -53,19 +53,31 @@ type RiskBadge = {
 };
 
 function riskBadge(level: string | undefined): RiskBadge {
+  const danger: Omit<RiskBadge, "label"> = {
+    color: "var(--c-danger)", background: "var(--c-danger-soft)", border: "var(--c-danger-border)",
+  };
+  const warning: Omit<RiskBadge, "label"> = {
+    color: "var(--c-warning)", background: "var(--c-warning-soft)", border: "var(--c-warning-border)",
+  };
+  const info: Omit<RiskBadge, "label"> = {
+    color: "var(--c-info)", background: "var(--c-info-soft)", border: "var(--c-info-border)",
+  };
+  const neutral: Omit<RiskBadge, "label"> = {
+    color: "var(--c-text-3)", background: "var(--c-surface-2)", border: "var(--c-border)",
+  };
   const map: Record<string, RiskBadge> = {
-    high: { label: "High", color: "#fca5a5", background: "rgba(239,68,68,0.14)", border: "rgba(239,68,68,0.3)" },
-    required: { label: "High", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)" },
-    "required-or-recommended": { label: "High", color: "#fcd34d", background: "rgba(234,179,8,0.14)", border: "rgba(234,179,8,0.3)" },
-    moderate: { label: "Moderate", color: "#fbbf24", background: "rgba(245,158,11,0.14)", border: "rgba(245,158,11,0.28)" },
-    recommended: { label: "Moderate", color: "#fcd34d", background: "rgba(234,179,8,0.12)", border: "rgba(234,179,8,0.26)" },
-    present: { label: "Present", color: "#fbbf24", background: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.26)" },
-    limited: { label: "Limited", color: "#bae6fd", background: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.24)" },
-    possible: { label: "Possible", color: "#bae6fd", background: "rgba(56,189,248,0.1)", border: "rgba(56,189,248,0.24)" },
-    low: { label: "Low", color: "#bae6fd", background: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)" },
-    sporadic: { label: "Sporadic", color: "#bae6fd", background: "rgba(56,189,248,0.08)", border: "rgba(56,189,248,0.2)" },
-    "generally-not": { label: "Low", color: "#fef08a", background: "rgba(234,179,8,0.08)", border: "rgba(234,179,8,0.18)" },
-    none: { label: "None", color: "#64748b", background: "rgba(100,116,139,0.06)", border: "rgba(100,116,139,0.14)" },
+    high: { label: "High", ...danger },
+    required: { label: "High", ...danger },
+    "required-or-recommended": { label: "High", ...danger },
+    moderate: { label: "Moderate", ...warning },
+    recommended: { label: "Moderate", ...warning },
+    present: { label: "Present", ...warning },
+    limited: { label: "Limited", ...info },
+    possible: { label: "Possible", ...info },
+    low: { label: "Low", ...info },
+    sporadic: { label: "Sporadic", ...info },
+    "generally-not": { label: "Low", ...info },
+    none: { label: "None", ...neutral },
   };
   return map[level ?? "none"] ?? map.none;
 }
@@ -125,22 +137,22 @@ export default async function CountryPage({ params }: Props) {
     <main
       style={{
         minHeight: "100vh",
-        background: "#030712",
-        color: "#f1f5f9",
+        background: "var(--c-bg)",
+        color: "var(--c-text)",
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
-      <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "32px 24px 80px" }}>
+      <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "32px 24px 96px" }}>
         {/* ── Back link ────────────────────────────────────────────── */}
         <Link
           href="/countries"
+          className="t-label"
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "6px",
-            fontSize: "13px",
-            color: "#64748b",
-            marginBottom: "32px",
+            color: "var(--c-text-3)",
+            marginBottom: "24px",
             textDecoration: "none",
           }}
         >
@@ -150,41 +162,97 @@ export default async function CountryPage({ params }: Props) {
           All countries
         </Link>
 
-        {/* ── Header ──────────────────────────────────────────────── */}
-        <div style={{ display: "flex", alignItems: "center", gap: "24px", marginBottom: "40px" }}>
-          <span style={{ fontSize: "72px", lineHeight: 1, filter: "drop-shadow(0 8px 20px rgba(0,0,0,0.4))" }}>
-            {meta.flag}
-          </span>
-          <div>
-            <h1 style={{ fontSize: "clamp(40px, 5vw, 60px)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1, margin: "0 0 10px" }}>
+        {/* ── Destination hero banner ─────────────────────────────── */}
+        <div
+          style={{
+            position: "relative",
+            borderRadius: "var(--c-radius-lg)",
+            border: "1px solid var(--c-border)",
+            background:
+              "linear-gradient(135deg, var(--c-accent-soft) 0%, var(--c-surface) 60%)",
+            padding: "44px 40px",
+            marginBottom: "var(--c-space-section)",
+            display: "flex",
+            alignItems: "center",
+            gap: "32px",
+            flexWrap: "wrap",
+          }}
+        >
+          <span style={{ fontSize: "72px", lineHeight: 1 }}>{meta.flag}</span>
+          <div style={{ flex: "1 1 280px", minWidth: 0 }}>
+            <h1 className="t-display" style={{ margin: "0 0 12px", color: "var(--c-text)" }}>
               {label}
             </h1>
-            <p style={{ fontSize: "13px", color: "#64748b", margin: 0, letterSpacing: "0.02em" }}>
-              {meta.region} &middot; {meta.continent} &middot; Physician brief
+            <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0, letterSpacing: "0.02em" }}>
+              {[meta.region, meta.continent].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")} · Physician brief
             </p>
+
+            {/* ── Status badge — inside the hero ──────────────────── */}
+            {health?.reviewStatus === "reviewed" && (
+              <div
+                className="t-label"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 14px",
+                  borderRadius: "999px",
+                  background: "var(--c-trust-soft)",
+                  border: "1px solid var(--c-trust-border)",
+                  marginTop: "18px",
+                  fontWeight: 600,
+                  color: "var(--c-trust)",
+                }}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6 9 17l-5-5" />
+                </svg>
+                Physician-reviewed{health.lastReviewed ? ` · ${health.lastReviewed}` : ""}
+              </div>
+            )}
+            {health?.reviewStatus === "draft" && (
+              <div
+                className="t-label"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "8px 14px",
+                  borderRadius: "999px",
+                  background: "var(--c-surface-2)",
+                  border: "1px solid var(--c-border)",
+                  marginTop: "18px",
+                  fontWeight: 600,
+                  color: "var(--c-text-2)",
+                }}
+              >
+                <span style={{ lineHeight: 1.2 }}>📝</span>
+                Draft — pending physician review
+              </div>
+            )}
           </div>
         </div>
 
         {/* ── Draft notice — AI-sourced brief awaiting clinician sign-off ── */}
         {health?.reviewStatus === "draft" && (
           <div
+            className="t-label"
             style={{
               display: "flex",
               alignItems: "flex-start",
               gap: "10px",
-              padding: "12px 16px",
-              borderRadius: "12px",
-              background: "rgba(148,163,184,0.06)",
-              border: "1px solid rgba(148,163,184,0.18)",
-              marginBottom: "32px",
-              fontSize: "12.5px",
+              padding: "16px 18px",
+              borderRadius: "var(--c-radius-sm)",
+              background: "var(--c-surface-2)",
+              border: "1px solid var(--c-border)",
+              marginBottom: "var(--c-space-section)",
               lineHeight: 1.5,
-              color: "#94a3b8",
+              color: "var(--c-text-2)",
             }}
           >
-            <span style={{ fontSize: "14px", lineHeight: 1.2 }}>📝</span>
+            <span style={{ lineHeight: 1.2 }}>📝</span>
             <span>
-              <strong style={{ color: "#cbd5e1", fontWeight: 600 }}>Draft — pending physician review.</strong>{" "}
+              <strong style={{ color: "var(--c-text)", fontWeight: 600 }}>Draft — pending physician review.</strong>{" "}
               This brief was compiled from CDC, WHO, and EKRM/HealthyTravel sources
               {health.lastReviewed ? ` (${health.lastReviewed})` : ""} and has not yet been
               verified by a clinician. Confirm specifics with a travel-medicine professional before relying on it.
@@ -192,33 +260,9 @@ export default async function CountryPage({ params }: Props) {
           </div>
         )}
 
-        {/* ── Reviewed badge — signed off by a clinician ──────────────────── */}
-        {health?.reviewStatus === "reviewed" && (
-          <div
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "8px 14px",
-              borderRadius: "999px",
-              background: "rgba(16,185,129,0.08)",
-              border: "1px solid rgba(16,185,129,0.25)",
-              marginBottom: "32px",
-              fontSize: "12.5px",
-              fontWeight: 600,
-              color: "#6ee7b7",
-            }}
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 6 9 17l-5-5" />
-            </svg>
-            Physician-reviewed{health.lastReviewed ? ` · ${health.lastReviewed}` : ""}
-          </div>
-        )}
-
         {/* ── Alerts zone — manual + live, all above the risk row ──────── */}
         {(hasAlerts || outbreakAlerts.length > 0) && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "32px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "var(--c-space-section)" }}>
             {/* Manual curated alerts first (yellow warning style) */}
             {hasAlerts &&
               health!.countryAlerts!.map((alert, i) => (
@@ -236,8 +280,8 @@ export default async function CountryPage({ params }: Props) {
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-            gap: "12px",
-            marginBottom: "48px",
+            gap: "14px",
+            marginBottom: "var(--c-space-section)",
           }}
         >
           <RiskCard name="Malaria" diseaseSlug="malaria" badge={malaria} />
@@ -261,7 +305,7 @@ export default async function CountryPage({ params }: Props) {
                 consider={health!.vaccinesConsider}
               />
             )}
-            <div style={{ marginBottom: "48px" }} />
+            <div style={{ marginBottom: "var(--c-space-section)" }} />
 
             {/* ── Disease cards (titles are now LINKS to disease pages) ─── */}
             {hasDiseases && (
@@ -271,8 +315,8 @@ export default async function CountryPage({ params }: Props) {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    gap: "16px",
-                    marginBottom: "48px",
+                    gap: "18px",
+                    marginBottom: "var(--c-space-section)",
                   }}
                 >
                   {health!.diseases!.malaria && (
@@ -300,8 +344,8 @@ export default async function CountryPage({ params }: Props) {
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
-                gap: "16px",
-                marginBottom: "32px",
+                gap: "18px",
+                marginBottom: "var(--c-space-section)",
               }}
             >
               <PreventionCard title="Food & water" body={health!.foodWater} />
@@ -314,18 +358,18 @@ export default async function CountryPage({ params }: Props) {
         ) : (
           <div
             style={{
-              borderRadius: "16px",
-              border: "1px solid rgba(255,255,255,0.06)",
-              background: "rgba(255,255,255,0.02)",
-              padding: "32px",
+              borderRadius: "var(--c-radius-md)",
+              border: "1px solid var(--c-border)",
+              background: "var(--c-surface)",
+              padding: "var(--c-pad-card)",
               textAlign: "center",
-              marginBottom: "40px",
+              marginBottom: "var(--c-space-section)",
             }}
           >
-            <p style={{ fontSize: "15px", margin: "0 0 8px", color: "#cbd5e1", fontWeight: 600 }}>
+            <p className="t-h3" style={{ margin: "0 0 8px", color: "var(--c-text)", fontWeight: 600 }}>
               Detailed clinical brief for {label} is coming soon.
             </p>
-            <p style={{ fontSize: "13px", margin: 0, color: "#64748b" }}>
+            <p className="t-label" style={{ margin: 0, color: "var(--c-text-3)" }}>
               Disease risk indicators above are already available.
             </p>
           </div>
@@ -334,41 +378,40 @@ export default async function CountryPage({ params }: Props) {
         {/* ── Multi-country CTA ─────────────────────────────────── */}
         <div
           style={{
-            borderRadius: "20px",
-            border: "1px solid rgba(56,189,248,0.18)",
-            background: "linear-gradient(135deg, rgba(56,189,248,0.05), rgba(14,165,233,0.02))",
-            padding: "22px 26px",
+            borderRadius: "var(--c-radius-lg)",
+            border: "1px solid var(--c-accent-border)",
+            background: "linear-gradient(135deg, var(--c-accent-soft), var(--c-surface))",
+            padding: "24px 28px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             gap: "20px",
             flexWrap: "wrap",
-            marginTop: "32px",
+            marginTop: "var(--c-space-section)",
           }}
         >
           <div>
-            <p style={{ fontSize: "15px", fontWeight: 700, color: "#f1f5f9", margin: "0 0 4px" }}>
+            <p className="t-h3" style={{ fontWeight: 700, color: "var(--c-text)", margin: "0 0 4px" }}>
               Visiting more than one country?
             </p>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>
+            <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0 }}>
               Build a combined itinerary and get merged recommendations across all destinations.
             </p>
           </div>
           <Link
             href="/"
+            className="t-label"
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: "8px",
-              padding: "10px 18px",
-              borderRadius: "10px",
-              background: "linear-gradient(135deg, #38bdf8, #0ea5e9)",
-              color: "#02131d",
-              fontSize: "13px",
+              padding: "11px 20px",
+              borderRadius: "var(--c-radius-sm)",
+              background: "var(--c-accent)",
+              color: "var(--c-on-accent)",
               fontWeight: 700,
               textDecoration: "none",
               whiteSpace: "nowrap",
-              boxShadow: "0 8px 24px rgba(14,165,233,0.3)",
             }}
           >
             Plan an itinerary
@@ -380,12 +423,15 @@ export default async function CountryPage({ params }: Props) {
 
         {/* ── Disclaimer ────────────────────────────────────────── */}
         <p
+          className="t-micro"
           style={{
-            fontSize: "11px",
-            color: "#475569",
-            marginTop: "32px",
+            color: "var(--c-text-3)",
+            marginTop: "var(--c-space-section)",
             textAlign: "center",
             lineHeight: 1.6,
+            letterSpacing: "normal",
+            textTransform: "none",
+            fontWeight: 400,
           }}
         >
           This brief is for informational purposes and does not replace personalized medical advice.
@@ -404,13 +450,10 @@ export default async function CountryPage({ params }: Props) {
 function SectionTitle({ title }: { title: string }) {
   return (
     <h2
+      className="t-h2"
       style={{
-        fontSize: "12px",
-        fontWeight: 700,
-        letterSpacing: "0.1em",
-        textTransform: "uppercase",
-        color: "#64748b",
-        margin: "0 0 16px",
+        color: "var(--c-text)",
+        margin: "0 0 20px",
       }}
     >
       {title}
@@ -431,36 +474,32 @@ function RiskCard({
   return (
     <Link
       href={`/diseases/${diseaseSlug}`}
+      className="card-hover"
       style={{
         display: "block",
-        borderRadius: "14px",
+        borderRadius: "var(--c-radius-md)",
         border: `1px solid ${badge.border}`,
         background: badge.background,
-        padding: "14px 16px",
+        padding: "18px 18px",
         textDecoration: "none",
         color: "inherit",
-        transition: "transform 0.15s, box-shadow 0.15s",
       }}
     >
       <p
+        className="t-micro"
         style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          color: "#94a3b8",
-          letterSpacing: "0.06em",
-          textTransform: "uppercase",
+          color: "var(--c-text-2)",
           margin: "0 0 6px",
         }}
       >
         {name}
       </p>
       <p
+        className="t-h3"
         style={{
-          fontSize: "15px",
           fontWeight: 700,
           color: badge.color,
           margin: 0,
-          letterSpacing: "-0.01em",
         }}
       >
         {badge.label}
@@ -478,12 +517,9 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
     <div>
       <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: "14px" }}>
         <p
+          className="t-micro"
           style={{
-            fontSize: "11px",
-            fontWeight: 700,
-            color: "#94a3b8",
-            letterSpacing: "0.1em",
-            textTransform: "uppercase",
+            color: "var(--c-text-2)",
             margin: 0,
           }}
         >
@@ -491,9 +527,9 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
         </p>
         <Link
           href="/outbreaks"
+          className="t-label"
           style={{
-            fontSize: "12.5px",
-            color: "#7dd3fc",
+            color: "var(--c-accent)",
             textDecoration: "none",
           }}
         >
@@ -501,7 +537,7 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
         </Link>
       </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
         {alerts.map((alert) => {
           // Live alert source label for the inline footer line
           const sourceLabels: Record<string, string> = {
@@ -521,19 +557,19 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
           // Live alerts are auto-fetched updates, not severity signals or
           // hand-picked warnings, so they get their own visual lane.
           const tone = {
-            color: "#7dd3fc",
-            bg: "rgba(56,189,248,0.04)",
-            border: "rgba(56,189,248,0.18)",
+            color: "var(--c-info)",
+            bg: "var(--c-info-soft)",
+            border: "var(--c-info-border)",
           };
 
           return (
             <div
               key={alert.id}
               style={{
-                borderRadius: "12px",
+                borderRadius: "var(--c-radius-sm)",
                 border: `1px solid ${tone.border}`,
                 background: tone.bg,
-                padding: "14px 18px",
+                padding: "16px 18px",
                 display: "flex",
                 gap: "14px",
                 alignItems: "flex-start",
@@ -563,8 +599,8 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
                   href={alert.url}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="t-label"
                   style={{
-                    fontSize: "13.5px",
                     fontWeight: 700,
                     color: tone.color,
                     textDecoration: "none",
@@ -591,12 +627,12 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
                 </a>
 
                 {alert.summary && (
-                  <p style={{ fontSize: "13px", color: "#cbd5e1", margin: "4px 0 6px", lineHeight: 1.6 }}>
+                  <p className="t-body" style={{ color: "var(--c-text-2)", margin: "4px 0 6px" }}>
                     {alert.summary}
                   </p>
                 )}
 
-                <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+                <p className="t-micro" style={{ color: "var(--c-text-3)", margin: 0, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>
                   {sourceLabel} · {date}
                 </p>
               </div>
@@ -611,15 +647,15 @@ function RecentAlerts({ alerts }: { alerts: OutbreakAlert[] }) {
 function CountryAlertBanner({ alert }: { alert: CountryAlert }) {
   const tone =
     alert.level === "warning"
-      ? { color: "#fca5a5", bg: "rgba(239,68,68,0.05)", border: "rgba(239,68,68,0.22)" }
-      : { color: "#fbbf24", bg: "rgba(245,158,11,0.05)", border: "rgba(245,158,11,0.22)" };
+      ? { color: "var(--c-warning)", bg: "var(--c-warning-soft)", border: "var(--c-warning-border)" }
+      : { color: "var(--c-info)", bg: "var(--c-info-soft)", border: "var(--c-info-border)" };
   return (
     <div
       style={{
-        borderRadius: "12px",
+        borderRadius: "var(--c-radius-sm)",
         border: `1px solid ${tone.border}`,
         background: tone.bg,
-        padding: "14px 18px",
+        padding: "16px 18px",
         display: "flex",
         gap: "14px",
         alignItems: "flex-start",
@@ -631,14 +667,14 @@ function CountryAlertBanner({ alert }: { alert: CountryAlert }) {
         <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: "13.5px", fontWeight: 700, color: tone.color, margin: "0 0 4px" }}>{alert.title}</p>
+        <p className="t-label" style={{ fontWeight: 700, color: tone.color, margin: "0 0 4px" }}>{alert.title}</p>
         {alert.message && (
-          <p style={{ fontSize: "13px", color: "#cbd5e1", margin: "0 0 6px", lineHeight: 1.6 }}>{alert.message}</p>
+          <p className="t-body" style={{ color: "var(--c-text-2)", margin: "0 0 6px" }}>{alert.message}</p>
         )}
         {(alert.source || alert.date) && (
-          <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+          <p className="t-micro" style={{ color: "var(--c-text-3)", margin: 0, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>
             {alert.sourceUrl && alert.source ? (
-              <a href={alert.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#7dd3fc", textDecoration: "none" }}>
+              <a href={alert.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--c-accent)", textDecoration: "none" }}>
                 {alert.source} ↗
               </a>
             ) : (
@@ -679,7 +715,7 @@ function VaccineTable({
     return (
       <div style={tableShellStyle}>
         <TableHeader />
-        <div style={{ padding: "20px 22px", fontSize: "13px", color: "#64748b" }}>
+        <div className="t-label" style={{ padding: "20px 24px", color: "var(--c-text-3)" }}>
           No specific vaccine recommendations.
         </div>
       </div>
@@ -725,7 +761,7 @@ function SimpleVaccineTable({
     return (
       <div style={tableShellStyle}>
         <TableHeader />
-        <div style={{ padding: "20px 22px", fontSize: "13px", color: "#64748b" }}>
+        <div className="t-label" style={{ padding: "20px 24px", color: "var(--c-text-3)" }}>
           No specific vaccine recommendations.
         </div>
       </div>
@@ -765,9 +801,9 @@ function sortVaccines(a: string, b: string): number {
 // Dark slate panel that's just slightly lighter than the page background
 // (calm contrast jump). Light text on dark card — matches site visual family.
 const tableShellStyle: React.CSSProperties = {
-  borderRadius: "12px",
-  border: "1px solid rgba(255,255,255,0.06)",
-  background: "rgba(255,255,255,0.02)",
+  borderRadius: "var(--c-radius-md)",
+  border: "1px solid var(--c-border)",
+  background: "var(--c-surface)",
   overflow: "hidden",
 };
 
@@ -777,9 +813,9 @@ function TableHeader() {
       style={{
         display: "grid",
         gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
-        padding: "13px 22px",
-        background: "rgba(255,255,255,0.025)",
-        borderBottom: "1px solid rgba(255,255,255,0.06)",
+        padding: "14px 24px",
+        background: "var(--c-surface-2)",
+        borderBottom: "1px solid var(--c-border)",
         gap: "20px",
       }}
     >
@@ -902,8 +938,8 @@ function VaccineRow({
   const rowBorderBottom = isLast
     ? "none"
     : isRoutineBoundary
-      ? "1.5px solid rgba(255,255,255,0.1)"
-      : "1px solid rgba(255,255,255,0.05)";
+      ? "1.5px solid var(--c-border-strong)"
+      : "1px solid var(--c-border)";
   const paddingBottom = isRoutineBoundary ? "20px" : "14px";
 
   return (
@@ -912,7 +948,7 @@ function VaccineRow({
         display: "grid",
         gridTemplateColumns: "minmax(140px, 200px) 1fr minmax(120px, 180px)",
         gap: "20px",
-        padding: `14px 22px ${paddingBottom}`,
+        padding: `14px 24px ${paddingBottom}`,
         borderBottom: rowBorderBottom,
         alignItems: isRoutine ? "flex-start" : "baseline",
       }}
@@ -925,9 +961,9 @@ function VaccineRow({
             style={{
               fontSize: "14.5px",
               fontWeight: 600,
-              color: "#7dd3fc",
+              color: "var(--c-accent)",
               textDecoration: "underline",
-              textDecorationColor: "rgba(125, 211, 252, 0.3)",
+              textDecorationColor: "var(--c-accent-border)",
               textUnderlineOffset: "3px",
               letterSpacing: "-0.005em",
             }}
@@ -939,7 +975,7 @@ function VaccineRow({
             style={{
               fontSize: "14.5px",
               fontWeight: 600,
-              color: muted ? "#94a3b8" : "#e2e8f0",
+              color: muted ? "var(--c-text-2)" : "var(--c-text)",
               letterSpacing: "-0.005em",
             }}
           >
@@ -954,10 +990,9 @@ function VaccineRow({
         {isRoutine ? (
           <>
             <p
+              className="t-body"
               style={{
-                fontSize: "13.5px",
-                color: "#cbd5e1",
-                lineHeight: 1.6,
+                color: "var(--c-text-2)",
                 margin: "0 0 8px",
               }}
             >
@@ -965,13 +1000,13 @@ function VaccineRow({
               trip — per the Swiss BAG schedule. These include:
             </p>
             <ul
+              className="t-body"
               style={{
                 listStyle: "disc",
                 paddingLeft: "20px",
                 margin: 0,
-                fontSize: "13.5px",
                 lineHeight: 1.7,
-                color: "#cbd5e1",
+                color: "var(--c-text-2)",
               }}
             >
               {ROUTINE_VACCINE_LIST.map((v) => (
@@ -980,9 +1015,9 @@ function VaccineRow({
                     <Link
                       href={`/diseases/${v.slug}`}
                       style={{
-                        color: "#7dd3fc",
+                        color: "var(--c-accent)",
                         textDecoration: "underline",
-                        textDecorationColor: "rgba(125, 211, 252, 0.3)",
+                        textDecorationColor: "var(--c-accent-border)",
                         textUnderlineOffset: "3px",
                       }}
                     >
@@ -997,10 +1032,9 @@ function VaccineRow({
           </>
         ) : (
           <p
+            className="t-body"
             style={{
-              fontSize: "13.5px",
-              color: muted ? "#94a3b8" : "#cbd5e1",
-              lineHeight: 1.6,
+              color: muted ? "var(--c-text-3)" : "var(--c-text-2)",
               margin: 0,
             }}
           >
@@ -1018,9 +1052,9 @@ function VaccineRow({
             rel="noopener noreferrer"
             style={{
               fontSize: "12.5px",
-              color: "#38bdf8",
+              color: "var(--c-accent)",
               textDecoration: "underline",
-              textDecorationColor: "rgba(56, 189, 248, 0.3)",
+              textDecorationColor: "var(--c-accent-border)",
               textUnderlineOffset: "3px",
               fontWeight: 500,
               display: "inline-flex",
@@ -1044,7 +1078,7 @@ function VaccineRow({
             </svg>
           </a>
         ) : (
-          <span style={{ fontSize: "12.5px", color: "#64748b" }}>—</span>
+          <span style={{ fontSize: "12.5px", color: "var(--c-text-3)" }}>—</span>
         )}
       </div>
     </div>
@@ -1056,7 +1090,7 @@ const tableHeaderStyle: React.CSSProperties = {
   fontWeight: 600,
   letterSpacing: "0.08em",
   textTransform: "uppercase",
-  color: "#94a3b8",
+  color: "var(--c-text-2)",
 };
 
 // ── Disease card with title NOW WRAPPED IN A LINK ─────────────────────────
@@ -1078,11 +1112,12 @@ function DiseaseCard({
 
   return (
     <div
+      className="card-hover"
       style={{
-        borderRadius: "16px",
-        border: "1px solid rgba(255,255,255,0.06)",
-        background: "rgba(255,255,255,0.02)",
-        padding: "22px 24px",
+        borderRadius: "var(--c-radius-md)",
+        border: "1px solid var(--c-border)",
+        background: "var(--c-surface)",
+        padding: "var(--c-pad-card)",
       }}
     >
       {/* Header row: title + risk badge — title is now a LINK */}
@@ -1097,12 +1132,10 @@ function DiseaseCard({
       >
         <Link
           href={`/diseases/${slug}`}
+          className="t-h2"
           style={{
-            fontSize: "16px",
-            fontWeight: 700,
             margin: 0,
-            letterSpacing: "-0.02em",
-            color: "#f8fafc",
+            color: "var(--c-text)",
             textDecoration: "none",
             display: "inline-flex",
             alignItems: "center",
@@ -1117,7 +1150,7 @@ function DiseaseCard({
             height="13"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#475569"
+            stroke="var(--c-text-3)"
             strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -1128,16 +1161,13 @@ function DiseaseCard({
           </svg>
         </Link>
         <span
+          className="t-micro"
           style={{
-            fontSize: "10.5px",
-            fontWeight: 700,
-            letterSpacing: "0.06em",
-            padding: "3px 10px",
+            padding: "4px 11px",
             borderRadius: "999px",
             color: badge.color,
             background: badge.background,
             border: `1px solid ${badge.border}`,
-            textTransform: "uppercase",
           }}
         >
           {badge.label}
@@ -1162,7 +1192,7 @@ function DiseaseCard({
             justifyContent: textColumnJustify,
           }}
         >
-          <p style={{ fontSize: "13.5px", color: "#cbd5e1", lineHeight: 1.65, margin: "0 0 14px" }}>
+          <p className="t-body" style={{ color: "var(--c-text-2)", margin: "0 0 14px" }}>
             {summary.riskSummary}
           </p>
 
@@ -1173,16 +1203,16 @@ function DiseaseCard({
               display: "flex",
               gap: "16px",
               flexWrap: "wrap",
-              paddingTop: "12px",
+              paddingTop: "14px",
               marginTop: hasKeyFacts ? "16px" : "auto",
-              borderTop: "1px solid rgba(255,255,255,0.04)",
+              borderTop: "1px solid var(--c-border)",
             }}
           >
             <Link
               href={`/diseases/${slug}`}
               style={{
                 fontSize: "12px",
-                color: "#7dd3fc",
+                color: "var(--c-accent)",
                 textDecoration: "none",
                 fontWeight: 600,
                 display: "inline-flex",
@@ -1202,7 +1232,7 @@ function DiseaseCard({
                 rel="noopener noreferrer"
                 style={{
                   fontSize: "12px",
-                  color: "#94a3b8",
+                  color: "var(--c-text-2)",
                   textDecoration: "none",
                   fontWeight: 600,
                   display: "inline-flex",
@@ -1226,6 +1256,10 @@ function DiseaseCard({
               flex: "0 1 260px",
               minWidth: "200px",
               maxWidth: "300px",
+              padding: "10px",
+              borderRadius: "var(--c-radius-sm)",
+              background: "var(--c-surface-2)",
+              border: "1px solid var(--c-border)",
             }}
           >
             <CdcMapImage
@@ -1249,28 +1283,25 @@ function KeyFactsBlock({ facts }: { facts: KeyFact[] }) {
         gridTemplateColumns: "auto 1fr",
         columnGap: "16px",
         rowGap: "8px",
-        padding: "14px 16px",
-        borderRadius: "10px",
-        background: "rgba(255,255,255,0.02)",
-        border: "1px solid rgba(255,255,255,0.04)",
+        padding: "16px 18px",
+        borderRadius: "var(--c-radius-sm)",
+        background: "var(--c-surface-2)",
+        border: "1px solid var(--c-border)",
       }}
     >
       {facts.map((f, i) => (
         <div key={i} style={{ display: "contents" }}>
           <dt
+            className="t-micro"
             style={{
-              fontSize: "10.5px",
-              fontWeight: 700,
-              color: "#64748b",
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
+              color: "var(--c-text-3)",
               alignSelf: "center",
               whiteSpace: "nowrap",
             }}
           >
             {f.label}
           </dt>
-          <dd style={{ margin: 0, fontSize: "13px", color: "#e2e8f0", lineHeight: 1.5 }}>
+          <dd style={{ margin: 0, fontSize: "13px", color: "var(--c-text)", lineHeight: 1.5 }}>
             {f.value}
           </dd>
         </div>
@@ -1281,9 +1312,9 @@ function KeyFactsBlock({ facts }: { facts: KeyFact[] }) {
 
 function PreventionCard({ title, body }: { title: string; body: string }) {
   return (
-    <div style={{ borderRadius: "16px", border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)", padding: "22px 24px" }}>
-      <h3 style={{ fontSize: "14px", fontWeight: 700, margin: "0 0 10px", color: "#f8fafc", letterSpacing: "-0.01em" }}>{title}</h3>
-      <p style={{ fontSize: "13.5px", color: "#cbd5e1", lineHeight: 1.65, margin: 0 }}>{body}</p>
+    <div className="card-hover" style={{ borderRadius: "var(--c-radius-md)", border: "1px solid var(--c-border)", background: "var(--c-surface)", padding: "var(--c-pad-card)" }}>
+      <h3 className="t-h3" style={{ margin: "0 0 10px", color: "var(--c-text)", fontWeight: 700 }}>{title}</h3>
+      <p className="t-body" style={{ color: "var(--c-text-2)", margin: 0 }}>{body}</p>
     </div>
   );
 }
@@ -1294,30 +1325,30 @@ function SourcesFooter({ cdcUrl }: { cdcUrl?: string }) {
       style={{
         marginTop: "8px",
         marginBottom: "16px",
-        padding: "16px 20px",
-        borderRadius: "10px",
-        background: "rgba(255,255,255,0.015)",
-        border: "1px solid rgba(255,255,255,0.04)",
+        padding: "18px 22px",
+        borderRadius: "var(--c-radius-sm)",
+        background: "var(--c-surface-2)",
+        border: "1px solid var(--c-border)",
       }}
     >
-      <p style={{ fontSize: "10.5px", fontWeight: 700, color: "#475569", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>
+      <p className="t-micro" style={{ color: "var(--c-text-3)", margin: "0 0 6px" }}>
         Sources
       </p>
-      <p style={{ fontSize: "12.5px", color: "#94a3b8", margin: 0, lineHeight: 1.6 }}>
+      <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0, lineHeight: 1.6 }}>
         Based on{" "}
         {cdcUrl ? (
-          <a href={cdcUrl} target="_blank" rel="noopener noreferrer" style={{ color: "#7dd3fc", textDecoration: "none" }}>
+          <a href={cdcUrl} target="_blank" rel="noopener noreferrer" style={{ color: "var(--c-accent)", textDecoration: "none" }}>
             CDC Travelers&rsquo; Health
           </a>
         ) : (
           "CDC Travelers' Health"
         )}
         ,{" "}
-        <a href="https://www.cdc.gov/yellow-book/index.html" target="_blank" rel="noopener noreferrer" style={{ color: "#7dd3fc", textDecoration: "none" }}>
+        <a href="https://www.cdc.gov/yellow-book/index.html" target="_blank" rel="noopener noreferrer" style={{ color: "var(--c-accent)", textDecoration: "none" }}>
           CDC Yellow Book
         </a>
         , and the{" "}
-        <a href="https://www.bag.admin.ch/bag/en/home/krankheiten/krankheiten-im-ueberblick/impfungen.html" target="_blank" rel="noopener noreferrer" style={{ color: "#7dd3fc", textDecoration: "none" }}>
+        <a href="https://www.bag.admin.ch/bag/en/home/krankheiten/krankheiten-im-ueberblick/impfungen.html" target="_blank" rel="noopener noreferrer" style={{ color: "var(--c-accent)", textDecoration: "none" }}>
           Swiss Federal Vaccination Schedule (BAG)
         </a>
         . Always verify current recommendations before travel.

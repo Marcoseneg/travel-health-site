@@ -23,6 +23,85 @@
   --font-sans: "DM Sans", system-ui, -apple-system, sans-serif;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   REDESIGN DESIGN TOKENS  (--c-*  namespace)
+   Single source of truth for the light theme (default) and the
+   dark theme (toggle via [data-theme="dark"] on <html>).
+   Components reference these vars instead of hardcoding colors,
+   so a theme swap is one block and harmonization is enforced.
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  /* Surfaces */
+  --c-bg: #f6f8fb;
+  --c-surface: #ffffff;
+  --c-surface-2: #f1f5f9;
+
+  /* Text */
+  --c-text: #0f172a;
+  --c-text-2: #475569;
+  --c-text-3: #94a3b8;
+  --c-on-accent: #ffffff;
+
+  /* Borders */
+  --c-border: #e2e8f0;
+  --c-border-strong: #cbd5e1;
+
+  /* Brand — cyan (darkened for contrast on light) */
+  --c-accent: #0891b2;
+  --c-accent-strong: #0e7490;
+  --c-accent-bright: #06b6d4;
+  --c-accent-soft: #ecfeff;
+  --c-accent-border: #a5f3fc;
+
+  /* Semantic — high risk (red) / moderate (amber) / trust (green) / info (cyan) */
+  --c-danger: #b91c1c;  --c-danger-soft: #fef2f2;  --c-danger-border: #fecaca;
+  --c-warning: #b45309; --c-warning-soft: #fffbeb; --c-warning-border: #fde68a;
+  --c-trust: #047857;   --c-trust-soft: #ecfdf5;   --c-trust-border: #a7f3d0;
+  --c-info: #0e7490;    --c-info-soft: #ecfeff;    --c-info-border: #a5f3fc;
+
+  /* Radius + rhythm */
+  --c-radius-sm: 10px;
+  --c-radius-md: 14px;
+  --c-radius-lg: 20px;
+  --c-space-section: 64px;
+  --c-pad-card: 26px;
+}
+
+[data-theme="dark"] {
+  --c-bg: #030712;
+  --c-surface: #0b1220;
+  --c-surface-2: #0f1729;
+
+  --c-text: #f1f5f9;
+  --c-text-2: #94a3b8;
+  --c-text-3: #64748b;
+  --c-on-accent: #02131d;
+
+  --c-border: rgba(255, 255, 255, 0.08);
+  --c-border-strong: rgba(255, 255, 255, 0.14);
+
+  --c-accent: #38bdf8;
+  --c-accent-strong: #7dd3fc;
+  --c-accent-bright: #38bdf8;
+  --c-accent-soft: rgba(56, 189, 248, 0.10);
+  --c-accent-border: rgba(56, 189, 248, 0.28);
+
+  --c-danger: #fca5a5;  --c-danger-soft: rgba(239, 68, 68, 0.14);  --c-danger-border: rgba(239, 68, 68, 0.30);
+  --c-warning: #fbbf24; --c-warning-soft: rgba(245, 158, 11, 0.14); --c-warning-border: rgba(245, 158, 11, 0.28);
+  --c-trust: #6ee7b7;   --c-trust-soft: rgba(16, 185, 129, 0.10);   --c-trust-border: rgba(16, 185, 129, 0.30);
+  --c-info: #7dd3fc;    --c-info-soft: rgba(56, 189, 248, 0.10);    --c-info-border: rgba(56, 189, 248, 0.28);
+}
+
+/* ── Type scale — the one system every page uses ──────────────
+   Replaces the ~20 ad-hoc inline font sizes. */
+.t-display { font-size: clamp(34px, 4.5vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.04; }
+.t-h1      { font-size: 28px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+.t-h2      { font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+.t-h3      { font-size: 15px; font-weight: 600; line-height: 1.4; }
+.t-body    { font-size: 14px; font-weight: 400; line-height: 1.65; }
+.t-label   { font-size: 13px; font-weight: 500; line-height: 1.5; }
+.t-micro   { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+
 html,
 body {
   margin: 0;
