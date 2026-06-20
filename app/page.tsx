@@ -36,10 +36,34 @@ export default function Home() {
 
   const clearAll = () => setSelectedCountries([]);
 
+  // Hero search mode — single destination vs. a full multi-stop trip.
+  // "Full Trip" keeps the itinerary builder (TravelMed's differentiator)
+  // visible on the homepage instead of hiding it on /itinerary.
+  const [tripMode, setTripMode] = useState<"destination" | "trip">("destination");
+  const openDestination = (country: CountrySlug) =>
+    router.push(`/country/${country}`);
+
   const goToItinerary = () => {
     if (selectedCountries.length === 0) return;
     router.push(`/itinerary?countries=${selectedCountries.join(",")}`);
   };
+
+  const heroTabStyle = (active: boolean): React.CSSProperties => ({
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "6px",
+    padding: "8px 14px",
+    fontSize: "13px",
+    fontWeight: 700,
+    borderRadius: "9px",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    border: "1px solid",
+    borderColor: active ? "var(--c-accent-border)" : "transparent",
+    background: active ? "var(--c-accent-soft)" : "transparent",
+    color: active ? "var(--c-accent-strong)" : "var(--c-text-3)",
+    transition: "all 0.15s ease",
+  });
 
   return (
     <>
@@ -56,32 +80,65 @@ export default function Home() {
               {/* ── Left column: copy + search + itinerary row ──────── */}
               <div className="hero-copy animate-fade-up">
                 <h1 className="hero-title">
-                  Travel safe.
+                  Travel health advice
                   <br />
-                  <span>Travel informed.</span>
+                  <span>for any destination.</span>
                 </h1>
 
                 <p className="hero-description">
-                  Evidence-based vaccine recommendations, malaria prophylaxis and
-                  outbreak alerts — tailored to your itinerary.
+                  Personalized vaccine, malaria, and outbreak guidance — for a
+                  single stop or a full multi-country trip.
                 </p>
 
-                {/* Build your trip — bare label + search bar (no card) */}
-                <p className="hero-build-label">Build your trip</p>
-                <DestinationSearch
-                  selectedCountries={selectedCountries}
-                  onAddCountry={addCountry}
-                />
+                {/* Destination / Full Trip tabs — keeps the itinerary builder
+                    on the homepage as a first-class search mode. */}
+                <div
+                  role="tablist"
+                  aria-label="Search mode"
+                  style={{ display: "inline-flex", gap: "2px", marginBottom: "12px", padding: "3px", borderRadius: "11px", background: "var(--c-surface-2)", border: "1px solid var(--c-border)" }}
+                >
+                  <button
+                    role="tab"
+                    aria-selected={tripMode === "destination"}
+                    onClick={() => setTripMode("destination")}
+                    style={heroTabStyle(tripMode === "destination")}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></svg>
+                    Destination
+                  </button>
+                  <button
+                    role="tab"
+                    aria-selected={tripMode === "trip"}
+                    onClick={() => setTripMode("trip")}
+                    style={heroTabStyle(tripMode === "trip")}
+                  >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="6" cy="19" r="2" /><circle cx="18" cy="5" r="2" /><path d="M8 19h7a4 4 0 0 0 0-8H9a4 4 0 0 1 0-8h7" /></svg>
+                    Full Trip
+                  </button>
+                </div>
 
-                {/* Three-zone itinerary row — always rendered; the zones
-                    transform between an instructional empty state and the
-                    populated state. */}
-                <ItineraryPanel
-                  selectedCountries={selectedCountries}
-                  onRemoveCountry={removeCountry}
-                  onClearAll={clearAll}
-                  onGo={goToItinerary}
-                />
+                {tripMode === "destination" ? (
+                  <DestinationSearch
+                    selectedCountries={[]}
+                    onAddCountry={openDestination}
+                  />
+                ) : (
+                  <>
+                    <DestinationSearch
+                      selectedCountries={selectedCountries}
+                      onAddCountry={addCountry}
+                    />
+                    {/* Three-zone itinerary row — always rendered; the zones
+                        transform between an instructional empty state and the
+                        populated state. */}
+                    <ItineraryPanel
+                      selectedCountries={selectedCountries}
+                      onRemoveCountry={removeCountry}
+                      onClearAll={clearAll}
+                      onGo={goToItinerary}
+                    />
+                  </>
+                )}
               </div>
 
               {/* ── Right column: globe ─────────────────────────────── */}
@@ -97,6 +154,31 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* ── Physician trust strip — small, minimal, directly under hero ─── */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: "9px",
+          padding: "12px 24px",
+          borderTop: "1px solid var(--c-border)",
+          borderBottom: "1px solid var(--c-border)",
+          background: "var(--c-surface)",
+          flexWrap: "wrap",
+          textAlign: "center",
+        }}
+      >
+        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px", borderRadius: "50%", background: "var(--c-trust-soft)", border: "1px solid var(--c-trust-border)", color: "var(--c-trust)", flexShrink: 0 }}>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+        </span>
+        <span style={{ fontSize: "12.5px", color: "var(--c-text-2)" }}>
+          Physician-reviewed by{" "}
+          <strong style={{ color: "var(--c-text)", fontWeight: 700 }}>Dr. Marco Seneghini</strong>{" "}
+          · Infectious Diseases Specialist · Switzerland
+        </span>
+      </div>
 
       {/* ── Stats strip (proof row) ───────────────────────────────────── */}
       <section className="stats-strip">
