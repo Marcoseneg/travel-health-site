@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { SUPPORTED_COUNTRIES } from "./lib/travelData";
 import { DISEASE_LIST } from "./lib/diseaseData";
 import { articles } from "./lib/guidesData";
+import { insights } from "./lib/insights";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // sitemap.ts
@@ -31,6 +32,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE_URL}/outbreaks`,  lastModified, changeFrequency: "hourly",  priority: 0.7 },
     { url: `${BASE_URL}/itinerary`,  lastModified, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE_URL}/guides`,     lastModified, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE_URL}/insights`,   lastModified, changeFrequency: "weekly",  priority: 0.7 },
     { url: `${BASE_URL}/about`,      lastModified, changeFrequency: "yearly",  priority: 0.4 },
   ];
 
@@ -65,5 +67,19 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     }));
 
-  return [...staticPages, ...countryPages, ...diseasePages, ...guidePages];
+  // ── One entry per insight article ────────────────────────────────────────
+  const insightPages: MetadataRoute.Sitemap = insights.map((i) => ({
+    url: `${BASE_URL}/insights/${i.id}`,
+    lastModified: new Date(i.date),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [
+    ...staticPages,
+    ...countryPages,
+    ...diseasePages,
+    ...guidePages,
+    ...insightPages,
+  ];
 }

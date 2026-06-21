@@ -37,6 +37,7 @@ const NAV_LINKS = [
   { label: "Countries", href: "/countries" },
   { label: "Diseases", href: "/diseases" },
   { label: "Outbreaks", href: "/outbreaks" },
+  { label: "Insights", href: "/insights" },
   { label: "Guides", href: "/guides" },
   { label: "About", href: "/about" },
 ];

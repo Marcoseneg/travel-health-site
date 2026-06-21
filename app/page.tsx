@@ -6,6 +6,7 @@ import DestinationSearch from "./components/DestinationSearch";
 import GlobeHero from "./components/GlobeHero";
 import CurrentAlerts from "./components/CurrentAlerts";
 import PopularDestinations from "./components/PopularDestinations";
+import InsightsPreview from "./components/InsightsPreview";
 import PlanYourTrip from "./components/PlanYourTrip";
 import GuidesPreview from "./components/GuidesPreview";
 import { TrustBanner, SiteFooter } from "./components/TrustFooter";
@@ -183,6 +184,8 @@ export default function Home() {
       <CurrentAlerts />
 
       <PopularDestinations />
+
+      <InsightsPreview />
 
       <PlanYourTrip />
 

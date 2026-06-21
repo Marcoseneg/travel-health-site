@@ -97,9 +97,10 @@ const navSchema = {
     { "@type": "SiteNavigationElement", position: 1, name: "Countries",  url: `${SITE_URL}/countries` },
     { "@type": "SiteNavigationElement", position: 2, name: "Diseases",   url: `${SITE_URL}/diseases` },
     { "@type": "SiteNavigationElement", position: 3, name: "Outbreaks",  url: `${SITE_URL}/outbreaks` },
-    { "@type": "SiteNavigationElement", position: 4, name: "Itinerary",  url: `${SITE_URL}/itinerary` },
-    { "@type": "SiteNavigationElement", position: 5, name: "Guides",     url: `${SITE_URL}/guides` },
-    { "@type": "SiteNavigationElement", position: 6, name: "About",      url: `${SITE_URL}/about` },
+    { "@type": "SiteNavigationElement", position: 4, name: "Insights",   url: `${SITE_URL}/insights` },
+    { "@type": "SiteNavigationElement", position: 5, name: "Itinerary",  url: `${SITE_URL}/itinerary` },
+    { "@type": "SiteNavigationElement", position: 6, name: "Guides",     url: `${SITE_URL}/guides` },
+    { "@type": "SiteNavigationElement", position: 7, name: "About",      url: `${SITE_URL}/about` },
   ],
 };
 
