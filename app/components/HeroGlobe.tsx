@@ -1,26 +1,51 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { geoOrthographic, geoPath, geoGraticule10 } from "d3-geo";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { geoOrthographic, geoPath, geoGraticule10, type GeoProjection } from "d3-geo";
+import { SUPPORTED_COUNTRIES, type CountrySlug } from "../lib/travelData";
 
-// Lightweight, light-themed hero globe — a static orthographic SVG rendering of
-// the world (d3-geo), not the heavy 3D react-globe.gl canvas. It is decorative
-// (destination selection lives in the search), so it has no zoom and no camera
-// state to glitch on remount. Pale teal land on a soft sphere, a dashed flight
-// arc, and a destination pin linking to a featured country.
+// Interactive, light-themed hero globe — a hand-rolled orthographic SVG globe
+// (d3-geo), NOT the heavy 3D react-globe.gl canvas. It auto-spins, pauses on
+// hover, highlights countries, and lets you click to add a destination to the
+// trip. Light by design, no WebGL camera state, so none of the dark/zoom
+// glitches of the 3D globe.
 
-const VB = 560; // viewBox size
+const VB = 560;
 const C = VB / 2;
-const R = 250; // globe radius
-// Rotate so Africa/Europe sit center-left and SE Asia (the pin) is on the right.
-const ROTATE: [number, number, number] = [-50, -12, 0];
-const PIN: [number, number] = [100.5, 13.7]; // Bangkok, Thailand
+const R = 250;
+const SPEED = 5; // degrees / second
+const TILT = -12;
 
-type GeoJson = { features: { type: string; geometry: unknown; properties: unknown }[] };
+type GeoFeature = { type: string; geometry: unknown; properties: { NAME?: string; ADMIN?: string } };
+type GeoJson = { features: GeoFeature[] };
 
-export default function HeroGlobe() {
+// Reverse map: geojson country NAME -> our supported slug.
+const LABEL_TO_SLUG: Record<string, CountrySlug> = Object.fromEntries(
+  (Object.entries(SUPPORTED_COUNTRIES) as [CountrySlug, { label: string }][]).map(
+    ([slug, c]) => [c.label, slug]
+  )
+) as Record<string, CountrySlug>;
+
+function slugForFeature(f: GeoFeature): CountrySlug | undefined {
+  const name = f.properties?.NAME || f.properties?.ADMIN || "";
+  return LABEL_TO_SLUG[name];
+}
+
+type Props = {
+  selectedCountries: CountrySlug[];
+  onToggleCountry: (slug: CountrySlug) => void;
+};
+
+export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props) {
   const [geo, setGeo] = useState<GeoJson | null>(null);
+  const [hover, setHover] = useState<{ name: string; slug?: CountrySlug; x: number; y: number } | null>(null);
+
+  const pathEls = useRef<(SVGPathElement | null)[]>([]);
+  const lambdaRef = useRef(20);
+  const pausedRef = useRef(false);
+  const selectedRef = useRef<Set<string>>(new Set());
+
+  useEffect(() => { selectedRef.current = new Set(selectedCountries); }, [selectedCountries]);
 
   useEffect(() => {
     let alive = true;
@@ -31,25 +56,75 @@ export default function HeroGlobe() {
     return () => { alive = false; };
   }, []);
 
-  const { sphere, graticule, countries, pin } = useMemo(() => {
-    const projection = geoOrthographic().scale(R).translate([C, C]).rotate(ROTATE);
-    const path = geoPath(projection);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const countryPaths = (geo?.features ?? []).map((f) => path(f as any) || "");
-    const pinPos = projection(PIN);
-    // Only show the pin when the point is on the near (visible) hemisphere.
-    const visible = pinPos && geoPath(projection)({ type: "Point", coordinates: PIN } as never);
-    return {
-      sphere: path({ type: "Sphere" } as never) || "",
-      graticule: path(geoGraticule10()) || "",
-      countries: countryPaths,
-      pin: visible ? pinPos : null,
+  const features = geo?.features ?? [];
+
+  // Static layers (sphere + graticule) recomputed only when not spinning would
+  // change them — but they don't change with rotation shape much; we redraw
+  // them each frame cheaply alongside the countries via the same projection.
+  const slugs = useMemo(() => features.map((f) => slugForFeature(f)), [features]);
+
+  useEffect(() => {
+    if (!features.length) return;
+    const reduce =
+      typeof window !== "undefined" &&
+      window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+    let raf = 0;
+    let last = performance.now();
+    let lastDraw = -999;
+
+    const draw = (proj: GeoProjection) => {
+      const path = geoPath(proj);
+      const sel = selectedRef.current;
+      for (let i = 0; i < features.length; i++) {
+        const el = pathEls.current[i];
+        if (!el) continue;
+        el.setAttribute("d", path(features[i] as never) || "");
+        const slug = slugs[i];
+        const fill = slug && sel.has(slug)
+          ? "#0891b2"
+          : slug
+          ? "#9fd6d8"
+          : "#cfe3e4";
+        el.setAttribute("fill", fill);
+      }
+      const gr = document.getElementById("hg-grat") as unknown as SVGPathElement | null;
+      if (gr) gr.setAttribute("d", path(geoGraticule10()) || "");
     };
-  }, [geo]);
+
+    const loop = (now: number) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      const spinning = !pausedRef.current && !reduce && !document.hidden;
+      if (spinning) lambdaRef.current = (lambdaRef.current + SPEED * dt) % 360;
+      // throttle redraw to ~30fps
+      if (spinning ? now - lastDraw > 33 : now - lastDraw > 120) {
+        lastDraw = now;
+        const proj = geoOrthographic().scale(R).translate([C, C]).rotate([lambdaRef.current, TILT]).clipAngle(90);
+        draw(proj);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(raf);
+  }, [features, slugs]);
+
+  const onEnter = (i: number, e: React.MouseEvent<SVGPathElement>) => {
+    pausedRef.current = true;
+    const f = features[i];
+    const name = f.properties?.NAME || f.properties?.ADMIN || "";
+    const svg = e.currentTarget.ownerSVGElement;
+    if (!svg) return;
+    const rect = svg.getBoundingClientRect();
+    setHover({ name, slug: slugs[i], x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
+  };
 
   return (
-    <div style={{ position: "relative", width: "100%", maxWidth: "560px", margin: "0 auto" }}>
-      <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe highlighting travel destinations" style={{ display: "block", overflow: "visible" }}>
+    <div
+      style={{ position: "relative", width: "100%", maxWidth: "540px", margin: "0 auto" }}
+      onMouseLeave={() => { pausedRef.current = false; setHover(null); }}
+    >
+      <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe — click a country to add it to your trip" style={{ display: "block", overflow: "visible" }}>
         <defs>
           <radialGradient id="hg-sphere" cx="40%" cy="34%" r="72%">
             <stop offset="0" stopColor="#ffffff" />
@@ -62,62 +137,54 @@ export default function HeroGlobe() {
           </radialGradient>
         </defs>
 
-        {/* soft halo for depth */}
         <circle cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
-        {/* sphere */}
-        <path d={sphere} fill="url(#hg-sphere)" stroke="rgba(8,145,178,0.18)" strokeWidth={1} />
-        {/* graticule */}
-        <path d={graticule} fill="none" stroke="rgba(8,145,178,0.10)" strokeWidth={0.6} />
-        {/* land */}
-        <g fill="#a7d8da" stroke="#ffffff" strokeWidth={0.5} strokeLinejoin="round">
-          {countries.map((d, i) => (d ? <path key={i} d={d} /> : null))}
+        <circle cx={C} cy={C} r={R} fill="url(#hg-sphere)" stroke="rgba(8,145,178,0.18)" strokeWidth={1} />
+        <path id="hg-grat" fill="none" stroke="rgba(8,145,178,0.10)" strokeWidth={0.6} />
+
+        <g stroke="#ffffff" strokeWidth={0.5} strokeLinejoin="round">
+          {features.map((f, i) => {
+            const slug = slugs[i];
+            return (
+              <path
+                key={i}
+                ref={(el) => { pathEls.current[i] = el; }}
+                fill="#cfe3e4"
+                style={{ cursor: slug ? "pointer" : "default", transition: "fill 0.15s" }}
+                onMouseEnter={(e) => onEnter(i, e)}
+                onMouseMove={(e) => onEnter(i, e)}
+                onClick={() => { if (slug) onToggleCountry(slug); }}
+              />
+            );
+          })}
         </g>
-
-        {/* dashed flight arc (decorative) */}
-        <path
-          d={`M ${C - 150} ${C - 150} Q ${C + 40} ${C - 230} ${pin ? pin[0] : C + 150} ${pin ? pin[1] - 6 : C - 40}`}
-          fill="none"
-          stroke="#0891b2"
-          strokeWidth={1.6}
-          strokeDasharray="2 7"
-          strokeLinecap="round"
-          opacity={0.7}
-        />
-        {/* plane */}
-        <path d={`M ${C - 156} ${C - 156} l 16 -7 l -4 7 l 4 7 z`} fill="#0891b2" />
-
-        {/* destination pin */}
-        {pin && (
-          <g transform={`translate(${pin[0]}, ${pin[1]})`}>
-            <circle r={12} fill="rgba(8,145,178,0.18)" />
-            <circle r={5.5} fill="#0891b2" stroke="#ffffff" strokeWidth={1.5} />
-          </g>
-        )}
       </svg>
 
-      {/* Tooltip card anchored near the pin */}
-      {pin && (
-        <Link
-          href="/country/thailand"
+      {hover && (
+        <div
           style={{
             position: "absolute",
-            left: `${(pin[0] / VB) * 100}%`,
-            top: `${(pin[1] / VB) * 100}%`,
-            transform: "translate(14px, -130%)",
+            left: `${hover.x}%`,
+            top: `${hover.y}%`,
+            transform: "translate(14px, -120%)",
             background: "var(--c-surface)",
             border: "1px solid var(--c-border)",
-            borderRadius: "12px",
-            padding: "9px 13px",
-            boxShadow: "0 10px 26px rgba(15,23,42,0.12)",
-            textDecoration: "none",
+            borderRadius: "10px",
+            padding: "7px 11px",
+            boxShadow: "0 10px 26px rgba(15,23,42,0.14)",
+            pointerEvents: "none",
             whiteSpace: "nowrap",
+            zIndex: 5,
           }}
         >
-          <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--c-text)" }}>Thailand</div>
-          <div className="t-label" style={{ color: "var(--c-accent-strong)", fontWeight: 600 }}>
-            View health guide →
+          <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--c-text)" }}>{hover.name}</div>
+          <div className="t-label" style={{ color: hover.slug ? "var(--c-accent-strong)" : "var(--c-text-3)", fontWeight: 600 }}>
+            {hover.slug
+              ? selectedCountries.includes(hover.slug)
+                ? "Added ✓ · click to remove"
+                : "Click to add to trip"
+              : "Not yet covered"}
           </div>
-        </Link>
+        </div>
       )}
     </div>
   );

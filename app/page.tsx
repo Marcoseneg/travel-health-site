@@ -26,6 +26,14 @@ export default function Home() {
     setSelectedCountries((prev) => prev.filter((c) => c !== country));
   };
 
+  const toggleCountry = (country: CountrySlug) => {
+    setSelectedCountries((prev) =>
+      prev.includes(country)
+        ? prev.filter((c) => c !== country)
+        : [...prev, country]
+    );
+  };
+
   const clearAll = () => setSelectedCountries([]);
 
   const goToItinerary = () => {
@@ -134,7 +142,10 @@ export default function Home() {
 
               {/* ── Right column: light SVG globe (decorative) ──────── */}
               <div className="hero-visual animate-fade-up-3">
-                <HeroGlobe />
+                <HeroGlobe
+                  selectedCountries={selectedCountries}
+                  onToggleCountry={toggleCountry}
+                />
               </div>
             </div>
           </div>
