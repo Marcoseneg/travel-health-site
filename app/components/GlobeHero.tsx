@@ -119,9 +119,15 @@ type Props = {
    * the user-driven chip bar continues to work as before.
    */
   fixedFilter?: FilterMode;
+  /**
+   * Hide the interactive disease filter chip bar (e.g. on the homepage, to
+   * keep the hero globe clean and free of an extra decision). The globe still
+   * rotates and countries stay selectable.
+   */
+  showFilterBar?: boolean;
 };
 
-export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFilter }: Props) {
+export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFilter, showFilterBar = true }: Props) {
   const globeRef = useRef<GlobeMethods>(undefined);
   const containerRef = useRef<HTMLDivElement>(null);
   const [allCountries, setAllCountries] = useState<Feature[]>([]);
@@ -579,7 +585,7 @@ export default function GlobeHero({ selectedCountries, onToggleCountry, fixedFil
           marginTop lift). This keeps the filter bar at its original visual
           position on the page while the globe sphere sits 28px higher,
           shrinking the visible gap between the filter and the globe. */}
-      {!fixedFilter && (
+      {!fixedFilter && showFilterBar && (
         <div
           style={{
             position: "absolute",

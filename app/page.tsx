@@ -145,6 +145,7 @@ export default function Home() {
                   <GlobeHero
                     selectedCountries={selectedCountries}
                     onToggleCountry={toggleCountry}
+                    showFilterBar={false}
                   />
                 </div>
               </div>
