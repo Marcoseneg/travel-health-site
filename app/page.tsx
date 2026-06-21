@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DestinationSearch from "./components/DestinationSearch";
-import GlobeHero from "./components/GlobeHero";
+import HeroGlobe from "./components/HeroGlobe";
 import CurrentAlerts from "./components/CurrentAlerts";
 import PopularDestinations from "./components/PopularDestinations";
 import InsightsPreview from "./components/InsightsPreview";
@@ -24,14 +24,6 @@ export default function Home() {
 
   const removeCountry = (country: CountrySlug) => {
     setSelectedCountries((prev) => prev.filter((c) => c !== country));
-  };
-
-  const toggleCountry = (country: CountrySlug) => {
-    setSelectedCountries((prev) =>
-      prev.includes(country)
-        ? prev.filter((c) => c !== country)
-        : [...prev, country]
-    );
   };
 
   const clearAll = () => setSelectedCountries([]);
@@ -140,15 +132,9 @@ export default function Home() {
                 )}
               </div>
 
-              {/* ── Right column: globe ─────────────────────────────── */}
+              {/* ── Right column: light SVG globe (decorative) ──────── */}
               <div className="hero-visual animate-fade-up-3">
-                <div className="hero-globe-wrap">
-                  <GlobeHero
-                    selectedCountries={selectedCountries}
-                    onToggleCountry={toggleCountry}
-                    showFilterBar={false}
-                  />
-                </div>
+                <HeroGlobe />
               </div>
             </div>
           </div>
