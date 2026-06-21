@@ -56,11 +56,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     return () => { alive = false; };
   }, []);
 
-  const features = geo?.features ?? [];
-
-  // Static layers (sphere + graticule) recomputed only when not spinning would
-  // change them — but they don't change with rotation shape much; we redraw
-  // them each frame cheaply alongside the countries via the same projection.
+  const features = useMemo(() => geo?.features ?? [], [geo]);
   const slugs = useMemo(() => features.map((f) => slugForFeature(f)), [features]);
 
   useEffect(() => {
