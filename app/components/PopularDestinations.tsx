@@ -18,6 +18,7 @@ const FEATURED: Featured[] = [
   { slug: "thailand", img: "/images/destinations/thailand.jpg", tint: "#4f93a2", tintDark: "#356773", risk: "Dengue, limited malaria" },
   { slug: "tanzania", img: "/images/destinations/tanzania.jpg", tint: "#a3865a", tintDark: "#725d3d", risk: "Yellow fever, malaria" },
   { slug: "peru", img: "/images/destinations/peru.jpg", tint: "#5a7f93", tintDark: "#3d5867", risk: "Altitude, Amazon yellow fever" },
+  { slug: "brazil", img: "/images/destinations/brazil.jpg", tint: "#3f6f86", tintDark: "#2a4a5a", risk: "Dengue, yellow fever (Amazon)" },
 ];
 
 export default function PopularDestinations() {
