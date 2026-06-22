@@ -33,7 +33,6 @@ function buildSearchItems(): SearchItem[] {
 const SEARCH_ITEMS = buildSearchItems();
 
 const NAV_LINKS = [
-  { label: "Home", href: "/" },
   { label: "Countries", href: "/countries" },
   { label: "Diseases", href: "/diseases" },
   { label: "Outbreaks", href: "/outbreaks" },
@@ -174,9 +173,9 @@ export default function SiteHeader() {
         >
           <div
             style={{
-              width: "34px",
-              height: "34px",
-              borderRadius: "10px",
+              width: "44px",
+              height: "44px",
+              borderRadius: "12px",
               background: "var(--c-surface)",
               border: "1px solid var(--c-border)",
               display: "flex",
@@ -184,10 +183,11 @@ export default function SiteHeader() {
               justifyContent: "center",
               position: "relative",
               overflow: "hidden",
+              flexShrink: 0,
             }}
           >
             {/* "Living Globe" mark — globe with a pulse line, cyan→teal duotone */}
-            <svg width="24" height="24" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <svg width="31" height="31" viewBox="0 0 40 40" fill="none" aria-hidden="true">
               <defs>
                 <linearGradient id="tmGlobe" x1="6" y1="6" x2="34" y2="34" gradientUnits="userSpaceOnUse">
                   <stop offset="0" stopColor="#0891b2" />
@@ -199,17 +199,15 @@ export default function SiteHeader() {
               <path d="M7 20.5H15L17.5 14.5L21 26L23.5 20.5H33" stroke="#ffffff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-          <span
-            style={{
-              fontWeight: 700,
-              fontSize: "18px",
-              letterSpacing: "-0.025em",
-              color: "var(--c-text)",
-            }}
-          >
-            Travel
-            <span style={{ color: "var(--c-accent)", fontWeight: 500 }}>Med</span>
-          </span>
+          <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.05 }}>
+            <span style={{ fontWeight: 800, fontSize: "20px", letterSpacing: "-0.03em", color: "var(--c-text)" }}>
+              Travel
+              <span style={{ color: "var(--c-accent)", fontWeight: 600 }}>Med</span>
+            </span>
+            <span style={{ fontSize: "10.5px", fontWeight: 500, color: "var(--c-text-3)", letterSpacing: "0.01em", marginTop: "2px" }}>
+              Evidence. Expertise. Safer travel.
+            </span>
+          </div>
         </Link>
 
         {/* ── Divider between logo and search ──────────────────────── */}

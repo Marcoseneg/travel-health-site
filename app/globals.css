@@ -274,7 +274,7 @@ a {
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 600px) minmax(0, 1fr);
-  align-items: center;
+  align-items: start;
   gap: 32px;
   padding: 20px 52px 24px;
 }

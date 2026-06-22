@@ -86,6 +86,9 @@ export default function Home() {
                   onAddCountry={addCountry}
                 />
 
+                {/* Reserved-height area so adding/removing destinations doesn't
+                    resize the hero or shift the title. */}
+                <div style={{ minHeight: "156px" }}>
                 {selectedCountries.length === 0 && (
                   <div style={{ marginTop: "18px" }}>
                     {/* Popular searches — single inline line */}
@@ -168,6 +171,7 @@ export default function Home() {
                     )}
                   </div>
                 )}
+                </div>
               </div>
 
               {/* ── Right column: light SVG globe (decorative) ──────── */}
