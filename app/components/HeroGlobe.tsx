@@ -43,6 +43,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
   const pathEls = useRef<(SVGPathElement | null)[]>([]);
   const sphereEl = useRef<SVGPathElement | null>(null);
   const haloEl = useRef<SVGCircleElement | null>(null);
+  const limbEl = useRef<SVGCircleElement | null>(null);
   const gratEl = useRef<SVGPathElement | null>(null);
 
   const lambdaRef = useRef(20);
@@ -98,6 +99,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
         sphereEl.current.setAttribute("stroke", dark ? "rgba(255,255,255,0.10)" : "rgba(8,145,178,0.18)");
       }
       if (haloEl.current) haloEl.current.setAttribute("r", String(R * zoomRef.current + 26));
+      if (limbEl.current) limbEl.current.setAttribute("r", String(R * zoomRef.current));
       if (gratEl.current) {
         gratEl.current.setAttribute("d", path(geoGraticule10()) || "");
         gratEl.current.setAttribute("stroke", dark ? "rgba(255,255,255,0.07)" : "rgba(8,145,178,0.10)");
@@ -137,7 +139,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     movedRef.current = false;
     pausedRef.current = true;
     dragStart.current = { x: e.clientX, y: e.clientY, lambda: lambdaRef.current, phi: phiRef.current };
-    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    // NOTE: deliberately NOT using setPointerCapture — capturing the pointer on
+    // the container retargets all later events to it, which swallows the click
+    // on country paths and the zoom buttons. Drag works fine without it.
   };
   const onPointerMove = (e: React.PointerEvent) => {
     if (!draggingRef.current) return;
@@ -204,6 +208,13 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
             <stop offset="60%" stopColor="rgba(8,145,178,0.12)" />
             <stop offset="100%" stopColor="rgba(8,145,178,0)" />
           </radialGradient>
+          {/* Limb darkening — shades the rim so the disc reads as a sphere. */}
+          <radialGradient id="hg-limb" cx="42%" cy="38%" r="62%">
+            <stop offset="0" stopColor="rgba(255,255,255,0.16)" />
+            <stop offset="55%" stopColor="rgba(0,0,0,0)" />
+            <stop offset="88%" stopColor="rgba(3,18,24,0.10)" />
+            <stop offset="100%" stopColor="rgba(3,18,24,0.32)" />
+          </radialGradient>
         </defs>
 
         <circle ref={haloEl} cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
@@ -226,6 +237,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
             );
           })}
         </g>
+
+        {/* Limb-darkening overlay for 3D depth — non-interactive */}
+        <circle ref={limbEl} cx={C} cy={C} r={R} fill="url(#hg-limb)" style={{ pointerEvents: "none" }} />
       </svg>
 
       {/* Zoom controls — discrete, no wheel zoom */}

@@ -58,8 +58,8 @@ export default function PopularDestinations({ embedded = false }: { embedded?: b
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-            gap: "14px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+            gap: "10px",
           }}
         >
           {FEATURED.map((dest) => {

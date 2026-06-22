@@ -167,8 +167,8 @@ export default function CurrentAlerts({ embedded = false }: { embedded?: boolean
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: "12px",
+          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gap: "10px",
         }}
       >
         {alerts.map((alert) => (
