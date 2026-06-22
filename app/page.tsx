@@ -189,7 +189,7 @@ export default function Home() {
       {/* ── Alerts + Featured destinations, side by side in one row ─────── */}
       {/* Gutter-outside + inner max-width mirrors the hero (.hero-shell +
           .hero-container) so this row's edges align exactly with the hero box. */}
-      <section style={{ padding: "20px 24px" }}>
+      <section style={{ padding: "12px 24px" }}>
         <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
           <div
             style={{
