@@ -5,21 +5,21 @@ import { geoOrthographic, geoPath, geoGraticule10, type GeoProjection } from "d3
 import { SUPPORTED_COUNTRIES, type CountrySlug } from "../lib/travelData";
 
 // Interactive, light-themed hero globe — a hand-rolled orthographic SVG globe
-// (d3-geo), NOT the heavy 3D react-globe.gl canvas. It auto-spins, pauses on
-// hover, highlights countries, and lets you click to add a destination to the
-// trip. Light by design, no WebGL camera state, so none of the dark/zoom
-// glitches of the 3D globe.
+// (d3-geo), NOT the heavy 3D react-globe.gl canvas. It auto-spins, can be
+// dragged to rotate, zoomed with +/- buttons (no wheel zoom → no scroll-jack,
+// nothing to persist, so none of the dark/zoom glitches of the 3D globe), and
+// clicking a country adds it to the trip.
 
 const VB = 560;
 const C = VB / 2;
 const R = 250;
 const SPEED = 13; // degrees / second (full rotation ~28s)
-const TILT = -12;
+const ZOOM_MIN = 0.75;
+const ZOOM_MAX = 2.4;
 
 type GeoFeature = { type: string; geometry: unknown; properties: { NAME?: string; ADMIN?: string } };
 type GeoJson = { features: GeoFeature[] };
 
-// Reverse map: geojson country NAME -> our supported slug.
 const LABEL_TO_SLUG: Record<string, CountrySlug> = Object.fromEntries(
   (Object.entries(SUPPORTED_COUNTRIES) as [CountrySlug, { label: string }][]).map(
     ([slug, c]) => [c.label, slug]
@@ -41,8 +41,19 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
   const [hover, setHover] = useState<{ name: string; slug?: CountrySlug; x: number; y: number } | null>(null);
 
   const pathEls = useRef<(SVGPathElement | null)[]>([]);
+  const sphereEl = useRef<SVGPathElement | null>(null);
+  const haloEl = useRef<SVGCircleElement | null>(null);
+  const gratEl = useRef<SVGPathElement | null>(null);
+
   const lambdaRef = useRef(20);
+  const phiRef = useRef(-12);
+  const zoomRef = useRef(1);
   const pausedRef = useRef(false);
+  const draggingRef = useRef(false);
+  const movedRef = useRef(false);
+  const suppressClickRef = useRef(false);
+  const dragStart = useRef({ x: 0, y: 0, lambda: 0, phi: 0 });
+  const drawRef = useRef<() => void>(() => {});
   const selectedRef = useRef<Set<string>>(new Set());
 
   useEffect(() => { selectedRef.current = new Set(selectedCountries); }, [selectedCountries]);
@@ -65,37 +76,41 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
       typeof window !== "undefined" &&
       window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-    let raf = 0;
-    let last = performance.now();
-    let lastDraw = -999;
+    const buildProj = () =>
+      geoOrthographic()
+        .scale(R * zoomRef.current)
+        .translate([C, C])
+        .rotate([lambdaRef.current, phiRef.current])
+        .clipAngle(90);
 
     const draw = (proj: GeoProjection) => {
       const path = geoPath(proj);
       const sel = selectedRef.current;
+      if (sphereEl.current) sphereEl.current.setAttribute("d", path({ type: "Sphere" } as never) || "");
+      if (haloEl.current) haloEl.current.setAttribute("r", String(R * zoomRef.current + 26));
+      if (gratEl.current) gratEl.current.setAttribute("d", path(geoGraticule10()) || "");
       for (let i = 0; i < features.length; i++) {
         const el = pathEls.current[i];
         if (!el) continue;
         el.setAttribute("d", path(features[i] as never) || "");
         const slug = slugs[i];
-        // selected = brand cyan; supported (clickable) = medium teal;
-        // unsupported = lighter teal — all distinct from the pale ocean.
-        const fill = slug ? (sel.has(slug) ? "#0891b2" : "#54b3ba") : "#8fccd0";
-        el.setAttribute("fill", fill);
+        el.setAttribute("fill", slug ? (sel.has(slug) ? "#0891b2" : "#54b3ba") : "#8fccd0");
       }
-      const gr = document.getElementById("hg-grat") as unknown as SVGPathElement | null;
-      if (gr) gr.setAttribute("d", path(geoGraticule10()) || "");
     };
+    drawRef.current = () => draw(buildProj());
 
+    let raf = 0;
+    let last = performance.now();
+    let lastDraw = -999;
     const loop = (now: number) => {
       const dt = Math.min(0.05, (now - last) / 1000);
       last = now;
-      const spinning = !pausedRef.current && !reduce && !document.hidden;
+      const spinning = !pausedRef.current && !draggingRef.current && !reduce && !document.hidden;
       if (spinning) lambdaRef.current = (lambdaRef.current + SPEED * dt) % 360;
-      // throttle redraw to ~30fps
-      if (spinning ? now - lastDraw > 33 : now - lastDraw > 120) {
+      const active = spinning || draggingRef.current;
+      if (active ? now - lastDraw > 33 : now - lastDraw > 200) {
         lastDraw = now;
-        const proj = geoOrthographic().scale(R).translate([C, C]).rotate([lambdaRef.current, TILT]).clipAngle(90);
-        draw(proj);
+        draw(buildProj());
       }
       raf = requestAnimationFrame(loop);
     };
@@ -103,7 +118,34 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     return () => cancelAnimationFrame(raf);
   }, [features, slugs]);
 
+  // ── Drag to rotate ─────────────────────────────────────────────────────────
+  const onPointerDown = (e: React.PointerEvent) => {
+    draggingRef.current = true;
+    movedRef.current = false;
+    pausedRef.current = true;
+    dragStart.current = { x: e.clientX, y: e.clientY, lambda: lambdaRef.current, phi: phiRef.current };
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!draggingRef.current) return;
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+    if (Math.abs(dx) + Math.abs(dy) > 4) movedRef.current = true;
+    const sens = 0.28 / zoomRef.current;
+    lambdaRef.current = dragStart.current.lambda + dx * sens;
+    phiRef.current = Math.max(-89, Math.min(89, dragStart.current.phi - dy * sens));
+    drawRef.current();
+  };
+  const onPointerUp = () => {
+    if (movedRef.current) {
+      suppressClickRef.current = true;
+      setTimeout(() => { suppressClickRef.current = false; }, 0);
+    }
+    draggingRef.current = false;
+  };
+
   const onEnter = (i: number, e: React.MouseEvent<SVGPathElement>) => {
+    if (draggingRef.current) return;
     pausedRef.current = true;
     const f = features[i];
     const name = f.properties?.NAME || f.properties?.ADMIN || "";
@@ -113,12 +155,27 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     setHover({ name, slug: slugs[i], x: ((e.clientX - rect.left) / rect.width) * 100, y: ((e.clientY - rect.top) / rect.height) * 100 });
   };
 
+  const zoom = (factor: number) => {
+    zoomRef.current = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, zoomRef.current * factor));
+    drawRef.current();
+  };
+
+  const zoomBtn: React.CSSProperties = {
+    width: "32px", height: "32px", display: "flex", alignItems: "center", justifyContent: "center",
+    borderRadius: "8px", background: "var(--c-surface)", border: "1px solid var(--c-border)",
+    color: "var(--c-text-2)", cursor: "pointer", fontSize: "18px", lineHeight: 1, fontFamily: "inherit",
+    boxShadow: "0 2px 8px rgba(15,23,42,0.06)",
+  };
+
   return (
     <div
-      style={{ position: "relative", width: "100%", maxWidth: "540px", margin: "0 auto" }}
-      onMouseLeave={() => { pausedRef.current = false; setHover(null); }}
+      style={{ position: "relative", width: "100%", maxWidth: "540px", margin: "0 auto", touchAction: "pan-y" }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onMouseLeave={() => { pausedRef.current = false; draggingRef.current = false; setHover(null); }}
     >
-      <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe — click a country to add it to your trip" style={{ display: "block", overflow: "visible" }}>
+      <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe — drag to rotate, click a country to add it to your trip" style={{ display: "block", overflow: "visible", cursor: "grab" }}>
         <defs>
           <radialGradient id="hg-sphere" cx="38%" cy="32%" r="75%">
             <stop offset="0" stopColor="#f2fbfb" />
@@ -131,9 +188,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
           </radialGradient>
         </defs>
 
-        <circle cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
-        <circle cx={C} cy={C} r={R} fill="url(#hg-sphere)" stroke="rgba(8,145,178,0.18)" strokeWidth={1} />
-        <path id="hg-grat" fill="none" stroke="rgba(8,145,178,0.10)" strokeWidth={0.6} />
+        <circle ref={haloEl} cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
+        <path ref={sphereEl} fill="url(#hg-sphere)" stroke="rgba(8,145,178,0.18)" strokeWidth={1} />
+        <path ref={gratEl} fill="none" stroke="rgba(8,145,178,0.10)" strokeWidth={0.6} />
 
         <g stroke="#ffffff" strokeWidth={0.5} strokeLinejoin="round">
           {features.map((f, i) => {
@@ -146,12 +203,18 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
                 style={{ cursor: slug ? "pointer" : "default", transition: "fill 0.15s" }}
                 onMouseEnter={(e) => onEnter(i, e)}
                 onMouseMove={(e) => onEnter(i, e)}
-                onClick={() => { if (slug) onToggleCountry(slug); }}
+                onClick={() => { if (slug && !suppressClickRef.current) onToggleCountry(slug); }}
               />
             );
           })}
         </g>
       </svg>
+
+      {/* Zoom controls — discrete, no wheel zoom */}
+      <div style={{ position: "absolute", right: "2%", bottom: "6%", display: "flex", flexDirection: "column", gap: "6px", zIndex: 6 }}>
+        <button aria-label="Zoom in" style={zoomBtn} onClick={() => zoom(1.25)}>+</button>
+        <button aria-label="Zoom out" style={zoomBtn} onClick={() => zoom(0.8)}>−</button>
+      </div>
 
       {hover && (
         <div
