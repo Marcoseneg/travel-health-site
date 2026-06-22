@@ -178,6 +178,14 @@ a {
 .hg-trail {
   animation: hg-trail 4s linear infinite;
 }
+
+/* Resource-row hover (homepage guides / disease list) */
+.resource-row {
+  transition: background 0.15s ease;
+}
+.resource-row:hover {
+  background: var(--c-surface-2);
+}
 @media (prefers-reduced-motion: reduce) {
   .hg-trail {
     animation: none;

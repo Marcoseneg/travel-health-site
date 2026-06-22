@@ -8,7 +8,7 @@ import CurrentAlerts from "./components/CurrentAlerts";
 import PopularDestinations from "./components/PopularDestinations";
 import InsightsPreview from "./components/InsightsPreview";
 import PlanYourTrip from "./components/PlanYourTrip";
-import GuidesPreview from "./components/GuidesPreview";
+import HomeResourcesRow from "./components/HomeResourcesRow";
 import { TrustBanner, SiteFooter } from "./components/TrustFooter";
 import { SUPPORTED_COUNTRIES, type CountrySlug } from "./lib/travelData";
 
@@ -219,7 +219,7 @@ export default function Home() {
 
       <PlanYourTrip />
 
-      <GuidesPreview />
+      <HomeResourcesRow />
 
       <TrustBanner />
 
