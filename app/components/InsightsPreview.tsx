@@ -25,7 +25,7 @@ export default function InsightsPreview() {
   if (FEATURED.length === 0) return null;
 
   return (
-    <section style={{ maxWidth: 1320, margin: "0 auto", padding: "40px 24px" }}>
+    <section style={{ maxWidth: 1320, margin: "0 auto", padding: "20px 24px" }}>
       <div
         style={{
           background: "var(--c-surface)",

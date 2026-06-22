@@ -50,7 +50,7 @@ export default function PlanYourTrip() {
       style={{
         maxWidth: "1320px",
         margin: "0 auto",
-        padding: "64px 24px",
+        padding: "28px 24px",
         background: "var(--c-bg)",
       }}
     >

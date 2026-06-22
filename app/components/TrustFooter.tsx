@@ -43,7 +43,7 @@ const PILLARS = [
 
 export function TrustBanner() {
   return (
-    <section style={{ padding: "80px 24px", position: "relative" }}>
+    <section style={{ padding: "44px 24px", position: "relative" }}>
       {/* Soft radial accent behind the pillar row */}
       <div
         aria-hidden
