@@ -88,24 +88,24 @@ export default function Home() {
 
                 {selectedCountries.length === 0 && (
                   <div style={{ marginTop: "18px" }}>
-                    <span className="t-micro" style={{ color: "var(--c-text-3)" }}>Popular</span>
-                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "9px" }}>
-                      {(["thailand", "tanzania", "peru", "brazil", "india", "vietnam"] as CountrySlug[]).map((slug) => {
+                    {/* Popular searches — single inline line */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "nowrap", overflow: "hidden" }}>
+                      <span className="t-micro" style={{ color: "var(--c-text-3)", flexShrink: 0 }}>Popular</span>
+                      {(["thailand", "tanzania", "peru", "brazil", "india"] as CountrySlug[]).map((slug) => {
                         const c = SUPPORTED_COUNTRIES[slug];
                         if (!c) return null;
                         return (
                           <button
                             key={slug}
                             onClick={() => addCountry(slug)}
-                            style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "7px 13px", borderRadius: "999px", background: "var(--c-surface)", border: "1px solid var(--c-border)", fontSize: "13px", fontWeight: 600, color: "var(--c-text)", cursor: "pointer", fontFamily: "inherit" }}
+                            style={{ flexShrink: 0, padding: "6px 12px", borderRadius: "999px", background: "var(--c-surface)", border: "1px solid var(--c-border)", fontSize: "12.5px", fontWeight: 600, color: "var(--c-text)", cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}
                           >
-                            <span style={{ fontSize: "14px", lineHeight: 1 }}>{c.flag}</span>
                             {c.label}
                           </button>
                         );
                       })}
                     </div>
-                    <div style={{ display: "flex", gap: "28px", marginTop: "26px", flexWrap: "wrap" }}>
+                    <div style={{ display: "flex", gap: "28px", marginTop: "24px", flexWrap: "wrap" }}>
                       {([["100", "Destinations"], ["9", "Disease guides"], ["Live", "Outbreak alerts"]] as const).map(([n, l]) => (
                         <div key={l}>
                           <div style={{ fontSize: "22px", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--c-text)", lineHeight: 1 }}>{n}</div>
@@ -182,43 +182,22 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Physician trust strip — small, minimal, directly under hero ─── */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: "9px",
-          padding: "12px 24px",
-          borderTop: "1px solid var(--c-border)",
-          borderBottom: "1px solid var(--c-border)",
-          background: "var(--c-surface)",
-          flexWrap: "wrap",
-          textAlign: "center",
-        }}
-      >
-        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "22px", height: "22px", borderRadius: "50%", background: "var(--c-trust-soft)", border: "1px solid var(--c-trust-border)", color: "var(--c-trust)", flexShrink: 0 }}>
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-        </span>
-        <span style={{ fontSize: "12.5px", color: "var(--c-text-2)" }}>
-          Physician-reviewed by{" "}
-          <strong style={{ color: "var(--c-text)", fontWeight: 700 }}>Dr. Marco Seneghini</strong>{" "}
-          · Infectious Diseases Specialist · Switzerland
-        </span>
-      </div>
-
       {/* ── Alerts + Featured destinations, side by side in one row ─────── */}
-      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "44px 24px" }}>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))",
-            gap: "36px",
-            alignItems: "start",
-          }}
-        >
-          <CurrentAlerts embedded />
-          <PopularDestinations embedded />
+      {/* Gutter-outside + inner max-width mirrors the hero (.hero-shell +
+          .hero-container) so this row's edges align exactly with the hero box. */}
+      <section style={{ padding: "40px 24px" }}>
+        <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))",
+              gap: "36px",
+              alignItems: "start",
+            }}
+          >
+            <CurrentAlerts embedded />
+            <PopularDestinations embedded />
+          </div>
         </div>
       </section>
 
