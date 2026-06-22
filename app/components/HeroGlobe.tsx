@@ -13,7 +13,7 @@ import { SUPPORTED_COUNTRIES, type CountrySlug } from "../lib/travelData";
 const VB = 560;
 const C = VB / 2;
 const R = 250;
-const SPEED = 5; // degrees / second
+const SPEED = 13; // degrees / second (full rotation ~28s)
 const TILT = -12;
 
 type GeoFeature = { type: string; geometry: unknown; properties: { NAME?: string; ADMIN?: string } };
@@ -77,11 +77,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
         if (!el) continue;
         el.setAttribute("d", path(features[i] as never) || "");
         const slug = slugs[i];
-        const fill = slug && sel.has(slug)
-          ? "#0891b2"
-          : slug
-          ? "#9fd6d8"
-          : "#cfe3e4";
+        // selected = brand cyan; supported (clickable) = medium teal;
+        // unsupported = lighter teal — all distinct from the pale ocean.
+        const fill = slug ? (sel.has(slug) ? "#0891b2" : "#54b3ba") : "#8fccd0";
         el.setAttribute("fill", fill);
       }
       const gr = document.getElementById("hg-grat") as unknown as SVGPathElement | null;
@@ -122,10 +120,10 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     >
       <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe — click a country to add it to your trip" style={{ display: "block", overflow: "visible" }}>
         <defs>
-          <radialGradient id="hg-sphere" cx="40%" cy="34%" r="72%">
-            <stop offset="0" stopColor="#ffffff" />
-            <stop offset="55%" stopColor="#eef7f8" />
-            <stop offset="100%" stopColor="#d6ebee" />
+          <radialGradient id="hg-sphere" cx="38%" cy="32%" r="75%">
+            <stop offset="0" stopColor="#f2fbfb" />
+            <stop offset="50%" stopColor="#d3edf0" />
+            <stop offset="100%" stopColor="#a7d6dc" />
           </radialGradient>
           <radialGradient id="hg-halo" cx="50%" cy="50%" r="50%">
             <stop offset="60%" stopColor="rgba(8,145,178,0.10)" />
@@ -144,7 +142,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
               <path
                 key={i}
                 ref={(el) => { pathEls.current[i] = el; }}
-                fill="#cfe3e4"
+                fill={slug ? "#54b3ba" : "#8fccd0"}
                 style={{ cursor: slug ? "pointer" : "default", transition: "fill 0.15s" }}
                 onMouseEnter={(e) => onEnter(i, e)}
                 onMouseMove={(e) => onEnter(i, e)}

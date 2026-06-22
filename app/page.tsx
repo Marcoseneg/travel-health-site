@@ -86,6 +86,36 @@ export default function Home() {
                   onAddCountry={addCountry}
                 />
 
+                {selectedCountries.length === 0 && (
+                  <div style={{ marginTop: "18px" }}>
+                    <span className="t-micro" style={{ color: "var(--c-text-3)" }}>Popular</span>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "9px" }}>
+                      {(["thailand", "tanzania", "peru", "brazil", "india", "vietnam"] as CountrySlug[]).map((slug) => {
+                        const c = SUPPORTED_COUNTRIES[slug];
+                        if (!c) return null;
+                        return (
+                          <button
+                            key={slug}
+                            onClick={() => addCountry(slug)}
+                            style={{ display: "inline-flex", alignItems: "center", gap: "7px", padding: "7px 13px", borderRadius: "999px", background: "var(--c-surface)", border: "1px solid var(--c-border)", fontSize: "13px", fontWeight: 600, color: "var(--c-text)", cursor: "pointer", fontFamily: "inherit" }}
+                          >
+                            <span style={{ fontSize: "14px", lineHeight: 1 }}>{c.flag}</span>
+                            {c.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div style={{ display: "flex", gap: "28px", marginTop: "26px", flexWrap: "wrap" }}>
+                      {([["100", "Destinations"], ["9", "Disease guides"], ["Live", "Outbreak alerts"]] as const).map(([n, l]) => (
+                        <div key={l}>
+                          <div style={{ fontSize: "22px", fontWeight: 800, letterSpacing: "-0.02em", color: "var(--c-text)", lineHeight: 1 }}>{n}</div>
+                          <div className="t-micro" style={{ color: "var(--c-text-3)", marginTop: "5px" }}>{l}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
                 {selectedCountries.length > 0 && (
                   <div style={{ marginTop: "18px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
