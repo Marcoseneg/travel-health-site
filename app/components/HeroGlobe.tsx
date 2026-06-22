@@ -258,9 +258,10 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
 
         {/* Decorative flight trail + plane near the globe's upper-left */}
         <g style={{ pointerEvents: "none" }}>
-          <path className="hg-trail" d="M28 40 Q92 36 150 78" fill="none" stroke="var(--c-accent)" strokeWidth="1.8" strokeDasharray="2 8" strokeLinecap="round" opacity="0.55" />
-          {/* Airplane silhouette (Tabler "plane"), nose pointed along the trail */}
-          <g transform="translate(150 78) rotate(80) scale(0.95) translate(-12 -12)">
+          <path className="hg-trail" d="M2 66 Q60 34 108 48" fill="none" stroke="var(--c-accent)" strokeWidth="1.8" strokeDasharray="2 8" strokeLinecap="round" opacity="0.55" />
+          {/* Airplane silhouette (Tabler "plane") flying in the open space to the
+              upper-left of the globe (not over it), nose along the trail. */}
+          <g transform="translate(108 48) rotate(58) scale(0.85) translate(-12 -12)">
             <path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" fill="var(--c-accent)" />
           </g>
         </g>
