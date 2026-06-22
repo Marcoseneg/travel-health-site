@@ -207,10 +207,20 @@ export default function Home() {
         </span>
       </div>
 
-      {/* ── Below-the-fold sections (v3 order) ────────────────────────── */}
-      <CurrentAlerts />
-
-      <PopularDestinations />
+      {/* ── Alerts + Featured destinations, side by side in one row ─────── */}
+      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "44px 24px" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))",
+            gap: "36px",
+            alignItems: "start",
+          }}
+        >
+          <CurrentAlerts embedded />
+          <PopularDestinations embedded />
+        </div>
+      </section>
 
       <InsightsPreview />
 

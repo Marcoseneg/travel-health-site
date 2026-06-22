@@ -21,10 +21,11 @@ const FEATURED: Featured[] = [
   { slug: "brazil", img: "/images/destinations/brazil.jpg", tint: "#3f6f86", tintDark: "#2a4a5a", risk: "Dengue, yellow fever (Amazon)" },
 ];
 
-export default function PopularDestinations() {
+export default function PopularDestinations({ embedded = false }: { embedded?: boolean }) {
+  const Wrapper = embedded ? "div" : "section";
   return (
-    <section style={{ background: "var(--c-bg)", padding: "64px 24px" }}>
-      <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
+    <Wrapper style={embedded ? undefined : { background: "var(--c-bg)", padding: "56px 24px" }}>
+      <div style={embedded ? undefined : { maxWidth: "1320px", margin: "0 auto" }}>
         {/* ── Header row ──────────────────────────────────────────── */}
         <div
           style={{
@@ -121,6 +122,6 @@ export default function PopularDestinations() {
           })}
         </div>
       </div>
-    </section>
+    </Wrapper>
   );
 }

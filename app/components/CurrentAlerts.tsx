@@ -118,17 +118,22 @@ function AlertCard({ alert }: { alert: OutbreakAlert }) {
   );
 }
 
-export default function CurrentAlerts() {
+export default function CurrentAlerts({ embedded = false }: { embedded?: boolean }) {
   const alerts = outbreakAlerts.slice(0, 4);
+  const Wrapper = embedded ? "div" : "section";
 
   return (
-    <section
-      style={{
-        maxWidth: "1320px",
-        margin: "0 auto",
-        padding: "64px 24px",
-        background: "var(--c-bg)",
-      }}
+    <Wrapper
+      style={
+        embedded
+          ? undefined
+          : {
+              maxWidth: "1320px",
+              margin: "0 auto",
+              padding: "56px 24px",
+              background: "var(--c-bg)",
+            }
+      }
     >
       {/* Header row: title + view-all link */}
       <div
@@ -170,6 +175,6 @@ export default function CurrentAlerts() {
           <AlertCard key={alert.id} alert={alert} />
         ))}
       </div>
-    </section>
+    </Wrapper>
   );
 }

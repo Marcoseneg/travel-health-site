@@ -13,7 +13,7 @@ import { SUPPORTED_COUNTRIES, type CountrySlug } from "../lib/travelData";
 const VB = 560;
 const C = VB / 2;
 const R = 250;
-const SPEED = 13; // degrees / second (full rotation ~28s)
+const SPEED = 7; // degrees / second (full rotation ~51s)
 const ZOOM_MIN = 0.75;
 const ZOOM_MAX = 2.4;
 
@@ -86,15 +86,28 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     const draw = (proj: GeoProjection) => {
       const path = geoPath(proj);
       const sel = selectedRef.current;
-      if (sphereEl.current) sphereEl.current.setAttribute("d", path({ type: "Sphere" } as never) || "");
+      // Theme-aware palette. Land is teal-green vs a blue-teal ocean (two hues)
+      // so the globe doesn't read as flat monochrome plastic.
+      const dark = document.documentElement.getAttribute("data-theme") === "dark";
+      const cLand = dark ? "#2f7077" : "#79c2b3";
+      const cLandU = dark ? "#244e55" : "#a9d8d0";
+      const cSel = dark ? "#38bdf8" : "#0891b2";
+      if (sphereEl.current) {
+        sphereEl.current.setAttribute("d", path({ type: "Sphere" } as never) || "");
+        sphereEl.current.setAttribute("fill", dark ? "url(#hg-sphere-dark)" : "url(#hg-sphere-light)");
+        sphereEl.current.setAttribute("stroke", dark ? "rgba(255,255,255,0.10)" : "rgba(8,145,178,0.18)");
+      }
       if (haloEl.current) haloEl.current.setAttribute("r", String(R * zoomRef.current + 26));
-      if (gratEl.current) gratEl.current.setAttribute("d", path(geoGraticule10()) || "");
+      if (gratEl.current) {
+        gratEl.current.setAttribute("d", path(geoGraticule10()) || "");
+        gratEl.current.setAttribute("stroke", dark ? "rgba(255,255,255,0.07)" : "rgba(8,145,178,0.10)");
+      }
       for (let i = 0; i < features.length; i++) {
         const el = pathEls.current[i];
         if (!el) continue;
         el.setAttribute("d", path(features[i] as never) || "");
         const slug = slugs[i];
-        el.setAttribute("fill", slug ? (sel.has(slug) ? "#0891b2" : "#54b3ba") : "#8fccd0");
+        el.setAttribute("fill", slug ? (sel.has(slug) ? cSel : cLand) : cLandU);
       }
     };
     drawRef.current = () => draw(buildProj());
@@ -169,7 +182,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
 
   return (
     <div
-      style={{ position: "relative", width: "100%", maxWidth: "540px", margin: "0 auto", touchAction: "pan-y" }}
+      style={{ position: "relative", width: "100%", maxWidth: "468px", margin: "0 auto", touchAction: "pan-y" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
@@ -177,20 +190,25 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
     >
       <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe — drag to rotate, click a country to add it to your trip" style={{ display: "block", overflow: "visible", cursor: "grab" }}>
         <defs>
-          <radialGradient id="hg-sphere" cx="38%" cy="32%" r="75%">
-            <stop offset="0" stopColor="#f2fbfb" />
-            <stop offset="50%" stopColor="#d3edf0" />
-            <stop offset="100%" stopColor="#a7d6dc" />
+          <radialGradient id="hg-sphere-light" cx="38%" cy="32%" r="76%">
+            <stop offset="0" stopColor="#eef8f9" />
+            <stop offset="55%" stopColor="#d2e9ec" />
+            <stop offset="100%" stopColor="#aed7dc" />
+          </radialGradient>
+          <radialGradient id="hg-sphere-dark" cx="38%" cy="32%" r="80%">
+            <stop offset="0" stopColor="#163a42" />
+            <stop offset="55%" stopColor="#0e2a31" />
+            <stop offset="100%" stopColor="#08191e" />
           </radialGradient>
           <radialGradient id="hg-halo" cx="50%" cy="50%" r="50%">
-            <stop offset="60%" stopColor="rgba(8,145,178,0.10)" />
+            <stop offset="60%" stopColor="rgba(8,145,178,0.12)" />
             <stop offset="100%" stopColor="rgba(8,145,178,0)" />
           </radialGradient>
         </defs>
 
         <circle ref={haloEl} cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
-        <path ref={sphereEl} fill="url(#hg-sphere)" stroke="rgba(8,145,178,0.18)" strokeWidth={1} />
-        <path ref={gratEl} fill="none" stroke="rgba(8,145,178,0.10)" strokeWidth={0.6} />
+        <path ref={sphereEl} fill="url(#hg-sphere-light)" strokeWidth={1} />
+        <path ref={gratEl} fill="none" strokeWidth={0.6} />
 
         <g stroke="#ffffff" strokeWidth={0.5} strokeLinejoin="round">
           {features.map((f, i) => {
@@ -199,7 +217,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
               <path
                 key={i}
                 ref={(el) => { pathEls.current[i] = el; }}
-                fill={slug ? "#54b3ba" : "#8fccd0"}
+                fill={slug ? "#79c2b3" : "#a9d8d0"}
                 style={{ cursor: slug ? "pointer" : "default", transition: "fill 0.15s" }}
                 onMouseEnter={(e) => onEnter(i, e)}
                 onMouseMove={(e) => onEnter(i, e)}
