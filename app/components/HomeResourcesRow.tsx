@@ -25,6 +25,14 @@ const VIDEOS: Video[] = [
 
 const DISEASES = DISEASE_LIST.slice(0, 5);
 
+const PANEL: React.CSSProperties = {
+  background: "var(--c-surface)",
+  border: "1px solid var(--c-border)",
+  borderRadius: "var(--c-radius-lg)",
+  padding: "24px",
+  boxShadow: "0 1px 3px rgba(15,23,42,0.04)",
+};
+
 function ColHeader({ title, linkLabel, href }: { title: string; linkLabel: string; href: string }) {
   return (
     <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: 12, marginBottom: 16 }}>
@@ -52,18 +60,14 @@ export default function HomeResourcesRow() {
       <div style={{ maxWidth: 1320, margin: "0 auto" }}>
         <div
           style={{
-            background: "var(--c-surface)",
-            border: "1px solid var(--c-border)",
-            borderRadius: "var(--c-radius-lg)",
-            padding: "28px",
-            boxShadow: "0 1px 3px rgba(15,23,42,0.04)",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: "36px",
+            gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+            gap: "20px",
+            alignItems: "start",
           }}
         >
           {/* ── Practical travel guides ──────────────────────────── */}
-          <div>
+          <div style={PANEL}>
             <ColHeader title="Practical travel guides" linkLabel="Explore all guides" href="/guides" />
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {GUIDES.map((g) => (
@@ -80,7 +84,7 @@ export default function HomeResourcesRow() {
           </div>
 
           {/* ── Expert video briefs ──────────────────────────────── */}
-          <div>
+          <div style={PANEL}>
             <ColHeader title="Expert video briefs" linkLabel="View all videos" href="/insights" />
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {VIDEOS.map((v) => (
@@ -100,7 +104,7 @@ export default function HomeResourcesRow() {
           </div>
 
           {/* ── Disease library ──────────────────────────────────── */}
-          <div>
+          <div style={PANEL}>
             <ColHeader title="Disease library" linkLabel="Browse all diseases" href="/diseases" />
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {DISEASES.map((slug) => {

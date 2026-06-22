@@ -217,9 +217,9 @@ export default function Home() {
 
       <InsightsPreview />
 
-      <PlanYourTrip />
-
       <HomeResourcesRow />
+
+      <PlanYourTrip />
 
       <TrustBanner />
 
