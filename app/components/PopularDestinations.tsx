@@ -98,7 +98,7 @@ export default function PopularDestinations({ embedded = false }: { embedded?: b
                       "linear-gradient(180deg, transparent 40%, rgba(2,12,24,0.66))",
                   }}
                 />
-                {/* Foreground caption */}
+                {/* Foreground caption + arrow */}
                 <div
                   style={{
                     position: "absolute",
@@ -106,16 +106,39 @@ export default function PopularDestinations({ embedded = false }: { embedded?: b
                     right: 0,
                     bottom: 0,
                     zIndex: 2,
-                    padding: "18px 18px 16px",
+                    padding: "16px 16px 14px",
                     color: "#fff",
+                    display: "flex",
+                    alignItems: "flex-end",
+                    justifyContent: "space-between",
+                    gap: "8px",
                   }}
                 >
-                  <div style={{ fontWeight: 700, fontSize: "17px", letterSpacing: "-0.01em" }}>
-                    {c.label}
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontWeight: 700, fontSize: "17px", letterSpacing: "-0.01em" }}>
+                      {c.label}
+                    </div>
+                    <div style={{ fontSize: "12px", opacity: 0.9, marginTop: "2px" }}>
+                      {c.region}
+                    </div>
                   </div>
-                  <div style={{ fontSize: "12px", opacity: 0.9, marginTop: "2px" }}>
-                    {c.region}
-                  </div>
+                  <span
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "28px",
+                      height: "28px",
+                      flexShrink: 0,
+                      borderRadius: "50%",
+                      background: "rgba(255,255,255,0.18)",
+                      backdropFilter: "blur(4px)",
+                    }}
+                  >
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  </span>
                 </div>
               </Link>
             );
