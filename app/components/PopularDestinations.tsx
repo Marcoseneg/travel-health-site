@@ -114,7 +114,7 @@ export default function PopularDestinations({ embedded = false }: { embedded?: b
                     {c.label}
                   </div>
                   <div style={{ fontSize: "12px", opacity: 0.9, marginTop: "2px" }}>
-                    {c.region} · {dest.risk}
+                    {c.region}
                   </div>
                 </div>
               </Link>
