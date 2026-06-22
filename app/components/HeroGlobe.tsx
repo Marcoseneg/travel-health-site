@@ -44,6 +44,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
   const sphereEl = useRef<SVGPathElement | null>(null);
   const haloEl = useRef<SVGCircleElement | null>(null);
   const limbEl = useRef<SVGCircleElement | null>(null);
+  const shadowEl = useRef<SVGEllipseElement | null>(null);
   const gratEl = useRef<SVGPathElement | null>(null);
 
   const lambdaRef = useRef(20);
@@ -100,6 +101,11 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
       }
       if (haloEl.current) haloEl.current.setAttribute("r", String(R * zoomRef.current + 26));
       if (limbEl.current) limbEl.current.setAttribute("r", String(R * zoomRef.current));
+      if (shadowEl.current) {
+        const rr = R * zoomRef.current;
+        shadowEl.current.setAttribute("cy", String(C + rr + 4));
+        shadowEl.current.setAttribute("rx", String(rr * 0.6));
+      }
       if (gratEl.current) {
         gratEl.current.setAttribute("d", path(geoGraticule10()) || "");
         gratEl.current.setAttribute("stroke", dark ? "rgba(255,255,255,0.07)" : "rgba(8,145,178,0.10)");
@@ -208,6 +214,12 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
             <stop offset="60%" stopColor="rgba(8,145,178,0.12)" />
             <stop offset="100%" stopColor="rgba(8,145,178,0)" />
           </radialGradient>
+          {/* Contact shadow under the globe. */}
+          <radialGradient id="hg-shadow" cx="50%" cy="50%" r="50%">
+            <stop offset="0" stopColor="rgba(15,23,42,0.22)" />
+            <stop offset="65%" stopColor="rgba(15,23,42,0.08)" />
+            <stop offset="100%" stopColor="rgba(15,23,42,0)" />
+          </radialGradient>
           {/* Limb darkening — shades the rim so the disc reads as a sphere. */}
           <radialGradient id="hg-limb" cx="42%" cy="38%" r="62%">
             <stop offset="0" stopColor="rgba(255,255,255,0.16)" />
@@ -217,6 +229,8 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
           </radialGradient>
         </defs>
 
+        {/* Contact shadow — sits behind/below the globe so it looks grounded */}
+        <ellipse ref={shadowEl} cx={C} cy={C + R + 4} rx={R * 0.6} ry={22} fill="url(#hg-shadow)" style={{ pointerEvents: "none" }} />
         <circle ref={haloEl} cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
         <path ref={sphereEl} fill="url(#hg-sphere-light)" strokeWidth={1} />
         <path ref={gratEl} fill="none" strokeWidth={0.6} />
@@ -240,6 +254,14 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
 
         {/* Limb-darkening overlay for 3D depth — non-interactive */}
         <circle ref={limbEl} cx={C} cy={C} r={R} fill="url(#hg-limb)" style={{ pointerEvents: "none" }} />
+
+        {/* Decorative flight trail + plane near the globe's upper-left */}
+        <g style={{ pointerEvents: "none" }}>
+          <path className="hg-trail" d="M28 40 Q92 36 150 78" fill="none" stroke="var(--c-accent)" strokeWidth="1.8" strokeDasharray="2 8" strokeLinecap="round" opacity="0.55" />
+          <g transform="translate(150 78) rotate(34)">
+            <path d="M0 0 L-15 -5 L-10 0 L-15 5 Z" fill="var(--c-accent)" />
+          </g>
+        </g>
       </svg>
 
       {/* Zoom controls — discrete, no wheel zoom */}

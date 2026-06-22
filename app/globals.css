@@ -169,6 +169,21 @@ a {
   animation: chip-in 0.24s ease-out;
 }
 
+/* Hero globe flight-trail dash drift */
+@keyframes hg-trail {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+.hg-trail {
+  animation: hg-trail 4s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hg-trail {
+    animation: none;
+  }
+}
+
 /* ── Shared hover utilities ──────────────────────────────── */
 
 .nav-link {
