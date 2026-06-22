@@ -25,14 +25,16 @@ export default function InsightsPreview() {
   if (FEATURED.length === 0) return null;
 
   return (
-    <section
-      style={{
-        maxWidth: 1320,
-        margin: "0 auto",
-        padding: "64px 24px",
-        background: "var(--c-bg)",
-      }}
-    >
+    <section style={{ maxWidth: 1320, margin: "0 auto", padding: "40px 24px" }}>
+      <div
+        style={{
+          background: "var(--c-surface)",
+          border: "1px solid var(--c-border)",
+          borderRadius: "var(--c-radius-lg)",
+          padding: "28px",
+          boxShadow: "0 1px 3px rgba(15,23,42,0.04)",
+        }}
+      >
       {/* Header row */}
       <div
         style={{
@@ -76,7 +78,7 @@ export default function InsightsPreview() {
               className="step-card"
               style={{
                 display: "block",
-                background: "var(--c-surface)",
+                background: "var(--c-surface-2)",
                 border: "1px solid var(--c-border)",
                 borderRadius: "var(--c-radius-md)",
                 overflow: "hidden",
@@ -178,6 +180,7 @@ export default function InsightsPreview() {
             </Link>
           );
         })}
+      </div>
       </div>
     </section>
   );

@@ -193,14 +193,24 @@ export default function Home() {
         <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
           <div
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))",
-              gap: "36px",
-              alignItems: "start",
+              background: "var(--c-surface)",
+              border: "1px solid var(--c-border)",
+              borderRadius: "var(--c-radius-lg)",
+              padding: "28px",
+              boxShadow: "0 1px 3px rgba(15,23,42,0.04)",
             }}
           >
-            <CurrentAlerts embedded />
-            <PopularDestinations embedded />
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(330px, 1fr))",
+                gap: "36px",
+                alignItems: "start",
+              }}
+            >
+              <CurrentAlerts embedded />
+              <PopularDestinations embedded />
+            </div>
           </div>
         </div>
       </section>
