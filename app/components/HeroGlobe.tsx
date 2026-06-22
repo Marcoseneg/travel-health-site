@@ -186,7 +186,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
 
   return (
     <div
-      style={{ position: "relative", width: "100%", maxWidth: "468px", margin: "0 auto", touchAction: "pan-y" }}
+      style={{ position: "relative", width: "100%", maxWidth: "516px", margin: "0 auto", touchAction: "pan-y" }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
