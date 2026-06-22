@@ -11,6 +11,7 @@ export const climateChangeVectorBorne: Insight = {
   readingTime: 7,
   tags: ["climate", "modeling", "dengue", "malaria"],
   coverGradient: "linear-gradient(135deg, #0891b2, #0e7490)",
+  coverImage: { src: "/images/insights/climate-change-vector-borne.jpg", alt: "Cracked, drought-stricken earth" },
   content: `Vector-borne disease risk is unusually sensitive to climate because the mosquito, the pathogen, and the biting rate all respond to temperature. Modeling studies converge on a consistent picture: the **map of risk is shifting**, not simply growing.
 
 ## Why temperature matters so much

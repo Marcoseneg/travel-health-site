@@ -11,6 +11,7 @@ export const wolbachiaDengue2026: Insight = {
   readingTime: 7,
   tags: ["dengue", "vector control", "Wolbachia", "Aedes"],
   coverGradient: "linear-gradient(135deg, #0891b2, #14b8a6)",
+  coverImage: { src: "/images/insights/wolbachia-dengue-2026.jpg", alt: "Close-up of an Aedes mosquito, the dengue vector" },
   featured: true,
   content: `Wolbachia is a naturally occurring bacterium that, when introduced into *Aedes aegypti* mosquitoes, sharply reduces their ability to transmit dengue, Zika, and chikungunya. Unlike fogging or larviciding, it is self-sustaining: released mosquitoes pass Wolbachia to their offspring, so a single deployment can persist for years.
 

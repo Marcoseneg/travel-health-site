@@ -70,12 +70,12 @@ function AlertCard({ alert }: { alert: OutbreakAlert }) {
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "12px",
-        minHeight: "196px",
+        gap: "9px",
+        height: "196px",
         borderRadius: "var(--c-radius-md)",
         border: `1px solid ${tone.border}`,
         background: tone.soft,
-        padding: "18px",
+        padding: "16px",
         textDecoration: "none",
         color: "inherit",
       }}

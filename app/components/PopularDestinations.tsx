@@ -73,8 +73,8 @@ export default function PopularDestinations({ embedded = false }: { embedded?: b
                 style={{
                   position: "relative",
                   display: "block",
-                  height: "180px",
-                  borderRadius: "var(--c-radius-lg)",
+                  height: "196px",
+                  borderRadius: "var(--c-radius-md)",
                   overflow: "hidden",
                   textDecoration: "none",
                   background: `linear-gradient(160deg, ${dest.tint}, ${dest.tintDark})`,

@@ -11,6 +11,7 @@ export const qdengaRealWorldData: Insight = {
   readingTime: 8,
   tags: ["dengue", "vaccine", "Qdenga", "TAK-003"],
   coverGradient: "linear-gradient(135deg, #0e7490, #0891b2)",
+  coverImage: { src: "/images/insights/qdenga-real-world-data.jpg", alt: "Gloved hand holding a vaccine syringe" },
   featured: true,
   content: `Qdenga (TAK-003) is a live-attenuated, tetravalent dengue vaccine. Its key advantage over the earlier Dengvaxia is that it does **not require proof of prior dengue infection** before vaccination, which removes the main barrier that limited Dengvaxia's use.
 

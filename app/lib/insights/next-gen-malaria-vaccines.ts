@@ -11,6 +11,7 @@ export const nextGenMalariaVaccines: Insight = {
   readingTime: 8,
   tags: ["malaria", "vaccine", "R21", "RTS,S"],
   coverGradient: "linear-gradient(135deg, #0e7490, #14b8a6)",
+  coverImage: { src: "/images/insights/next-gen-malaria-vaccines.jpg", alt: "Researcher pipetting samples in a laboratory" },
   content: `For the first time, there are **two WHO-recommended malaria vaccines**: RTS,S/AS01 (Mosquirix) and R21/Matrix-M. Both target the pre-erythrocytic stage of *Plasmodium falciparum*.
 
 ## Where the evidence stands

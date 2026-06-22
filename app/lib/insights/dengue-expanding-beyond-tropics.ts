@@ -11,6 +11,7 @@ export const dengueExpandingBeyondTropics: Insight = {
   readingTime: 6,
   tags: ["dengue", "Aedes albopictus", "Europe", "climate"],
   coverGradient: "linear-gradient(135deg, #14b8a6, #0891b2)",
+  coverImage: { src: "/images/insights/dengue-expanding-beyond-tropics.jpg", alt: "Mosquito on human skin" },
   featured: true,
   content: `For decades, dengue was something travelers brought *back* from the tropics. Increasingly, it is being transmitted **locally** in temperate regions — including southern France, Italy, Spain, and Croatia — where the tiger mosquito *Aedes albopictus* is now established.
 
