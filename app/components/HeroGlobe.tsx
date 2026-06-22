@@ -103,8 +103,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
       if (limbEl.current) limbEl.current.setAttribute("r", String(R * zoomRef.current));
       if (shadowEl.current) {
         const rr = R * zoomRef.current;
-        shadowEl.current.setAttribute("cy", String(C + rr + 4));
-        shadowEl.current.setAttribute("rx", String(rr * 0.6));
+        shadowEl.current.setAttribute("cx", String(C - rr * 0.12));
+        shadowEl.current.setAttribute("cy", String(C + rr + 6));
+        shadowEl.current.setAttribute("rx", String(rr * 0.74));
       }
       if (gratEl.current) {
         gratEl.current.setAttribute("d", path(geoGraticule10()) || "");
@@ -230,7 +231,7 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
         </defs>
 
         {/* Contact shadow — sits behind/below the globe so it looks grounded */}
-        <ellipse ref={shadowEl} cx={C} cy={C + R + 4} rx={R * 0.6} ry={22} fill="url(#hg-shadow)" style={{ pointerEvents: "none" }} />
+        <ellipse ref={shadowEl} cx={C - R * 0.12} cy={C + R + 6} rx={R * 0.74} ry={26} fill="url(#hg-shadow)" style={{ pointerEvents: "none" }} />
         <circle ref={haloEl} cx={C} cy={C} r={R + 26} fill="url(#hg-halo)" />
         <path ref={sphereEl} fill="url(#hg-sphere-light)" strokeWidth={1} />
         <path ref={gratEl} fill="none" strokeWidth={0.6} />
@@ -258,8 +259,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
         {/* Decorative flight trail + plane near the globe's upper-left */}
         <g style={{ pointerEvents: "none" }}>
           <path className="hg-trail" d="M28 40 Q92 36 150 78" fill="none" stroke="var(--c-accent)" strokeWidth="1.8" strokeDasharray="2 8" strokeLinecap="round" opacity="0.55" />
-          <g transform="translate(150 78) rotate(34)">
-            <path d="M0 0 L-15 -5 L-10 0 L-15 5 Z" fill="var(--c-accent)" />
+          {/* Airplane silhouette (Tabler "plane"), nose pointed along the trail */}
+          <g transform="translate(150 78) rotate(80) scale(0.95) translate(-12 -12)">
+            <path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" fill="var(--c-accent)" />
           </g>
         </g>
       </svg>
