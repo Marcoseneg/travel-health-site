@@ -6,14 +6,14 @@ import { diseases, DISEASE_LIST } from "../lib/diseaseData";
 // A dense "explore more" block near the bottom of the homepage. Video briefs are
 // placeholders that link to the related insight article until real videos exist.
 
-type GuideRow = { title: string; desc: string; id: string; icon: React.ReactNode };
+type GuideRow = { title: string; desc: string; id: string; icon: React.ReactNode; color: string; soft: string };
 type Video = { title: string; duration: string; img: string; href: string };
 
 const GUIDES: GuideRow[] = [
-  { title: "Mosquito bite prevention", desc: "Practical ways to avoid bites and reduce your risk.", id: "best-deet-sprays-2026", icon: <BugIcon /> },
-  { title: "Food & water safety", desc: "How to avoid traveler's diarrhea and stay healthy.", id: "travelers-diarrhea-survival", icon: <DropletIcon /> },
-  { title: "Malaria prophylaxis", desc: "Which tablets, when to start, and how they compare.", id: "malaria-prophylaxis-compared", icon: <PillIcon /> },
-  { title: "Travel health kit essentials", desc: "Medications and supplies you shouldn't travel without.", id: "safari-health-kit", icon: <KitIcon /> },
+  { title: "Mosquito bite prevention", desc: "Practical ways to avoid bites and reduce your risk.", id: "best-deet-sprays-2026", icon: <BugIcon />, color: "#0891b2", soft: "#ecfeff" },
+  { title: "Food & water safety", desc: "How to avoid traveler's diarrhea and stay healthy.", id: "travelers-diarrhea-survival", icon: <DropletIcon />, color: "#2563eb", soft: "#eff6ff" },
+  { title: "Malaria prophylaxis", desc: "Which tablets, when to start, and how they compare.", id: "malaria-prophylaxis-compared", icon: <PillIcon />, color: "#b45309", soft: "#fffbeb" },
+  { title: "Travel health kit essentials", desc: "Medications and supplies you shouldn't travel without.", id: "safari-health-kit", icon: <KitIcon />, color: "#047857", soft: "#ecfdf5" },
 ];
 
 const VIDEOS: Video[] = [
@@ -63,7 +63,7 @@ export default function HomeResourcesRow() {
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
             gap: "20px",
-            alignItems: "start",
+            alignItems: "stretch",
           }}
         >
           {/* ── Practical travel guides ──────────────────────────── */}
@@ -72,7 +72,7 @@ export default function HomeResourcesRow() {
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {GUIDES.map((g) => (
                 <Link key={g.id} href={`/guides/${g.id}`} className="resource-row" style={listRowStyle()}>
-                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, flexShrink: 0, borderRadius: 9, background: "var(--c-accent-soft)", color: "var(--c-accent)" }}>{g.icon}</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, flexShrink: 0, borderRadius: 9, background: g.soft, color: g.color }}>{g.icon}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "var(--c-text)" }}>{g.title}</span>
                     <span style={{ display: "block", fontSize: 12, color: "var(--c-text-2)", lineHeight: 1.4, marginTop: 1 }}>{g.desc}</span>
@@ -89,7 +89,7 @@ export default function HomeResourcesRow() {
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
               {VIDEOS.map((v) => (
                 <Link key={v.title} href={v.href} className="resource-row" style={{ textDecoration: "none", color: "inherit" }}>
-                  <div style={{ position: "relative", height: 74, borderRadius: "var(--c-radius-sm)", overflow: "hidden", background: "var(--c-surface-2)" }}>
+                  <div style={{ position: "relative", height: 92, borderRadius: "var(--c-radius-sm)", overflow: "hidden", background: "var(--c-surface-2)" }}>
                     <Image src={v.img} alt={v.title} fill sizes="160px" style={{ objectFit: "cover" }} />
                     <span style={{ position: "absolute", inset: 0, background: "rgba(2,12,24,0.28)" }} />
                     <span style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)", width: 26, height: 26, borderRadius: "50%", background: "rgba(255,255,255,0.92)", display: "flex", alignItems: "center", justifyContent: "center" }}>
