@@ -149,7 +149,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   },
   "yellow-fever": {
     label: "Yellow Fever",
-    icon: "🦠",
+    icon: "🦟",
     category: "Mosquito-borne virus",
     transmission: "Transmitted by Aedes and Haemagogus mosquitoes in tropical regions of Africa and South America.",
     prevention: "Yellow fever vaccine (single dose provides lifelong protection). Required for entry into many countries. Mosquito avoidance.",
@@ -173,7 +173,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   },
   typhoid: {
     label: "Typhoid",
-    icon: "🦠",
+    icon: "🚰",
     category: "Food & waterborne bacterium",
     transmission: "Fecal-oral route through contaminated food and water. Caused by Salmonella typhi bacteria.",
     prevention: "Typhoid vaccine (injectable Vi polysaccharide or oral Ty21a). Safe food and water practices. Hand hygiene.",
@@ -202,7 +202,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   },
   "hepatitis-a": {
     label: "Hepatitis A",
-    icon: "💉",
+    icon: "🚰",
     category: "Food & waterborne virus",
     transmission: "Fecal-oral route through contaminated food, water, or close personal contact with an infected person.",
     prevention: "Hepatitis A vaccine (2-dose series provides long-term protection). Safe food and water practices. Hand hygiene.",
@@ -226,7 +226,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   },
   rabies: {
     label: "Rabies",
-    icon: "🦠",
+    icon: "🐕",
     category: "Animal bite or scratch",
     transmission: "Transmitted through saliva of infected mammals, usually via bites or scratches. Dogs are the most common source in endemic countries.",
     prevention: "Pre-exposure vaccination (3-dose series) for high-risk travelers. Avoid contact with stray animals. Post-exposure prophylaxis (PEP) is critical after potential exposure.",
@@ -255,7 +255,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   },
   cholera: {
     label: "Cholera",
-    icon: "🦠",
+    icon: "🚰",
     category: "Food & waterborne bacterium",
     transmission: "Ingestion of water or food contaminated with Vibrio cholerae bacteria. Often linked to poor sanitation and humanitarian crises.",
     prevention: "Oral cholera vaccine (Dukoral, Vaxchora) for high-risk travelers. Safe water and food practices. Hand hygiene.",
@@ -313,7 +313,7 @@ export const diseases: Record<string, DiseaseInfo> = {
   // FSME-Immun (Pfizer) and Encepur (GSK) prescribing information.
   tbe: {
     label: "Tick-borne Encephalitis",
-    icon: "🦠",
+    icon: "🪲",
     category: "Tick-borne virus",
     transmission:
       "Transmitted by Ixodes ricinus ticks active March–November (peak May–July). Rare cases also occur after consuming unpasteurised dairy products from infected goats, sheep, or cows. Not transmitted person-to-person.",
@@ -459,6 +459,47 @@ export const diseases: Record<string, DiseaseInfo> = {
     regions:
       "Endemic in Central and West Africa with historical clade I (more severe) and clade II (less severe) circulation. Since 2022, clade IIb has caused a sustained global outbreak primarily affecting men who have sex with men. Since 2024, clade Ib has emerged with sustained transmission in the Democratic Republic of the Congo and surrounding countries (Burundi, Rwanda, Uganda, Kenya), with travel-related cases reported worldwide.",
     vaccineAvailable: true,
+    riskLevel: "moderate",
+  },
+
+  // ── Oropouche ──────────────────────────────────────────────────────────────
+  // Sources: PAHO/WHO Oropouche epidemiological alerts (2024); CDC Oropouche
+  // travel guidance (2024); ECDC rapid risk assessment (2024).
+  oropouche: {
+    label: "Oropouche",
+    icon: "🦟",
+    category: "Midge-borne virus",
+    transmission:
+      "Spread mainly by the bite of tiny Culicoides paraensis biting midges (and some Culex mosquitoes), which breed near water and decaying vegetation. Midges are small enough to pass through standard mosquito nets. No routine person-to-person spread, though mother-to-fetus transmission is under investigation.",
+    prevention:
+      "Avoid midge and mosquito bites, especially around dawn and dusk near forest and water. No vaccine is available. Pregnant travelers should weigh the risk carefully given emerging reports of vertical transmission.",
+    preventionDetails: [
+      {
+        type: "behavior",
+        title: "Biting-midge protection",
+        detail:
+          "Midges are much smaller than mosquitoes and pass through ordinary nets — use fine-mesh, insecticide-treated screens and nets. Apply DEET (20–50%) or picaridin (20%) to exposed skin, wear long sleeves and trousers, and limit time outdoors at dawn and dusk near rivers, forest edges, and decaying vegetation where midges breed.",
+      },
+      {
+        type: "behavior",
+        title: "Pregnancy considerations",
+        detail:
+          "During the 2024 outbreak, health authorities reported possible mother-to-fetus transmission with fetal loss and congenital abnormalities — still under investigation. Pregnant travelers should discuss any travel to areas with active Oropouche transmission with a travel-medicine specialist and apply strict bite precautions.",
+      },
+      {
+        type: "post-exposure",
+        title: "Fever after travel — what to do",
+        detail:
+          "Oropouche looks like dengue. Any fever during or within ~2 weeks of travel to the Amazon basin or other affected areas should be checked by a doctor. Avoid aspirin and NSAIDs until dengue is excluded; use paracetamol. Tell the clinician where you travelled — Oropouche needs specific PCR testing.",
+      },
+    ],
+    symptoms:
+      "Abrupt fever, severe headache, muscle and joint pain, photophobia, and nausea — clinically similar to dengue. Symptoms typically last under a week, but recur after a few symptom-free days in a large share of patients. Most cases are self-limiting; rare neuroinvasive disease (meningitis) can occur.",
+    treatment:
+      "No specific antiviral treatment. Supportive care: rest, fluids, and paracetamol for fever and pain. Avoid aspirin and NSAIDs until dengue has been excluded.",
+    regions:
+      "Long endemic in the Amazon basin (Brazil, Peru, Bolivia, Ecuador, Colombia) and parts of the Caribbean. A large 2023–2024 outbreak expanded transmission to new regions of Brazil and to Cuba, with travel-associated cases reported in the United States and Europe.",
+    vaccineAvailable: false,
     riskLevel: "moderate",
   },
 };
