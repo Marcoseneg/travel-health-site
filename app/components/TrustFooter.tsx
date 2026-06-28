@@ -27,7 +27,7 @@ const PILLARS = [
       </svg>
     ),
     title: "Physician-reviewed",
-    body: "Briefs authored and clinically reviewed by board-certified travel medicine physicians, not AI summaries.",
+    body: "Briefs authored and clinically reviewed by an infectious-diseases physician, not unchecked AI summaries.",
   },
   {
     icon: (
@@ -189,7 +189,7 @@ const FOOTER_LINKS = {
   ],
   Company: [
     { label: "About", href: "/about" },
-    { label: "Our physicians", href: "/about#team" },
+    { label: "Who writes this", href: "/about#team" },
     { label: "Methodology", href: "/about#methodology" },
     { label: "Contact", href: "/contact" },
   ],
@@ -264,7 +264,7 @@ export function SiteFooter() {
     >
       <div
         style={{
-          maxWidth: "1320px",
+          maxWidth: "1480px",
           margin: "0 auto",
           padding: "56px 24px 24px",
         }}
@@ -571,7 +571,7 @@ export function SiteFooter() {
             © {new Date().getFullYear()} TravelMed. All rights reserved.
           </p>
           <p className="t-micro" style={{ color: "var(--c-text-3)", margin: 0, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>
-            Made for travelers, by physicians.
+            Made for travelers, by a physician.
           </p>
         </div>
       </div>
