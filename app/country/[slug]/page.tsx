@@ -16,6 +16,8 @@ import { chikungunyaRiskByCountry } from "../../lib/chikungunyaData";
 import CdcMapImage from "../../components/CdcMapImage";
 import { getAlertsForCountry } from "../../lib/countryAlerts";
 import type { OutbreakAlert } from "../../lib/outbreakSources";
+import JsonLd from "../../components/JsonLd";
+import { SITE_URL, authorRef, publisherRef, humanDateToIsoMonth } from "../../lib/seo";
 
 // ── Helper: pull disease keywords from manual country alerts ───────────────
 // Used to suppress live outbreak feed alerts that duplicate a manually
@@ -133,6 +135,26 @@ export default async function CountryPage({ params }: Props) {
   const specificTravelerVaccines =
     health?.vaccinesDetail?.filter((v) => v.audience === "specific") ?? [];
 
+  // Only claim a review date in structured data once the brief is actually
+  // physician-reviewed (not a draft), and only if the date parses cleanly.
+  const reviewedIso =
+    health?.reviewStatus === "reviewed"
+      ? humanDateToIsoMonth(health.lastReviewed)
+      : undefined;
+
+  const countrySchema = {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    name: `${label} travel health brief`,
+    description: `Physician-curated vaccine, malaria, and prevention guidance for travelers to ${label}.`,
+    url: `${SITE_URL}/country/${slug}`,
+    author: authorRef,
+    publisher: publisherRef,
+    about: { "@type": "Place", name: label },
+    audience: { "@type": "MedicalAudience", audienceType: "Travelers" },
+    ...(reviewedIso ? { lastReviewed: reviewedIso, dateModified: reviewedIso } : {}),
+  };
+
   return (
     <main
       style={{
@@ -142,6 +164,7 @@ export default async function CountryPage({ params }: Props) {
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
+      <JsonLd data={countrySchema} />
       <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "32px 24px 96px" }}>
         {/* ── Back link ────────────────────────────────────────────── */}
         <Link

@@ -9,6 +9,8 @@ import {
   INSIGHT_CATEGORY_LABELS,
 } from "../../lib/insights";
 import { formatDate } from "../../lib/utils/formatDate";
+import JsonLd from "../../components/JsonLd";
+import { SITE_URL, authorRef, publisherRef } from "../../lib/seo";
 
 // ── Design tokens ────────────────────────────────────────────────────────────
 // Mapped to the shared light-theme --c-* tokens defined in globals.css.
@@ -113,6 +115,22 @@ export default async function InsightArticlePage({ params }: Props) {
 
   const related = insights.filter((i) => i.id !== insight.id).slice(0, 3);
 
+  const coverSrc = insight.coverImage?.src;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: insight.title,
+    description: insight.subtitle,
+    datePublished: insight.date,
+    dateModified: insight.date,
+    author: authorRef,
+    publisher: publisherRef,
+    mainEntityOfPage: `${SITE_URL}/insights/${slug}`,
+    ...(coverSrc
+      ? { image: coverSrc.startsWith("http") ? coverSrc : `${SITE_URL}${coverSrc}` }
+      : {}),
+  };
+
   return (
     <main
       style={{
@@ -122,6 +140,7 @@ export default async function InsightArticlePage({ params }: Props) {
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
+      <JsonLd data={articleSchema} />
       <div style={{ maxWidth: "720px", margin: "0 auto", padding: "24px 24px 0" }}>
         <Link
           href="/insights"
