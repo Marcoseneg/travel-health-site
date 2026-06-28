@@ -19,15 +19,9 @@ import { getDiseaseVaccine } from "../lib/vaccineData";
 import { insights, INSIGHT_CATEGORY_LABELS, type Insight } from "../lib/insights";
 import DiseaseLinkedText from "./DiseaseLinkedText";
 import DiseaseRadarMap from "./DiseaseRadarMap";
+import DiseaseLibrarySidebar, { SIDEBAR_GROUPS } from "./DiseaseLibrarySidebar";
 
 // ── Static config ───────────────────────────────────────────────────────────
-
-const SIDEBAR_GROUPS: { label: string; icon: string; slugs: string[] }[] = [
-  { label: "Vector-borne", icon: "🦟", slugs: ["malaria", "dengue", "chikungunya", "yellow-fever", "zika", "japanese-encephalitis", "tbe", "oropouche"] },
-  { label: "Food & water-borne", icon: "🚰", slugs: ["typhoid", "hepatitis-a", "cholera"] },
-  { label: "Animal-associated", icon: "🐕", slugs: ["rabies"] },
-  { label: "Close contact", icon: "🤝", slugs: ["mpox"] },
-];
 
 const RISK_META: Record<string, { label: string; dot: string; soft: string; text: string }> = {
   high: { label: "High", dot: "#ef4444", soft: "rgba(239,68,68,0.12)", text: "#dc2626" },
@@ -61,7 +55,6 @@ export default function DiseaseRadar({ slug }: { slug: string }) {
   const d = diseases[slug];
 
   const [tab, setTab] = useState<Tab>("Overview");
-  const [search, setSearch] = useState("");
   const [copied, setCopied] = useState(false);
 
   const facts = DISEASE_FACTS[slug];
@@ -109,82 +102,9 @@ export default function DiseaseRadar({ slug }: { slug: string }) {
       <div style={{ maxWidth: "1480px", margin: "0 auto", padding: "28px 24px 80px" }}>
         <div className="radar-grid">
 
-          {/* ════ LEFT — disease browser ════════════════════════════════════ */}
+          {/* ════ LEFT — disease browser (shared component) ═════════════════ */}
           <aside className="radar-left">
-            <Link href="/diseases" className="t-label" style={{ display: "inline-flex", alignItems: "center", gap: "6px", color: "var(--c-text-3)", textDecoration: "none", marginBottom: "18px" }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
-              All diseases
-            </Link>
-
-            <div className="t-micro" style={{ color: "var(--c-text-3)", marginBottom: "10px" }}>Explore diseases</div>
-
-            {/* Search */}
-            <div style={{ position: "relative", marginBottom: "18px" }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--c-text-3)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search disease…"
-                className="t-label"
-                style={{ width: "100%", padding: "9px 12px 9px 34px", borderRadius: "10px", border: "1px solid var(--c-border)", background: "var(--c-surface)", color: "var(--c-text)", fontFamily: "inherit", outline: "none" }}
-              />
-            </div>
-
-            {/* Grouped disease list */}
-            <nav style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
-              {SIDEBAR_GROUPS.map((group) => {
-                const items = group.slugs
-                  .filter((s) => diseases[s])
-                  .filter((s) => diseases[s].label.toLowerCase().includes(search.toLowerCase()));
-                if (!items.length) return null;
-                return (
-                  <div key={group.label}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-                      <span className="t-micro" style={{ color: "var(--c-text-3)", display: "flex", alignItems: "center", gap: "6px" }}>
-                        <span style={{ fontSize: "12px" }}>{group.icon}</span>{group.label}
-                      </span>
-                      <span className="t-micro" style={{ color: "var(--c-text-3)" }}>{group.slugs.length}</span>
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-                      {items.map((s) => {
-                        const di = diseases[s];
-                        const active = s === slug;
-                        const r = RISK_META[di.riskLevel];
-                        return (
-                          <Link
-                            key={s}
-                            href={`/diseases/${s}`}
-                            className="t-label"
-                            style={{
-                              display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px",
-                              padding: "8px 10px", borderRadius: "9px", textDecoration: "none",
-                              background: active ? "var(--c-accent-soft)" : "transparent",
-                              border: `1px solid ${active ? "var(--c-accent-border)" : "transparent"}`,
-                              color: active ? "var(--c-accent-strong)" : "var(--c-text-2)",
-                              fontWeight: active ? 700 : 500,
-                            }}
-                          >
-                            <span style={{ display: "flex", alignItems: "center", gap: "8px", minWidth: 0 }}>
-                              <span style={{ fontSize: "13px" }}>{di.icon}</span>
-                              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{di.label}</span>
-                            </span>
-                            <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: r.dot, flexShrink: 0 }} title={`${r.label} risk`} />
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </nav>
-
-            <div style={{ marginTop: "22px", padding: "14px", borderRadius: "12px", background: "var(--c-surface)", border: "1px solid var(--c-border)" }}>
-              <div className="t-micro" style={{ color: "var(--c-text-3)", marginBottom: "6px" }}>Methodology & data</div>
-              <p className="t-label" style={{ color: "var(--c-text-2)", margin: "0 0 8px", lineHeight: 1.5 }}>
-                Risk levels and prevention guidance are sourced from CDC, WHO, and the Swiss EKRM.
-              </p>
-              <Link href="/about" className="t-label" style={{ color: "var(--c-accent-strong)", textDecoration: "none", fontWeight: 600 }}>View methodology →</Link>
-            </div>
+            <DiseaseLibrarySidebar activeSlug={slug} />
           </aside>
 
           {/* ════ CENTER ════════════════════════════════════════════════════ */}
