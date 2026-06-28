@@ -8,6 +8,7 @@ import {
   SUPPORTED_COUNTRIES,
 } from "../lib/travelData";
 import { diseases, DISEASE_LIST } from "../lib/diseaseData";
+import { TOOLS } from "../lib/toolsData";
 import ThemeToggle from "./ThemeToggle";
 
 type SearchItem = {
@@ -36,8 +37,9 @@ const NAV_LINKS = [
   { label: "Countries", href: "/countries" },
   { label: "Diseases", href: "/diseases" },
   { label: "Outbreaks", href: "/outbreaks" },
+  { label: "Resources", href: "/resources" },
+  { label: "Tools", href: "/tools" },
   { label: "Insights", href: "/insights" },
-  { label: "Guides", href: "/guides" },
   { label: "About", href: "/about" },
 ];
 
@@ -64,6 +66,7 @@ export default function SiteHeader() {
   const [focused, setFocused] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [toolsOpen, setToolsOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [activeLang, setActiveLang] = useState("EN");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -151,7 +154,7 @@ export default function SiteHeader() {
     >
       <div
         style={{
-          maxWidth: "1320px",
+          maxWidth: "1480px",
           margin: "0 auto",
           height: "72px",
           display: "flex",
@@ -422,23 +425,92 @@ export default function SiteHeader() {
         >
           {NAV_LINKS.map((item) => {
             const active = isActiveLink(item.href);
+            const linkStyle: React.CSSProperties = {
+              padding: "8px 14px",
+              fontSize: "14px",
+              fontWeight: 600,
+              color: active ? "var(--c-accent-strong)" : "var(--c-text-2)",
+              textDecoration: "none",
+              borderRadius: "8px",
+              whiteSpace: "nowrap",
+              letterSpacing: "-0.01em",
+              background: active ? "var(--c-accent-soft)" : "transparent",
+            };
+
+            // The Tools item is a link to /tools AND a hover/focus dropdown of
+            // individual tools (live ones clickable, coming-soon dimmed).
+            if (item.href === "/tools") {
+              return (
+                <div
+                  key={item.label}
+                  style={{ position: "relative" }}
+                  onMouseEnter={() => setToolsOpen(true)}
+                  onMouseLeave={() => setToolsOpen(false)}
+                  onFocus={() => setToolsOpen(true)}
+                  onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setToolsOpen(false); }}
+                  onKeyDown={(e) => { if (e.key === "Escape") setToolsOpen(false); }}
+                >
+                  <a
+                    href={item.href}
+                    className="nav-link"
+                    aria-current={active ? "page" : undefined}
+                    aria-haspopup="true"
+                    aria-expanded={toolsOpen}
+                    style={{ ...linkStyle, display: "inline-flex", alignItems: "center", gap: "4px" }}
+                  >
+                    {item.label}
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ transform: toolsOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s", opacity: 0.7 }} aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                  </a>
+                  {toolsOpen && (
+                    <div style={{ position: "absolute", top: "100%", left: 0, paddingTop: "8px", zIndex: 1001 }}>
+                      <div role="menu" aria-label="Tools" style={{ minWidth: "300px", background: "var(--c-surface)", border: "1px solid var(--c-border)", borderRadius: "14px", boxShadow: "0 18px 44px rgba(15,23,42,0.16)", padding: "8px" }}>
+                        {TOOLS.map((t) => {
+                          const live = t.status === "live";
+                          const inner = (
+                            <>
+                              <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "34px", height: "34px", borderRadius: "10px", background: t.soft, fontSize: "17px", flexShrink: 0 }}>{t.icon}</span>
+                              <span style={{ flex: 1, minWidth: 0 }}>
+                                <span style={{ display: "flex", alignItems: "center", gap: "7px" }}>
+                                  <span style={{ fontSize: "13.5px", fontWeight: 700, color: "var(--c-text)" }}>{t.title}</span>
+                                  {!live && <span style={{ fontSize: "10px", fontWeight: 700, padding: "1px 6px", borderRadius: "999px", background: "var(--c-surface-2)", color: "var(--c-text-3)", whiteSpace: "nowrap" }}>Soon</span>}
+                                </span>
+                                <span style={{ display: "block", fontSize: "12px", color: "var(--c-text-3)", lineHeight: 1.4, marginTop: "2px" }}>{t.blurb}</span>
+                              </span>
+                            </>
+                          );
+                          const itemStyle: React.CSSProperties = { display: "flex", alignItems: "center", gap: "11px", padding: "9px 10px", borderRadius: "10px", textDecoration: "none" };
+                          return live ? (
+                            <Link
+                              key={t.id}
+                              href={t.href}
+                              role="menuitem"
+                              onClick={() => setToolsOpen(false)}
+                              style={itemStyle}
+                              onMouseEnter={(e) => { e.currentTarget.style.background = "var(--c-surface-2)"; }}
+                              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
+                            >
+                              {inner}
+                            </Link>
+                          ) : (
+                            <div key={t.id} role="menuitem" aria-disabled="true" style={{ ...itemStyle, opacity: 0.5, cursor: "default" }}>
+                              {inner}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <a
                 key={item.label}
                 href={item.href}
                 className="nav-link"
                 aria-current={active ? "page" : undefined}
-                style={{
-                  padding: "8px 14px",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  color: active ? "var(--c-accent-strong)" : "var(--c-text-2)",
-                  textDecoration: "none",
-                  borderRadius: "8px",
-                  whiteSpace: "nowrap",
-                  letterSpacing: "-0.01em",
-                  background: active ? "var(--c-accent-soft)" : "transparent",
-                }}
+                style={linkStyle}
               >
                 {item.label}
               </a>
