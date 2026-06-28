@@ -112,13 +112,15 @@ export default async function ItineraryPage({ searchParams }: Props) {
       <main style={pageBg}>
         <section style={{ maxWidth: "720px", margin: "0 auto", padding: "80px 24px", textAlign: "center" }}>
           <h1 className="t-h1" style={{ margin: "0 0 12px", color: "var(--c-text)" }}>
-            No destinations selected
+            Build a multi-country itinerary
           </h1>
-          <p className="t-body" style={{ color: "var(--c-text-2)", marginBottom: "28px" }}>
-            Build an itinerary by selecting destinations on the homepage.
+          <p className="t-body" style={{ color: "var(--c-text-2)", marginBottom: "28px", maxWidth: "480px", marginInline: "auto" }}>
+            Add the countries on your trip and we&apos;ll combine the vaccine,
+            malaria, and prevention guidance across every stop into one
+            checklist. Start by searching for your destinations on the homepage.
           </p>
           <Link href="/" style={primaryBtnStyle}>
-            Back to homepage
+            Choose destinations
           </Link>
         </section>
       </main>

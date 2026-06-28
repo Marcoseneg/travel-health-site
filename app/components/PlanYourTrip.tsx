@@ -48,7 +48,7 @@ export default function PlanYourTrip() {
   return (
     <section
       style={{
-        maxWidth: "1320px",
+        maxWidth: "1480px",
         margin: "0 auto",
         padding: "18px 24px",
         background: "var(--c-bg)",

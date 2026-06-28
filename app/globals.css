@@ -230,7 +230,7 @@ a {
 
 .hero-container {
   position: relative;
-  max-width: 1320px;
+  max-width: 1480px;
   margin: 0 auto;
 }
 
@@ -626,6 +626,10 @@ a {
 
   .hero-copy {
     max-width: 100%;
+    /* Grid item must be allowed to shrink below its min-content width,
+       otherwise wide non-wrapping descendants (search dropdown, popular
+       chips) force the column past the viewport and the panel clips it. */
+    min-width: 0;
   }
 
   .hero-card {
@@ -655,8 +659,10 @@ a {
   }
 
   .hero-title {
-    font-size: clamp(38px, 11vw, 52px);
-    line-height: 0.96;
+    font-size: clamp(28px, 8.2vw, 52px);
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    overflow-wrap: break-word;
   }
 
   .hero-description {
@@ -1039,3 +1045,12 @@ a {
 /* Resources landing: new&updated list + helper rail */
 .res-newgrid { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 24px; align-items: start; }
 @media (max-width: 900px) { .res-newgrid { grid-template-columns: 1fr; } }
+
+/* Legal / policy pages — readable long-form prose */
+.legal-prose { color: var(--c-text-2); font-size: 15.5px; line-height: 1.75; }
+.legal-prose h2 { color: var(--c-text); font-size: 19px; font-weight: 700; margin: 38px 0 12px; letter-spacing: -0.01em; }
+.legal-prose p { margin: 0 0 16px; }
+.legal-prose ul { margin: 0 0 16px; padding-left: 20px; }
+.legal-prose li { margin: 0 0 8px; }
+.legal-prose a { color: var(--c-accent-strong); text-decoration: underline; text-underline-offset: 2px; }
+.legal-prose strong { color: var(--c-text); font-weight: 600; }

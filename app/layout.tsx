@@ -110,7 +110,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Apply the saved theme before first paint to avoid a flash.
             Light is the default; dark is opt-in via the header toggle. */}

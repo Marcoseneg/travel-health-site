@@ -57,7 +57,7 @@ function listRowStyle(): React.CSSProperties {
 export default function HomeResourcesRow() {
   return (
     <section style={{ padding: "12px 24px" }}>
-      <div style={{ maxWidth: 1320, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1480, margin: "0 auto" }}>
         <div
           style={{
             display: "grid",
