@@ -1008,3 +1008,34 @@ a {
     scale: 1;
   }
 }
+
+/* Resources section — persistent sidebar + content shell */
+.res-grid {
+  display: grid;
+  grid-template-columns: 248px minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+}
+.res-side { position: sticky; top: 88px; }
+@media (max-width: 940px) {
+  .res-grid { grid-template-columns: 1fr; }
+  .res-side { display: none; }
+}
+
+@media (max-width: 760px) {
+  .res-illu { display: none; }
+}
+
+/* The hero illustration has a white background — soften it on dark theme so it
+   doesn't glare (it blends naturally on the light theme). */
+[data-theme="dark"] .res-illu { opacity: 0.9; }
+
+/* ── Resources: popular carousel + browse-all list rows ──────────────── */
+.res-carousel { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; }
+.res-carousel > * { scroll-snap-align: start; flex: 0 0 300px; }
+.res-row-meta { display: flex; align-items: center; gap: 20px; flex-shrink: 0; }
+@media (max-width: 720px) { .res-row-meta { display: none; } }
+
+/* Resources landing: new&updated list + helper rail */
+.res-newgrid { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 24px; align-items: start; }
+@media (max-width: 900px) { .res-newgrid { grid-template-columns: 1fr; } }

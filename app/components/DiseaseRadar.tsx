@@ -330,7 +330,7 @@ export default function DiseaseRadar({ slug }: { slug: string }) {
                   { icon: "🧭", title: "Plan a trip", sub: "Vaccines by destination", href: "/" },
                   { icon: "🗺️", title: "Country risk map", sub: "Risks by destination", href: "/map" },
                   { icon: "📡", title: "Outbreak tracker", sub: "Live alerts", href: "/outbreaks" },
-                  { icon: "📋", title: "Travel guides", sub: "Practical how-tos", href: "/guides" },
+                  { icon: "📋", title: "Travel resources", sub: "Practical how-tos", href: "/resources" },
                 ].map((t) => (
                   <Link key={t.title} href={t.href} data-card="lift" style={{ display: "flex", alignItems: "center", gap: "12px", padding: "14px 16px", borderRadius: "13px", background: "var(--c-surface)", border: "1px solid var(--c-border)", textDecoration: "none" }}>
                     <span style={{ fontSize: "20px" }}>{t.icon}</span>

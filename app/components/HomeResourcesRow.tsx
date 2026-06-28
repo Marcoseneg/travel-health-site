@@ -10,10 +10,10 @@ type GuideRow = { title: string; desc: string; id: string; icon: React.ReactNode
 type Video = { title: string; duration: string; img: string; href: string };
 
 const GUIDES: GuideRow[] = [
-  { title: "Mosquito bite prevention", desc: "Practical ways to avoid bites and reduce your risk.", id: "best-deet-sprays-2026", icon: <BugIcon />, color: "#0891b2", soft: "#ecfeff" },
-  { title: "Food & water safety", desc: "How to avoid traveler's diarrhea and stay healthy.", id: "travelers-diarrhea-survival", icon: <DropletIcon />, color: "#2563eb", soft: "#eff6ff" },
-  { title: "Malaria prophylaxis", desc: "Which tablets, when to start, and how they compare.", id: "malaria-prophylaxis-compared", icon: <PillIcon />, color: "#b45309", soft: "#fffbeb" },
-  { title: "Travel health kit essentials", desc: "Medications and supplies you shouldn't travel without.", id: "safari-health-kit", icon: <KitIcon />, color: "#047857", soft: "#ecfdf5" },
+  { title: "Protect against mosquitoes", desc: "Repellents, nets, clothing and timing — what works.", id: "mosquito-bite-prevention", icon: <BugIcon />, color: "#0891b2", soft: "#ecfeff" },
+  { title: "Visiting family in Africa", desc: "The malaria risk VFR travellers often miss.", id: "vfr-africa", icon: <PillIcon />, color: "#b45309", soft: "#fffbeb" },
+  { title: "Safe food & water abroad", desc: "The short list that prevents most stomach bugs.", id: "safe-food-water", icon: <DropletIcon />, color: "#2563eb", soft: "#eff6ff" },
+  { title: "Travel first-aid kit", desc: "A printable checklist you can tick off.", id: "travel-first-aid-kit", icon: <KitIcon />, color: "#047857", soft: "#ecfdf5" },
 ];
 
 const VIDEOS: Video[] = [
@@ -68,10 +68,10 @@ export default function HomeResourcesRow() {
         >
           {/* ── Practical travel guides ──────────────────────────── */}
           <div style={PANEL}>
-            <ColHeader title="Practical travel guides" linkLabel="Explore all guides" href="/guides" />
+            <ColHeader title="Practical resources" linkLabel="All resources" href="/resources" />
             <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
               {GUIDES.map((g) => (
-                <Link key={g.id} href={`/guides/${g.id}`} className="resource-row" style={listRowStyle()}>
+                <Link key={g.id} href={`/resources/${g.id}`} className="resource-row" style={listRowStyle()}>
                   <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 34, height: 34, flexShrink: 0, borderRadius: 9, background: g.soft, color: g.color }}>{g.icon}</span>
                   <span style={{ flex: 1, minWidth: 0 }}>
                     <span style={{ display: "block", fontSize: 13.5, fontWeight: 600, color: "var(--c-text)" }}>{g.title}</span>
