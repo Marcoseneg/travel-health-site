@@ -79,7 +79,7 @@ export default function DiseasesPage() {
       {/* ── Hero: discovery ────────────────────────────────────────────── */}
       <section style={{ position: "relative", overflow: "hidden" }}>
         <div aria-hidden style={{ position: "absolute", inset: 0, background: "radial-gradient(1000px 380px at 70% -60px, var(--c-accent-soft), transparent 70%)", pointerEvents: "none" }} />
-        <div className="dx-hero" style={{ position: "relative", maxWidth: "1200px", margin: "0 auto", padding: "18px 24px 6px" }}>
+        <div className="dx-hero" style={{ position: "relative", maxWidth: "1480px", margin: "0 auto", padding: "18px 24px 6px" }}>
           <div>
             <h1 className="t-display" style={{ margin: "0 0 14px", color: "var(--c-text)" }}>Disease Explorer</h1>
             <p className="t-body" style={{ color: "var(--c-text-2)", fontSize: "17px", lineHeight: 1.6, margin: "0 0 26px", maxWidth: "480px" }}>
@@ -97,7 +97,7 @@ export default function DiseasesPage() {
       </section>
 
       {/* ── Find a disease: compact filter bar + dense grid ────────────── */}
-      <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "8px 24px 8px" }}>
+      <section style={{ maxWidth: "1480px", margin: "0 auto", padding: "8px 24px 8px" }}>
         <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "8px", marginBottom: "18px" }}>
           {(["all", ...CATEGORY_ORDER] as string[]).map((key) => {
             const active = filter === key;
@@ -150,7 +150,7 @@ export default function DiseasesPage() {
       </section>
 
       {/* ── CTA ────────────────────────────────────────────────────────── */}
-      <section style={{ maxWidth: "1200px", margin: "0 auto", padding: "30px 24px 12px" }}>
+      <section style={{ maxWidth: "1480px", margin: "0 auto", padding: "30px 24px 12px" }}>
         <div style={{ background: "linear-gradient(135deg, var(--c-accent-soft), var(--c-surface))", border: "1px solid var(--c-accent-border)", borderRadius: "18px", padding: "22px 26px", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "16px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <span style={{ fontSize: "28px" }}>🧭</span>
@@ -169,7 +169,7 @@ export default function DiseasesPage() {
       </section>
 
       {/* Footer disclaimer */}
-      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 48px" }}>
+      <div style={{ maxWidth: "1480px", margin: "0 auto", padding: "0 24px 48px" }}>
         <p className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal", margin: 0 }}>
           ⓘ Disease risks vary by location, season, and individual factors. Always consult a healthcare professional for personalized advice.
         </p>

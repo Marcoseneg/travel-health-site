@@ -56,7 +56,7 @@ export default function InsightsPage() {
       }}
     >
       {/* ── Page header ─────────────────────────────────────────────── */}
-      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "56px 24px 0" }}>
+      <section style={{ maxWidth: "1480px", margin: "0 auto", padding: "56px 24px 0" }}>
         <div
           style={{
             display: "flex",
@@ -110,7 +110,7 @@ export default function InsightsPage() {
       </section>
 
       {/* ── Category filters ────────────────────────────────────────── */}
-      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 24px" }}>
+      <section style={{ maxWidth: "1480px", margin: "0 auto", padding: "0 24px" }}>
         <div
           style={{
             display: "flex",
@@ -155,7 +155,7 @@ export default function InsightsPage() {
       </section>
 
       {/* ── Insights grid ───────────────────────────────────────────── */}
-      <section style={{ maxWidth: "1320px", margin: "0 auto", padding: "0 24px 80px" }}>
+      <section style={{ maxWidth: "1480px", margin: "0 auto", padding: "0 24px 80px" }}>
         {filtered.length === 0 ? (
           <div style={{ textAlign: "center", padding: "64px 0", color: "var(--c-text-3)" }}>
             No insights in this category yet.

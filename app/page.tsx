@@ -190,7 +190,7 @@ export default function Home() {
       {/* Gutter-outside + inner max-width mirrors the hero (.hero-shell +
           .hero-container) so this row's edges align exactly with the hero box. */}
       <section style={{ padding: "12px 24px" }}>
-        <div style={{ maxWidth: "1320px", margin: "0 auto" }}>
+        <div style={{ maxWidth: "1480px", margin: "0 auto" }}>
           <div
             style={{
               background: "var(--c-surface)",

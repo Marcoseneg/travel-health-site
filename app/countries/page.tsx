@@ -201,7 +201,7 @@ export default function CountriesPage() {
       }}
     >
       {/* ── Hero / search ────────────────────────────────────────────── */}
-      <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "56px 24px 0" }}>
+      <section style={{ maxWidth: "1480px", margin: "0 auto", padding: "56px 24px 0" }}>
         <div
           className="t-micro"
           style={{
@@ -338,7 +338,7 @@ export default function CountriesPage() {
       {/* ── Country list ────────────────────────────────────────────── */}
       <section
         style={{
-          maxWidth: "1080px",
+          maxWidth: "1480px",
           margin: "0 auto",
           padding: "0 24px 80px",
           position: "relative",
