@@ -86,6 +86,19 @@ export default function Home() {
                   onAddCountry={addCountry}
                 />
 
+                {/* Itinerary-builder affordance — frames the search as a
+                    multi-country trip planner, the site's differentiator. */}
+                <p style={{ margin: "12px 2px 0", fontSize: "13px", color: "var(--c-text-3)", lineHeight: 1.5 }}>
+                  Visiting several countries? Add each stop to build a{" "}
+                  <a
+                    href="/itinerary"
+                    style={{ color: "var(--c-accent-strong)", fontWeight: 600, textDecoration: "underline", textUnderlineOffset: "2px" }}
+                  >
+                    combined multi-country itinerary
+                  </a>
+                  .
+                </p>
+
                 {/* Reserved-height area so adding/removing destinations doesn't
                     resize the hero or shift the title. */}
                 <div style={{ minHeight: "156px" }}>

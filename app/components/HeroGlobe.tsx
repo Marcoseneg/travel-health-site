@@ -199,7 +199,11 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
       onPointerUp={onPointerUp}
       onMouseLeave={() => { pausedRef.current = false; draggingRef.current = false; setHover(null); }}
     >
-      <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" role="img" aria-label="Interactive world globe — drag to rotate, click a country to add it to your trip" style={{ display: "block", overflow: "visible", cursor: "grab" }}>
+      {/* The globe duplicates the search box's functionality and is drag-only
+          (not keyboard-operable), so it's hidden from the accessibility tree
+          rather than exposing ~290 unusable country paths to screen readers.
+          The search input above is the accessible way to add destinations. */}
+      <svg viewBox={`0 0 ${VB} ${VB}`} width="100%" aria-hidden="true" focusable="false" style={{ display: "block", overflow: "visible", cursor: "grab" }}>
         <defs>
           <radialGradient id="hg-sphere-light" cx="38%" cy="32%" r="76%">
             <stop offset="0" stopColor="#eef8f9" />
@@ -268,9 +272,9 @@ export default function HeroGlobe({ selectedCountries, onToggleCountry }: Props)
       </svg>
 
       {/* Zoom controls — discrete, no wheel zoom */}
-      <div style={{ position: "absolute", right: "2%", bottom: "6%", display: "flex", flexDirection: "column", gap: "6px", zIndex: 6 }}>
-        <button aria-label="Zoom in" style={zoomBtn} onClick={() => zoom(1.25)}>+</button>
-        <button aria-label="Zoom out" style={zoomBtn} onClick={() => zoom(0.8)}>−</button>
+      <div aria-hidden="true" style={{ position: "absolute", right: "2%", bottom: "6%", display: "flex", flexDirection: "column", gap: "6px", zIndex: 6 }}>
+        <button tabIndex={-1} aria-label="Zoom in" style={zoomBtn} onClick={() => zoom(1.25)}>+</button>
+        <button tabIndex={-1} aria-label="Zoom out" style={zoomBtn} onClick={() => zoom(0.8)}>−</button>
       </div>
 
       {hover && (

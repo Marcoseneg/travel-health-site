@@ -26,7 +26,7 @@ export default function InsightsPreview() {
 
   return (
     <section style={{ padding: "12px 24px" }}>
-      <div style={{ maxWidth: 1320, margin: "0 auto" }}>
+      <div style={{ maxWidth: 1480, margin: "0 auto" }}>
       <div
         style={{
           background: "var(--c-surface)",

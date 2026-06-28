@@ -1,3 +1,25 @@
+import { SiteFooter } from "../components/TrustFooter";
+import JsonLd from "../components/JsonLd";
+import { SITE_URL, personSchema, organizationSchema } from "../lib/seo";
+
+export const metadata = {
+  title: "About & editorial standards",
+  description:
+    "Who builds TravelMed, how content is researched and clinically reviewed, and the authoritative sources behind every recommendation.",
+};
+
+const aboutSchema = [
+  { "@context": "https://schema.org", ...personSchema },
+  { "@context": "https://schema.org", ...organizationSchema },
+  {
+    "@context": "https://schema.org",
+    "@type": "AboutPage",
+    name: "About TravelMed",
+    url: `${SITE_URL}/about`,
+    mainEntity: { "@id": `${SITE_URL}/about#person` },
+  },
+];
+
 export default function AboutPage() {
   return (
     <main
@@ -8,6 +30,8 @@ export default function AboutPage() {
         fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
       }}
     >
+      <JsonLd data={aboutSchema} />
+
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section
         style={{
@@ -62,6 +86,73 @@ export default function AboutPage() {
           practical, and accessible to everyone — without paywalls or
           gatekeeping.
         </p>
+      </section>
+
+      {/* ── Who writes & reviews ─────────────────────────────────────── */}
+      <section
+        id="team"
+        style={{
+          maxWidth: "860px",
+          margin: "0 auto",
+          padding: "0 24px 64px",
+          scrollMarginTop: "90px",
+        }}
+      >
+        <h2 className="t-h2" style={{ margin: "0 0 20px", color: "var(--c-text)" }}>
+          Who writes and reviews TravelMed
+        </h2>
+        <div
+          style={{
+            display: "flex",
+            gap: "20px",
+            alignItems: "flex-start",
+            flexWrap: "wrap",
+            padding: "28px",
+            borderRadius: "var(--c-radius-lg)",
+            background: "var(--c-surface)",
+            border: "1px solid var(--c-border)",
+          }}
+        >
+          <div
+            aria-hidden
+            style={{
+              flexShrink: 0,
+              width: "64px",
+              height: "64px",
+              borderRadius: "50%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              background: "var(--c-accent-soft)",
+              border: "1px solid var(--c-accent-border)",
+              color: "var(--c-accent)",
+              fontSize: "22px",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+            }}
+          >
+            MS
+          </div>
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <h3 className="t-h3" style={{ margin: "0 0 2px", fontWeight: 700, color: "var(--c-text)" }}>
+              Marco Seneghini, MD
+            </h3>
+            <p className="t-label" style={{ margin: "0 0 14px", color: "var(--c-accent)", fontWeight: 600 }}>
+              Infectious diseases physician · Founder &amp; clinical author
+            </p>
+            <p className="t-body" style={{ margin: 0, color: "var(--c-text-2)", lineHeight: 1.75 }}>
+              Every brief, disease profile, and country guide on TravelMed is
+              written and clinically reviewed by a physician — not generated as
+              an unchecked AI summary. Content is checked against current CDC,
+              WHO, and ISTM guidance and revised when those recommendations
+              change. Spotted something that looks out of date?{" "}
+              <a href="/contact" style={{ color: "var(--c-accent-strong)", textDecoration: "underline", textUnderlineOffset: "2px" }}>
+                Tell us
+              </a>{" "}
+              — corrections are our top priority.
+            </p>
+          </div>
+        </div>
       </section>
 
       {/* ── Why this exists ──────────────────────────────────────────── */}
@@ -212,10 +303,12 @@ export default function AboutPage() {
 
       {/* ── Sources & methodology ────────────────────────────────────── */}
       <section
+        id="methodology"
         style={{
           maxWidth: "860px",
           margin: "0 auto",
           padding: "0 24px 64px",
+          scrollMarginTop: "90px",
         }}
       >
         <h2
@@ -236,8 +329,13 @@ export default function AboutPage() {
           }}
         >
           All recommendations on TravelMed are aligned with current guidelines
-          from the following organizations. Content is reviewed regularly and
-          updated when guidelines change or new outbreaks emerge.
+          from the authoritative sources below. Vaccine, malaria, and prevention
+          guidance is reviewed against the CDC Yellow Book, WHO International
+          Travel and Health, and ISTM standards, and revised when those
+          recommendations change. The outbreak monitor aggregates live notices
+          directly from CDC, WHO, and ECDC feeds, refreshed every few hours.
+          Where a claim cites a statistic or a notice, it links to the original
+          source so you can verify it yourself.
         </p>
         <div
           style={{
@@ -330,6 +428,8 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
+
+      <SiteFooter />
     </main>
   );
 }
