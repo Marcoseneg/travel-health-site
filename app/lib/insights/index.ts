@@ -8,6 +8,7 @@
 
 import type { Insight, InsightCategory } from "./types";
 
+import { ebolaBorderClosures } from "./ebola-border-closures";
 import { wolbachiaDengue2026 } from "./wolbachia-dengue-2026";
 import { qdengaRealWorldData } from "./qdenga-real-world-data";
 import { dengueExpandingBeyondTropics } from "./dengue-expanding-beyond-tropics";
@@ -27,6 +28,7 @@ export const INSIGHT_CATEGORY_LABELS: Record<
 
 // Newest first.
 export const insights: Insight[] = [
+  ebolaBorderClosures,
   wolbachiaDengue2026,
   qdengaRealWorldData,
   dengueExpandingBeyondTropics,
