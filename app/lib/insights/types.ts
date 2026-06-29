@@ -36,4 +36,16 @@ export type Insight = {
   coverGradient?: string;
   /** Surfaced in the homepage research strip + disease-page right rail. */
   featured?: boolean;
+  /**
+   * Primary peer-reviewed source this article discusses. Rendered as a
+   * "cited study" card in the article rail and as schema.org `citation` in the
+   * Article JSON-LD, so readers (and crawlers) can verify the source.
+   */
+  citation?: {
+    authors: string;
+    title: string;
+    journal: string;
+    year: string;
+    url: string;
+  };
 };

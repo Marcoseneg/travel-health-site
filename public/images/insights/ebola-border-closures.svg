@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 480" role="img" aria-label="Editorial illustration: movement paths crossing a national border, with disease-surveillance nodes and a health monitoring pulse">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#0b3b2e"/>
+      <stop offset="0.55" stop-color="#064e3b"/>
+      <stop offset="1" stop-color="#072a22"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.72" cy="0.28" r="0.7">
+      <stop offset="0" stop-color="#10b981" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#10b981" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.6" fill="#ffffff" fill-opacity="0.06"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#a7f3d0"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="480" fill="url(#bg)"/>
+  <rect width="1200" height="480" fill="url(#dots)"/>
+  <rect width="1200" height="480" fill="url(#glow)"/>
+
+  <!-- The "border": a dashed diagonal line with perpendicular tick marks -->
+  <g stroke="#a7f3d0" stroke-opacity="0.55">
+    <line x1="640" y1="-40" x2="380" y2="520" stroke-width="2.5" stroke-dasharray="2 12" stroke-linecap="round"/>
+  </g>
+  <g stroke="#6ee7b7" stroke-opacity="0.35" stroke-width="1.4">
+    <line x1="612" y1="40" x2="628" y2="48"/>
+    <line x1="560" y1="150" x2="576" y2="158"/>
+    <line x1="508" y1="260" x2="524" y2="268"/>
+    <line x1="456" y1="370" x2="472" y2="378"/>
+  </g>
+
+  <!-- Movement continues across the border (both directions) -->
+  <g fill="none" stroke="#a7f3d0" stroke-opacity="0.7" stroke-width="2.2" stroke-dasharray="1 9" stroke-linecap="round">
+    <path d="M120 360 Q420 250 880 150" marker-end="url(#arrow)"/>
+    <path d="M1040 380 Q700 360 300 430" marker-end="url(#arrow)"/>
+  </g>
+
+  <!-- Surveillance / outbreak nodes: filled centre + concentric rings -->
+  <g>
+    <g transform="translate(300 430)">
+      <circle r="22" fill="none" stroke="#34d399" stroke-opacity="0.25"/>
+      <circle r="13" fill="none" stroke="#34d399" stroke-opacity="0.45"/>
+      <circle r="5" fill="#a7f3d0"/>
+    </g>
+    <g transform="translate(880 150)">
+      <circle r="30" fill="none" stroke="#34d399" stroke-opacity="0.22"/>
+      <circle r="18" fill="none" stroke="#34d399" stroke-opacity="0.4"/>
+      <circle r="6.5" fill="#d1fae5"/>
+    </g>
+    <g transform="translate(560 300)">
+      <circle r="18" fill="none" stroke="#34d399" stroke-opacity="0.3"/>
+      <circle r="5" fill="#6ee7b7"/>
+    </g>
+  </g>
+
+  <!-- Health monitoring pulse line along the lower band -->
+  <path d="M60 250 H300 L320 250 L340 196 L368 312 L392 250 H520 L540 250 L556 214 L576 286 L596 250 H760"
+        fill="none" stroke="#ffffff" stroke-opacity="0.16" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
