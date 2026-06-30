@@ -23,6 +23,12 @@ import { NextResponse, type NextRequest } from "next/server";
 // ── Config — edit these ──────────────────────────────────────────────────────
 const BLOCKED_COUNTRIES = new Set(["CH", "DE"]); // ISO 3166-1 alpha-2 codes
 
+// Search-engine + link-preview crawlers are always let through (even from a
+// blocked country) so indexing and social previews keep working. Note: a
+// user-agent can be spoofed, so this is a small, deliberate hole in the gate.
+const ALLOWED_BOTS =
+  /(googlebot|google-inspectiontool|storebot-google|googleother|bingbot|bingpreview|duckduckbot|yandex|baiduspider|applebot|slurp|facebookexternalhit|facebot|twitterbot|linkedinbot|slackbot|whatsapp|telegrambot|discordbot)/i;
+
 // ✏️  YOUR PERSONALIZED MESSAGE — edit these freely.
 const BLOCK_HEADING = "TravelMed is currently undergoing maintenance";
 const BLOCK_MESSAGE = `We’re making some improvements and will be back shortly. Thanks for your patience.`;
@@ -35,6 +41,9 @@ export function proxy(request: NextRequest) {
 
   // Not a blocked country (or unknown, e.g. local dev) → let the request through.
   if (!country || !BLOCKED_COUNTRIES.has(country)) return;
+
+  // Always let search engines / link-preview crawlers see the real site.
+  if (ALLOWED_BOTS.test(request.headers.get("user-agent") ?? "")) return;
 
   // Owner bypass: ?geobypass=<token> sets a cookie; subsequent visits read it.
   const token = process.env.GEO_BYPASS_TOKEN;
