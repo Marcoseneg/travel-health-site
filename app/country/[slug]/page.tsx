@@ -168,24 +168,18 @@ export default async function CountryPage({ params }: Props) {
     >
       <JsonLd data={countrySchema} />
       <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "32px 24px 96px" }}>
-        {/* ── Back link ────────────────────────────────────────────── */}
-        <Link
-          href="/countries"
-          className="t-label"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "var(--c-text-3)",
-            marginBottom: "24px",
-            textDecoration: "none",
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-          All countries
-        </Link>
+        {/* ── Breadcrumb ───────────────────────────────────────────── */}
+        <nav className="t-label" aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px", color: "var(--c-text-3)", marginBottom: "24px" }}>
+          <Link href="/countries" style={{ color: "var(--c-text-3)", textDecoration: "none" }}>All countries</Link>
+          {meta.region && (
+            <>
+              <span style={{ color: "var(--c-border-strong)" }}>›</span>
+              <span>{meta.region}</span>
+            </>
+          )}
+          <span style={{ color: "var(--c-border-strong)" }}>›</span>
+          <span style={{ color: "var(--c-text-2)" }}>{label}</span>
+        </nav>
 
         {/* ── Destination hero banner ─────────────────────────────── */}
         <div
@@ -209,7 +203,7 @@ export default async function CountryPage({ params }: Props) {
               {label}
             </h1>
             <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0, letterSpacing: "0.02em" }}>
-              {[meta.region, meta.continent].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")}
+              {[meta.region, facts?.climate].filter(Boolean).join(" · ")}
             </p>
 
             {/* Country description with relevant travel-health context */}
