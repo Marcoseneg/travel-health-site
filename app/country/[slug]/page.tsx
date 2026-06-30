@@ -18,6 +18,7 @@ import { getAlertsForCountry } from "../../lib/countryAlerts";
 import type { OutbreakAlert } from "../../lib/outbreakSources";
 import JsonLd from "../../components/JsonLd";
 import { SITE_URL, authorRef, publisherRef, humanDateToIsoMonth } from "../../lib/seo";
+import { COUNTRY_FACTS } from "../../lib/countryFacts";
 
 // ── Helper: pull disease keywords from manual country alerts ───────────────
 // Used to suppress live outbreak feed alerts that duplicate a manually
@@ -108,6 +109,7 @@ export default async function CountryPage({ params }: Props) {
 
   const health: CountryInfo | undefined = healthData[slug];
   const label = meta.label;
+  const facts = COUNTRY_FACTS[slug];
 
   const malaria = riskBadge(malariaRiskByCountry[label]);
   const dengue = riskBadge(dengueRiskByCountry[label]);
@@ -166,24 +168,18 @@ export default async function CountryPage({ params }: Props) {
     >
       <JsonLd data={countrySchema} />
       <section style={{ maxWidth: "1080px", margin: "0 auto", padding: "32px 24px 96px" }}>
-        {/* ── Back link ────────────────────────────────────────────── */}
-        <Link
-          href="/countries"
-          className="t-label"
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            color: "var(--c-text-3)",
-            marginBottom: "24px",
-            textDecoration: "none",
-          }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-          All countries
-        </Link>
+        {/* ── Breadcrumb ───────────────────────────────────────────── */}
+        <nav className="t-label" aria-label="Breadcrumb" style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: "8px", color: "var(--c-text-3)", marginBottom: "24px" }}>
+          <Link href="/countries" style={{ color: "var(--c-text-3)", textDecoration: "none" }}>All countries</Link>
+          {meta.region && (
+            <>
+              <span style={{ color: "var(--c-border-strong)" }}>›</span>
+              <span>{meta.region}</span>
+            </>
+          )}
+          <span style={{ color: "var(--c-border-strong)" }}>›</span>
+          <span style={{ color: "var(--c-text-2)" }}>{label}</span>
+        </nav>
 
         {/* ── Destination hero banner ─────────────────────────────── */}
         <div
@@ -207,8 +203,15 @@ export default async function CountryPage({ params }: Props) {
               {label}
             </h1>
             <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0, letterSpacing: "0.02em" }}>
-              {[meta.region, meta.continent].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")} · Physician brief
+              {[meta.region, facts?.climate].filter(Boolean).join(" · ")}
             </p>
+
+            {/* Country description with relevant travel-health context */}
+            {facts?.summary && (
+              <p className="t-body" style={{ color: "var(--c-text-2)", margin: "14px 0 0", lineHeight: 1.6, maxWidth: "640px" }}>
+                {facts.summary}
+              </p>
+            )}
 
             {/* ── Status badge — inside the hero ──────────────────── */}
             {health?.reviewStatus === "reviewed" && (
@@ -233,55 +236,8 @@ export default async function CountryPage({ params }: Props) {
                 Physician-reviewed{health.lastReviewed ? ` · ${health.lastReviewed}` : ""}
               </div>
             )}
-            {health?.reviewStatus === "draft" && (
-              <div
-                className="t-label"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 14px",
-                  borderRadius: "999px",
-                  background: "var(--c-surface-2)",
-                  border: "1px solid var(--c-border)",
-                  marginTop: "18px",
-                  fontWeight: 600,
-                  color: "var(--c-text-2)",
-                }}
-              >
-                <span style={{ lineHeight: 1.2 }}>📝</span>
-                Draft — pending physician review
-              </div>
-            )}
           </div>
         </div>
-
-        {/* ── Draft notice — AI-sourced brief awaiting clinician sign-off ── */}
-        {health?.reviewStatus === "draft" && (
-          <div
-            className="t-label"
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: "10px",
-              padding: "16px 18px",
-              borderRadius: "var(--c-radius-sm)",
-              background: "var(--c-surface-2)",
-              border: "1px solid var(--c-border)",
-              marginBottom: "var(--c-space-section)",
-              lineHeight: 1.5,
-              color: "var(--c-text-2)",
-            }}
-          >
-            <span style={{ lineHeight: 1.2 }}>📝</span>
-            <span>
-              <strong style={{ color: "var(--c-text)", fontWeight: 600 }}>Draft — pending physician review.</strong>{" "}
-              This brief was compiled from CDC, WHO, and EKRM/HealthyTravel sources
-              {health.lastReviewed ? ` (${health.lastReviewed})` : ""} and has not yet been
-              verified by a clinician. Confirm specifics with a travel-medicine professional before relying on it.
-            </span>
-          </div>
-        )}
 
         {/* ── Alerts zone — manual + live, all above the risk row ──────── */}
         {(hasAlerts || outbreakAlerts.length > 0) && (
@@ -297,21 +253,6 @@ export default async function CountryPage({ params }: Props) {
             )}
           </div>
         )}
-
-        {/* ── Risk summary row — each card LINKS to disease page ──────── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-            gap: "14px",
-            marginBottom: "var(--c-space-section)",
-          }}
-        >
-          <RiskCard name="Malaria" diseaseSlug="malaria" badge={malaria} />
-          <RiskCard name="Dengue" diseaseSlug="dengue" badge={dengue} />
-          <RiskCard name="Yellow fever" diseaseSlug="yellow-fever" badge={yf} />
-          <RiskCard name="Chikungunya" diseaseSlug="chikungunya" badge={chik} />
-        </div>
 
         {hasDetailed ? (
           <>
@@ -485,52 +426,6 @@ function SectionTitle({ title }: { title: string }) {
 }
 
 // ── Risk card now wraps in a Link to the disease page ──────────────────────
-function RiskCard({
-  name,
-  diseaseSlug,
-  badge,
-}: {
-  name: string;
-  diseaseSlug: string;
-  badge: RiskBadge;
-}) {
-  return (
-    <Link
-      href={`/diseases/${diseaseSlug}`}
-      className="card-hover"
-      style={{
-        display: "block",
-        borderRadius: "var(--c-radius-md)",
-        border: `1px solid ${badge.border}`,
-        background: badge.background,
-        padding: "18px 18px",
-        textDecoration: "none",
-        color: "inherit",
-      }}
-    >
-      <p
-        className="t-micro"
-        style={{
-          color: "var(--c-text-2)",
-          margin: "0 0 6px",
-        }}
-      >
-        {name}
-      </p>
-      <p
-        className="t-h3"
-        style={{
-          fontWeight: 700,
-          color: badge.color,
-          margin: 0,
-        }}
-      >
-        {badge.label}
-      </p>
-    </Link>
-  );
-}
-
 // ── Recent outbreak alerts (live, country-tagged) ──────────────────────────
 // Shows up to 3 of the most recent outbreak alerts that mention this
 // country, pulled from the same RSS aggregation that powers /outbreaks.
