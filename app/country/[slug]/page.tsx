@@ -18,6 +18,7 @@ import { getAlertsForCountry } from "../../lib/countryAlerts";
 import type { OutbreakAlert } from "../../lib/outbreakSources";
 import JsonLd from "../../components/JsonLd";
 import { SITE_URL, authorRef, publisherRef, humanDateToIsoMonth } from "../../lib/seo";
+import { COUNTRY_FACTS } from "../../lib/countryFacts";
 
 // ── Helper: pull disease keywords from manual country alerts ───────────────
 // Used to suppress live outbreak feed alerts that duplicate a manually
@@ -108,6 +109,7 @@ export default async function CountryPage({ params }: Props) {
 
   const health: CountryInfo | undefined = healthData[slug];
   const label = meta.label;
+  const facts = COUNTRY_FACTS[slug];
 
   const malaria = riskBadge(malariaRiskByCountry[label]);
   const dengue = riskBadge(dengueRiskByCountry[label]);
@@ -210,6 +212,13 @@ export default async function CountryPage({ params }: Props) {
               {[meta.region, meta.continent].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")} · Physician brief
             </p>
 
+            {/* Country description with relevant travel-health context */}
+            {facts?.summary && (
+              <p className="t-body" style={{ color: "var(--c-text-2)", margin: "14px 0 0", lineHeight: 1.6, maxWidth: "640px" }}>
+                {facts.summary}
+              </p>
+            )}
+
             {/* ── Status badge — inside the hero ──────────────────── */}
             {health?.reviewStatus === "reviewed" && (
               <div
@@ -297,21 +306,6 @@ export default async function CountryPage({ params }: Props) {
             )}
           </div>
         )}
-
-        {/* ── Risk summary row — each card LINKS to disease page ──────── */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))",
-            gap: "14px",
-            marginBottom: "var(--c-space-section)",
-          }}
-        >
-          <RiskCard name="Malaria" diseaseSlug="malaria" badge={malaria} />
-          <RiskCard name="Dengue" diseaseSlug="dengue" badge={dengue} />
-          <RiskCard name="Yellow fever" diseaseSlug="yellow-fever" badge={yf} />
-          <RiskCard name="Chikungunya" diseaseSlug="chikungunya" badge={chik} />
-        </div>
 
         {hasDetailed ? (
           <>
@@ -485,52 +479,6 @@ function SectionTitle({ title }: { title: string }) {
 }
 
 // ── Risk card now wraps in a Link to the disease page ──────────────────────
-function RiskCard({
-  name,
-  diseaseSlug,
-  badge,
-}: {
-  name: string;
-  diseaseSlug: string;
-  badge: RiskBadge;
-}) {
-  return (
-    <Link
-      href={`/diseases/${diseaseSlug}`}
-      className="card-hover"
-      style={{
-        display: "block",
-        borderRadius: "var(--c-radius-md)",
-        border: `1px solid ${badge.border}`,
-        background: badge.background,
-        padding: "18px 18px",
-        textDecoration: "none",
-        color: "inherit",
-      }}
-    >
-      <p
-        className="t-micro"
-        style={{
-          color: "var(--c-text-2)",
-          margin: "0 0 6px",
-        }}
-      >
-        {name}
-      </p>
-      <p
-        className="t-h3"
-        style={{
-          fontWeight: 700,
-          color: badge.color,
-          margin: 0,
-        }}
-      >
-        {badge.label}
-      </p>
-    </Link>
-  );
-}
-
 // ── Recent outbreak alerts (live, country-tagged) ──────────────────────────
 // Shows up to 3 of the most recent outbreak alerts that mention this
 // country, pulled from the same RSS aggregation that powers /outbreaks.
