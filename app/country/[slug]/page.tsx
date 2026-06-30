@@ -209,7 +209,7 @@ export default async function CountryPage({ params }: Props) {
               {label}
             </h1>
             <p className="t-label" style={{ color: "var(--c-text-2)", margin: 0, letterSpacing: "0.02em" }}>
-              {[meta.region, meta.continent].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")} · Physician brief
+              {[meta.region, meta.continent].filter((v, i, a) => v && a.indexOf(v) === i).join(" · ")}
             </p>
 
             {/* Country description with relevant travel-health context */}
