@@ -242,55 +242,8 @@ export default async function CountryPage({ params }: Props) {
                 Physician-reviewed{health.lastReviewed ? ` · ${health.lastReviewed}` : ""}
               </div>
             )}
-            {health?.reviewStatus === "draft" && (
-              <div
-                className="t-label"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "8px 14px",
-                  borderRadius: "999px",
-                  background: "var(--c-surface-2)",
-                  border: "1px solid var(--c-border)",
-                  marginTop: "18px",
-                  fontWeight: 600,
-                  color: "var(--c-text-2)",
-                }}
-              >
-                <span style={{ lineHeight: 1.2 }}>📝</span>
-                Draft — pending physician review
-              </div>
-            )}
           </div>
         </div>
-
-        {/* ── Draft notice — AI-sourced brief awaiting clinician sign-off ── */}
-        {health?.reviewStatus === "draft" && (
-          <div
-            className="t-label"
-            style={{
-              display: "flex",
-              alignItems: "flex-start",
-              gap: "10px",
-              padding: "16px 18px",
-              borderRadius: "var(--c-radius-sm)",
-              background: "var(--c-surface-2)",
-              border: "1px solid var(--c-border)",
-              marginBottom: "var(--c-space-section)",
-              lineHeight: 1.5,
-              color: "var(--c-text-2)",
-            }}
-          >
-            <span style={{ lineHeight: 1.2 }}>📝</span>
-            <span>
-              <strong style={{ color: "var(--c-text)", fontWeight: 600 }}>Draft — pending physician review.</strong>{" "}
-              This brief was compiled from CDC, WHO, and EKRM/HealthyTravel sources
-              {health.lastReviewed ? ` (${health.lastReviewed})` : ""} and has not yet been
-              verified by a clinician. Confirm specifics with a travel-medicine professional before relying on it.
-            </span>
-          </div>
-        )}
 
         {/* ── Alerts zone — manual + live, all above the risk row ──────── */}
         {(hasAlerts || outbreakAlerts.length > 0) && (
