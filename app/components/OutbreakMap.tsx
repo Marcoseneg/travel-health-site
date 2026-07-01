@@ -31,12 +31,34 @@ type Point = MapMarker & { x: number; y: number };
 export default function OutbreakMap({
   decorative = false,
   markers,
+  scrollContainerId,
 }: {
   decorative?: boolean;
   markers?: MapMarker[];
+  scrollContainerId?: string;
 } = {}) {
   const [geo, setGeo] = useState<GeoJson | null>(null);
   const [hover, setHover] = useState<Point | null>(null);
+
+  // Scroll to the alert. If a scroll container is given and is scrollable,
+  // scroll *within it* (so the page doesn't jump); otherwise scroll the page.
+  function goToAnchor(anchor?: string) {
+    if (!anchor) return;
+    const el = document.getElementById(anchor);
+    if (!el) return;
+    const container = scrollContainerId ? document.getElementById(scrollContainerId) : null;
+    if (container && container.scrollHeight > container.clientHeight + 4) {
+      // Scroll only within the panel. Assigning scrollTop is reliable here;
+      // scrollTo({behavior:'smooth'}) doesn't animate this container.
+      const cRect = container.getBoundingClientRect();
+      const eRect = el.getBoundingClientRect();
+      container.scrollTop = container.scrollTop + (eRect.top - cRect.top) - 12;
+    } else {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    el.classList.add("ob-flash");
+    setTimeout(() => el.classList.remove("ob-flash"), 1400);
+  }
 
   useEffect(() => {
     let alive = true;
@@ -97,7 +119,7 @@ export default function OutbreakMap({
             style={{ cursor: p.anchor ? "pointer" : "default" }}
             onMouseEnter={() => setHover(p)}
             onMouseLeave={() => setHover(null)}
-            onClick={() => { if (p.anchor) document.getElementById(p.anchor)?.scrollIntoView({ behavior: "smooth", block: "center" }); }}
+            onClick={() => goToAnchor(p.anchor)}
           >
             <circle r={18} fill="transparent" />
             <circle r={4} fill={p.color} stroke="var(--c-surface)" strokeWidth={1} />

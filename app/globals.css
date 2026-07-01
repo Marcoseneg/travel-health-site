@@ -215,6 +215,35 @@ a {
   border-color: var(--c-border-strong) !important;
 }
 
+/* ── Outbreak dashboard (/outbreaks): map left, scrollable alert panel right ── */
+.ob-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+.ob-map-col { position: sticky; top: 16px; }
+.ob-list-panel {
+  position: relative;
+  max-height: 74vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 6px;
+}
+@keyframes ob-flash {
+  0% { box-shadow: 0 0 0 3px var(--c-accent); }
+  100% { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0); }
+}
+.ob-flash { animation: ob-flash 1.4s ease-out; }
+@media (max-width: 900px) {
+  .ob-grid { grid-template-columns: 1fr; }
+  .ob-map-col { position: static; }
+  .ob-list-panel { max-height: none; overflow-y: visible; }
+}
+
 /* ═══════════════════════════════════════════════════════════
    HERO
    ─ Shell (outer padding) → Container (max-width) → Panel

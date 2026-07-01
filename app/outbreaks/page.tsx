@@ -127,7 +127,7 @@ export default async function OutbreaksPage({ searchParams }: Props) {
         )}
 
         {/* Status legend */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", marginBottom: "16px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px 18px", marginBottom: "18px" }}>
           {[STATUS_META.ongoing, STATUS_META.increasing, STATUS_META.stable, STATUS_META.controlled, REPORTED_META].map((s) => (
             <span key={s.label} className="t-micro" style={{ display: "inline-flex", alignItems: "center", gap: "7px", color: "var(--c-text-2)", textTransform: "none", letterSpacing: "normal", fontWeight: 500 }}>
               <span style={{ width: "9px", height: "9px", borderRadius: "50%", background: s.color, flexShrink: 0 }} />
@@ -136,34 +136,39 @@ export default async function OutbreaksPage({ searchParams }: Props) {
           ))}
         </div>
 
-        {/* World map of outbreak locations */}
-        {markers.length > 0 && (
-          <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "14px", marginBottom: "28px" }}>
-            <OutbreakMap markers={markers} />
-            <p className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal", margin: "6px 4px 0" }}>Tap a marker to jump to the alert below.</p>
+        {/* Dashboard: map (left) + scrollable alert panel (right) */}
+        <div className="ob-grid">
+          <div className="ob-map-col">
+            <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "14px" }}>
+              <OutbreakMap markers={markers} scrollContainerId="ob-list" />
+              <p className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal", margin: "8px 4px 0" }}>Tap a marker to jump to that alert in the panel →</p>
+            </div>
+            <div style={{ ...legendStyle, marginTop: "16px", marginBottom: 0, borderBottom: "none", paddingBottom: 0 }}>
+              {OUTBREAK_SOURCES.map((s) => (
+                <span key={s.id} className="t-micro" style={{ ...legendItemStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 500 }}>
+                  <SourceDot sourceId={s.id} />
+                  {s.shortName}
+                </span>
+              ))}
+            </div>
           </div>
-        )}
 
-        <div style={legendStyle}>
-          {OUTBREAK_SOURCES.map((s) => (
-            <span key={s.id} className="t-micro" style={{ ...legendItemStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 500 }}>
-              <SourceDot sourceId={s.id} />
-              {s.shortName}
-            </span>
-          ))}
+          <div>
+            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "12px" }}>
+              <h2 className="t-h2" style={{ margin: 0, color: "var(--c-text)" }}>Latest updates</h2>
+              <span className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{display.length} alert{display.length === 1 ? "" : "s"}</span>
+            </div>
+            {display.length === 0 ? (
+              <p className="t-body" style={{ color: "var(--c-text-3)" }}>No alerts available. Check back soon.</p>
+            ) : (
+              <div id="ob-list" className="ob-list-panel">
+                {display.map((alert) => (
+                  <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-
-        {display.length === 0 ? (
-          <p className="t-body" style={{ color: "var(--c-text-3)" }}>
-            No alerts available. Check back soon.
-          </p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {display.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
-            ))}
-          </div>
-        )}
 
         <footer className="t-label" style={{ ...footerStyle, fontWeight: 400, letterSpacing: "normal" }}>
           <p style={{ margin: "0 0 8px" }}>
@@ -329,7 +334,7 @@ const pageStyle: React.CSSProperties = {
   color: "var(--c-text)",
   fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
 };
-const containerStyle: React.CSSProperties = { maxWidth: "880px", margin: "0 auto" };
+const containerStyle: React.CSSProperties = { maxWidth: "1480px", margin: "0 auto" };
 const kickerStyle: React.CSSProperties = {
   color: "var(--c-accent)",
   margin: "0 0 12px",
