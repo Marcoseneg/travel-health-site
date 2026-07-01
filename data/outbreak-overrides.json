@@ -4,5 +4,14 @@
   "who-don-vlv3ih": { "hidden": true },
   "who-don-vbvhti": { "hidden": true },
   "who-don-v1vw4j": { "hidden": true },
-  "who-don-wftwle": { "hidden": true }
+  "who-don-wftwle": { "hidden": true },
+
+  "who-don-y3rir8": {
+    "pinned": true,
+    "status": "ongoing",
+    "title": "Ebola (Bundibugyo virus) — DR Congo & Uganda",
+    "summary": "An outbreak of Bundibugyo Ebola virus with cases across the DRC and Uganda. No licensed vaccine exists for this Ebola species, so control relies on surveillance, isolation, and contact tracing."
+  },
+  "cdc-travel-11ssc3i": { "status": "ongoing" },
+  "who-don-i84f3o": { "status": "increasing" }
 }

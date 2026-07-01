@@ -13,17 +13,36 @@
 
 import overrides from "@/data/outbreak-overrides.json";
 
+// Traveler-facing status you assign editorially (the feed doesn't provide it).
+export type OutbreakStatus = "ongoing" | "increasing" | "stable" | "controlled";
+
+export const STATUS_META: Record<OutbreakStatus, { label: string; color: string }> = {
+  ongoing: { label: "Ongoing outbreak", color: "#ef4444" },
+  increasing: { label: "Increasing", color: "#f97316" },
+  stable: { label: "Stable", color: "#eab308" },
+  controlled: { label: "Controlled", color: "#16a34a" },
+};
+
+// Un-classified alerts (no status set) render neutral on the map + legend.
+export const REPORTED_META = { label: "Reported", color: "#64748b" };
+
 export type OutbreakCuration = {
-  /** Drop this alert from the list (and, later, the map). */
+  /** Drop this alert from the list and the map. */
   hidden?: boolean;
+  /** Plain-language rewrite of the feed title. */
+  title?: string;
+  /** Traveler-friendly rewrite of the feed summary. */
+  summary?: string;
+  /** Traveler-facing status → colors the map marker + legend. */
+  status?: OutbreakStatus;
+  /** Sort to the top of the list. */
+  pinned?: boolean;
+  /** Explicit map position; otherwise derived from the first tagged country. */
+  coords?: { lat: number; lng: number };
   // ── country-tag overrides (consumed by countryTagger) ──
   add?: string[];
   remove?: string[];
   replace?: string[];
-  // ── reserved for upcoming slices ──
-  // title?: string; summary?: string;
-  // status?: "ongoing" | "increasing" | "stable" | "controlled";
-  // pinned?: boolean; coords?: { lat: number; lng: number };
 };
 
 const CURATION = overrides as unknown as Record<string, OutbreakCuration>;
