@@ -53,6 +53,11 @@
   --c-accent-soft: #ecfeff;
   --c-accent-border: #a5f3fc;
 
+  /* World map (outbreaks) — ocean / land / borders */
+  --map-ocean: #cfe0ee;
+  --map-land: #f5f8fb;
+  --map-border: #a1b7c9;
+
   /* Semantic — high risk (red) / moderate (amber) / trust (green) / info (cyan) */
   --c-danger: #b91c1c;  --c-danger-soft: #fef2f2;  --c-danger-border: #fecaca;
   --c-warning: #b45309; --c-warning-soft: #fffbeb; --c-warning-border: #fde68a;
@@ -85,6 +90,10 @@
   --c-accent-bright: #38bdf8;
   --c-accent-soft: rgba(56, 189, 248, 0.10);
   --c-accent-border: rgba(56, 189, 248, 0.28);
+
+  --map-ocean: #0a1a26;
+  --map-land: #16242f;
+  --map-border: rgba(255, 255, 255, 0.13);
 
   --c-danger: #fca5a5;  --c-danger-soft: rgba(239, 68, 68, 0.14);  --c-danger-border: rgba(239, 68, 68, 0.30);
   --c-warning: #fbbf24; --c-warning-soft: rgba(245, 158, 11, 0.14); --c-warning-border: rgba(245, 158, 11, 0.28);
@@ -213,6 +222,46 @@ a {
   transform: translateY(-2px);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
   border-color: var(--c-border-strong) !important;
+}
+
+/* ── Outbreak dashboard (/outbreaks): map left, scrollable alert panel right ── */
+.ob-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+  margin-bottom: 40px;
+}
+.ob-map-col { position: sticky; top: 16px; }
+.ob-panel-label {
+  position: absolute;
+  top: -30px;
+  left: 2px;
+  right: 2px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.ob-list-panel {
+  position: relative;
+  max-height: 74vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 6px;
+}
+@keyframes ob-flash {
+  0% { box-shadow: 0 0 0 3px var(--c-accent); }
+  100% { box-shadow: 0 0 0 3px rgba(0, 0, 0, 0); }
+}
+.ob-flash { animation: ob-flash 1.4s ease-out; }
+@media (max-width: 900px) {
+  .ob-grid { grid-template-columns: 1fr; }
+  .ob-map-col { position: static; }
+  .ob-list-panel { max-height: none; overflow-y: visible; }
+  .ob-panel-label { position: static; margin: 8px 0 10px; }
 }
 
 /* ═══════════════════════════════════════════════════════════

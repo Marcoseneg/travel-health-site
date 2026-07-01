@@ -1,47 +1,108 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
-import { NAME_TO_SLUG } from "../lib/diseaseRisk";
-import { CAPITALS } from "../lib/capitalsData";
-import { diseases, DISEASE_LIST } from "../lib/diseaseData";
-import { outbreakAlerts, type AlertSeverity } from "../lib/outbreakData";
-
-// Disease label (as used in outbreakAlerts.disease) → /diseases/[slug] key.
-const LABEL_TO_SLUG: Record<string, string> = Object.fromEntries(
-  DISEASE_LIST.map((s) => [diseases[s].label.toLowerCase(), s])
-);
 
 // ─────────────────────────────────────────────────────────────────────────────
-// A decorative-but-real "outbreak radar": a stippled (dot-matrix) world map with
-// live outbreak hotspots pulsing over the affected countries. Land dots are
-// sampled by drawing the projected countries to an offscreen canvas and testing
-// a pixel grid with isPointInPath (fast + native). Hotspots come from
-// outbreakAlerts, placed at each affected country's capital. Used in the
-// /diseases Disease Explorer hero.
+// Stippled (dot-matrix) world map. Two modes:
+//   • decorative — just the map texture (used in the Disease Explorer hero).
+//   • markers    — plots caller-supplied outbreak markers, colored by status,
+//                  with a hover tooltip; clicking scrolls to the matching alert
+//                  card (via `anchor`). Used on /outbreaks.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const W = 1000;
 const H = 520;
 const STEP = 9; // px between land dots
 
-const SEVERITY: Record<AlertSeverity, { color: string; level: string }> = {
-  warning: { color: "#ef4444", level: "High" },
-  advisory: { color: "#f59e0b", level: "Moderate" },
-  watch: { color: "#fbbf24", level: "Low" },
+export type MapMarker = {
+  lat: number;
+  lng: number;
+  color: string;
+  title: string;
+  place: string;
+  anchor?: string; // element id to scroll to on click
 };
 
 type GeoFeature = { type: string; geometry: unknown; properties: { NAME?: string; ADMIN?: string } };
 type GeoJson = { type: string; features: GeoFeature[] };
+type Point = MapMarker & { x: number; y: number };
 
-type Hotspot = { x: number; y: number; color: string; title: string; place: string; disease: string; slug?: string };
-
-export default function OutbreakMap({ decorative = false }: { decorative?: boolean } = {}) {
-  const router = useRouter();
+export default function OutbreakMap({
+  decorative = false,
+  markers,
+  scrollContainerId,
+}: {
+  decorative?: boolean;
+  markers?: MapMarker[];
+  scrollContainerId?: string;
+} = {}) {
   const [geo, setGeo] = useState<GeoJson | null>(null);
-  const [hover, setHover] = useState<{ x: number; y: number; title: string; place: string; disease: string; slug?: string } | null>(null);
-  const wrapRef = useRef<HTMLDivElement | null>(null);
+  const [hover, setHover] = useState<Point | null>(null);
+
+  // Scroll to the alert. If a scroll container is given and is scrollable,
+  // scroll *within it* (so the page doesn't jump); otherwise scroll the page.
+  function goToAnchor(anchor?: string) {
+    if (!anchor) return;
+    const el = document.getElementById(anchor);
+    if (!el) return;
+    const container = scrollContainerId ? document.getElementById(scrollContainerId) : null;
+    if (container && container.scrollHeight > container.clientHeight + 4) {
+      // Scroll only within the panel. Assigning scrollTop is reliable here;
+      // scrollTo({behavior:'smooth'}) doesn't animate this container.
+      const cRect = container.getBoundingClientRect();
+      const eRect = el.getBoundingClientRect();
+      container.scrollTop = container.scrollTop + (eRect.top - cRect.top) - 12;
+    } else {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+    el.classList.add("ob-flash");
+    setTimeout(() => el.classList.remove("ob-flash"), 1400);
+  }
+
+  // ── Pan + zoom (markers variant) ──────────────────────────────────────────
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [center, setCenter] = useState({ x: W / 2, y: H / 2 });
+  const drag = useRef({ active: false, x: 0, y: 0, moved: false });
+
+  const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+  const vw = W / zoom;
+  const vh = H / zoom;
+  const vx = clamp(center.x - vw / 2, 0, W - vw);
+  const vy = clamp(center.y - vh / 2, 0, H - vh);
+
+  function zoomBy(factor: number) {
+    setZoom((z) => {
+      const nz = clamp(z * factor, 1, 5);
+      if (nz === 1) setCenter({ x: W / 2, y: H / 2 });
+      return nz;
+    });
+  }
+  function onPointerDown(e: React.PointerEvent) {
+    if (zoom === 1) return; // nothing to pan at full extent
+    drag.current = { active: true, x: e.clientX, y: e.clientY, moved: false };
+  }
+  function onPointerMove(e: React.PointerEvent) {
+    if (!drag.current.active) return;
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const scale = vw / rect.width; // map units per screen pixel
+    if (Math.abs(e.clientX - drag.current.x) + Math.abs(e.clientY - drag.current.y) > 3) drag.current.moved = true;
+    const dx = (e.clientX - drag.current.x) * scale;
+    const dy = (e.clientY - drag.current.y) * scale;
+    drag.current.x = e.clientX;
+    drag.current.y = e.clientY;
+    setCenter((c) => ({ x: clamp(c.x - dx, vw / 2, W - vw / 2), y: clamp(c.y - dy, vh / 2, H - vh / 2) }));
+  }
+  function endDrag() { drag.current.active = false; }
+
+  const zoomBtnStyle: React.CSSProperties = {
+    width: "30px", height: "30px", display: "inline-flex", alignItems: "center", justifyContent: "center",
+    border: "1px solid var(--c-border)", background: "var(--c-surface)", color: "var(--c-text-2)",
+    borderRadius: "8px", cursor: "pointer", fontSize: "17px", fontWeight: 700, lineHeight: 1,
+    boxShadow: "0 2px 8px rgba(15,23,42,0.10)",
+  };
 
   useEffect(() => {
     let alive = true;
@@ -49,20 +110,22 @@ export default function OutbreakMap({ decorative = false }: { decorative?: boole
     return () => { alive = false; };
   }, []);
 
-  const { dots, hotspots, landPath } = useMemo(() => {
-    if (!geo) return { dots: [] as { x: number; y: number }[], hotspots: [] as Hotspot[], landPath: "" };
+  const { dots, countryPaths, points } = useMemo(() => {
+    if (!geo) return { dots: [] as { x: number; y: number }[], countryPaths: [] as string[], points: [] as Point[] };
     const features = geo.features.filter((f) => (f.properties?.NAME || f.properties?.ADMIN) !== "Antarctica");
     const fc = { type: "FeatureCollection", features } as unknown as GeoJson;
     const projection = geoNaturalEarth1().fitExtent([[3, 3], [W - 3, H - 3]], fc as never);
     const path = geoPath(projection);
 
-    // Combine all country outlines into one Path2D for fast point-in-path tests.
-    const combined = features.map((f) => path(f as never) || "").join(" ");
+    // One SVG path per country → filled land with visible borders.
+    const countryPaths = features.map((f) => path(f as never) || "").filter(Boolean);
+
+    // Land dots only for the decorative variant (sampled via point-in-path).
     const dots: { x: number; y: number }[] = [];
-    if (typeof document !== "undefined") {
+    if (decorative && typeof document !== "undefined") {
       const ctx = document.createElement("canvas").getContext("2d");
       if (ctx) {
-        const p2d = new Path2D(combined);
+        const p2d = new Path2D(countryPaths.join(" "));
         for (let x = STEP / 2; x < W; x += STEP) {
           for (let y = STEP / 2; y < H; y += STEP) {
             if (ctx.isPointInPath(p2d, x, y)) dots.push({ x, y });
@@ -71,80 +134,90 @@ export default function OutbreakMap({ decorative = false }: { decorative?: boole
       }
     }
 
-    // Live outbreak hotspots → projected capital of the first affected country.
-    const hotspots: Hotspot[] = [];
-    outbreakAlerts.filter((a) => a.active).forEach((a) => {
-      const name = a.countries[0];
-      const countrySlug = NAME_TO_SLUG[name];
-      const cap = countrySlug ? CAPITALS[countrySlug] : undefined;
-      if (!cap) return;
-      const pt = projection([cap.lng, cap.lat]);
+    // Project caller-supplied markers to screen space.
+    const points: Point[] = [];
+    (markers ?? []).forEach((m) => {
+      const pt = projection([m.lng, m.lat]);
       if (!pt) return;
-      hotspots.push({ x: pt[0], y: pt[1], color: SEVERITY[a.severity].color, title: a.title, place: `${cap.name}, ${name}`, disease: a.disease, slug: LABEL_TO_SLUG[a.disease.toLowerCase()] });
+      points.push({ ...m, x: pt[0], y: pt[1] });
     });
 
-    return { dots, hotspots, landPath: combined };
-  }, [geo]);
+    return { dots, countryPaths, points };
+  }, [geo, markers, decorative]);
 
   return (
-    <div ref={wrapRef} style={{ position: "relative", width: "100%" }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={decorative ? "Decorative world map" : "World map with live outbreak hotspots"} style={{ display: "block", overflow: "visible" }}>
-        {/* Soft land silhouette so continents read as a map… */}
-        <path d={landPath} fill="var(--c-accent)" opacity={decorative ? 0.18 : 0.1} stroke="none" />
-        {/* …with a dot texture on top. */}
-        <g style={{ color: "var(--c-accent)" }}>
-          {dots.map((d, i) => (
-            <circle key={i} cx={d.x} cy={d.y} r={decorative ? 1.7 : 1.5} fill="currentColor" opacity={decorative ? 0.62 : 0.4} />
-          ))}
-        </g>
+    <div style={{ position: "relative", width: "100%" }}>
+      <svg
+        ref={svgRef}
+        viewBox={decorative ? `0 0 ${W} ${H}` : `${vx} ${vy} ${vw} ${vh}`}
+        width="100%"
+        role="img"
+        aria-label={decorative ? "Decorative world map" : "World map of outbreak locations"}
+        onPointerDown={decorative ? undefined : onPointerDown}
+        onPointerMove={decorative ? undefined : onPointerMove}
+        onPointerUp={decorative ? undefined : endDrag}
+        onPointerLeave={decorative ? undefined : endDrag}
+        style={{ display: "block", overflow: decorative ? "visible" : "hidden", borderRadius: decorative ? 0 : "10px", touchAction: !decorative && zoom > 1 ? "none" : "auto", cursor: !decorative && zoom > 1 ? "grab" : "default" }}
+      >
+        {decorative ? (
+          <>
+            {/* Soft land silhouette + dot texture (Disease Explorer hero). */}
+            <path d={countryPaths.join(" ")} fill="var(--c-accent)" opacity={0.18} stroke="none" />
+            <g style={{ color: "var(--c-accent)" }}>
+              {dots.map((d, i) => (
+                <circle key={i} cx={d.x} cy={d.y} r={1.7} fill="currentColor" opacity={0.62} />
+              ))}
+            </g>
+          </>
+        ) : (
+          <>
+            {/* Geographic map: ocean + filled countries with borders. */}
+            <rect x={0} y={0} width={W} height={H} rx={10} fill="var(--map-ocean)" />
+            <g>
+              {countryPaths.map((d, i) => (
+                <path key={i} d={d} fill="var(--map-land)" stroke="var(--map-border)" strokeWidth={0.6} strokeLinejoin="round" />
+              ))}
+            </g>
+          </>
+        )}
 
-        {/* Outbreak hotspots — only in the live (non-decorative) variant */}
-        {!decorative && hotspots.map((h, i) => (
-          <g key={i} transform={`translate(${h.x} ${h.y})`} style={{ cursor: h.slug ? "pointer" : "default" }}
-             onMouseEnter={() => setHover({ x: h.x, y: h.y, title: h.title, place: h.place, disease: h.disease, slug: h.slug })}
-             onMouseLeave={() => setHover(null)}
-             onClick={() => { if (h.slug) router.push(`/diseases/${h.slug}`); }}>
+        {/* Outbreak markers */}
+        {!decorative && points.map((p, i) => (
+          <g
+            key={i}
+            transform={`translate(${p.x} ${p.y})`}
+            style={{ cursor: p.anchor ? "pointer" : "default" }}
+            onMouseEnter={() => setHover(p)}
+            onMouseLeave={() => setHover(null)}
+            onClick={() => { if (drag.current.moved) { drag.current.moved = false; return; } goToAnchor(p.anchor); }}
+          >
             <circle r={18} fill="transparent" />
-            <circle r={3.6} fill={h.color} />
-            <circle r={3.6} fill="none" stroke={h.color} strokeWidth={1.4} opacity={0.7}>
-              <animate attributeName="r" values="3.6;13" dur="2.6s" begin={`${i * 0.35}s`} repeatCount="indefinite" />
-              <animate attributeName="opacity" values="0.7;0" dur="2.6s" begin={`${i * 0.35}s`} repeatCount="indefinite" />
+            <circle r={4} fill={p.color} stroke="var(--c-surface)" strokeWidth={1} />
+            <circle r={4} fill="none" stroke={p.color} strokeWidth={1.4} opacity={0.7}>
+              <animate attributeName="r" values="4;14" dur="2.6s" begin={`${(i % 8) * 0.32}s`} repeatCount="indefinite" />
+              <animate attributeName="opacity" values="0.7;0" dur="2.6s" begin={`${(i % 8) * 0.32}s`} repeatCount="indefinite" />
             </circle>
           </g>
         ))}
       </svg>
 
-      {/* Legend — only in the live variant (decorative map carries no data) */}
-      {!decorative && (
-      <div style={{ position: "absolute", top: "8px", right: "0", padding: "11px 13px", borderRadius: "12px", background: "var(--c-surface)", border: "1px solid var(--c-border)", boxShadow: "0 4px 16px rgba(15,23,42,0.08)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "7px", marginBottom: "10px" }}>
-          <span style={{ width: "8px", height: "8px", borderRadius: "50%", background: "#ef4444", flexShrink: 0 }} />
-          <span className="t-micro" style={{ color: "var(--c-text-2)", fontWeight: 700, textTransform: "none", letterSpacing: "normal" }}>{hotspots.length} live outbreaks</span>
-        </div>
-        {[
-          ["#ef4444", "Warning"],
-          ["#f59e0b", "Advisory"],
-          ["#fbbf24", "Watch"],
-        ].map(([color, label], i) => (
-          <div key={label} style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: i === 0 ? 0 : "6px" }}>
-            <span style={{ width: "9px", height: "9px", borderRadius: "50%", background: color, flexShrink: 0 }} />
-            <span className="t-label" style={{ color: "var(--c-text-2)" }}>{label}</span>
-          </div>
-        ))}
-        <div className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal", marginTop: "10px", maxWidth: "130px", lineHeight: 1.4 }}>Tap a marker to open the disease →</div>
-      </div>
-      )}
-
-      {/* Hotspot tooltip */}
+      {/* Marker tooltip (positioned in current viewBox space) */}
       {!decorative && hover && (
         <div style={{
-          position: "absolute", left: `${(hover.x / W) * 100}%`, top: `${(hover.y / H) * 100}%`,
+          position: "absolute", left: `${((hover.x - vx) / vw) * 100}%`, top: `${((hover.y - vy) / vh) * 100}%`,
           transform: "translate(12px, -120%)", background: "var(--c-surface)", border: "1px solid var(--c-border)",
-          borderRadius: "10px", padding: "7px 11px", boxShadow: "0 10px 26px rgba(15,23,42,0.16)", pointerEvents: "none", whiteSpace: "nowrap", zIndex: 5,
+          borderRadius: "10px", padding: "7px 11px", boxShadow: "0 10px 26px rgba(15,23,42,0.16)", pointerEvents: "none", whiteSpace: "nowrap", maxWidth: "260px", zIndex: 5,
         }}>
-          <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--c-text)" }}>{hover.title}</div>
+          <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--c-text)", overflow: "hidden", textOverflow: "ellipsis" }}>{hover.title}</div>
           <div className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{hover.place}</div>
-          {hover.slug && <div className="t-micro" style={{ color: "var(--c-accent-strong)", textTransform: "none", letterSpacing: "normal", marginTop: "4px", fontWeight: 700 }}>View {hover.disease} guide →</div>}
+        </div>
+      )}
+
+      {/* Zoom controls */}
+      {!decorative && (
+        <div style={{ position: "absolute", right: "10px", bottom: "10px", display: "flex", flexDirection: "column", gap: "6px", zIndex: 4 }}>
+          <button type="button" aria-label="Zoom in" onClick={() => zoomBy(1.6)} style={zoomBtnStyle}>+</button>
+          <button type="button" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.6)} style={zoomBtnStyle}>−</button>
         </div>
       )}
     </div>

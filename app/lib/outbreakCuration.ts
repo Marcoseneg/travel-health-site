@@ -14,16 +14,20 @@
 import overrides from "@/data/outbreak-overrides.json";
 
 export type OutbreakCuration = {
-  /** Drop this alert from the list (and, later, the map). */
+  /** Drop this alert from the list and the map. */
   hidden?: boolean;
+  /** Plain-language rewrite of the feed title. */
+  title?: string;
+  /** Traveler-friendly rewrite of the feed summary. */
+  summary?: string;
+  /** Sort to the top of the list. */
+  pinned?: boolean;
+  /** Explicit map position; otherwise derived from the first tagged country. */
+  coords?: { lat: number; lng: number };
   // ── country-tag overrides (consumed by countryTagger) ──
   add?: string[];
   remove?: string[];
   replace?: string[];
-  // ── reserved for upcoming slices ──
-  // title?: string; summary?: string;
-  // status?: "ongoing" | "increasing" | "stable" | "controlled";
-  // pinned?: boolean; coords?: { lat: number; lng: number };
 };
 
 const CURATION = overrides as unknown as Record<string, OutbreakCuration>;

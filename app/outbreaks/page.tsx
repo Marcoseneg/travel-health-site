@@ -18,25 +18,42 @@ import seedData from "@/data/outbreaks.json";
 import { OUTBREAK_SOURCES, type OutbreakAlert, type OutbreakSource } from "@/app/lib/outbreakSources";
 import { fetchAllOutbreaks } from "@/app/lib/outbreakFetcher";
 import { SUPPORTED_COUNTRIES } from "@/app/lib/travelData";
-import { isHidden } from "@/app/lib/outbreakCuration";
+import { isHidden, curationFor } from "@/app/lib/outbreakCuration";
+import { tagDisease } from "@/app/lib/outbreakDisease";
 import CopyId from "@/app/components/CopyId";
+import OutbreakMap, { type MapMarker } from "@/app/components/OutbreakMap";
+import OutbreakFilters from "@/app/components/OutbreakFilters";
+
+// Marker/source colors (kept in sync with <SourceDot>).
+function sourceColor(sourceId: string): string {
+  return sourceId.startsWith("ecdc") ? "#38bdf8"
+    : sourceId === "who-don" ? "#a78bfa"
+    : sourceId === "cdc-travel" ? "#fbbf24"
+    : "#64748b";
+}
 
 export const revalidate = 21600; // 6 hours
 
 export const metadata = {
-  title: "Outbreak monitor — TravelMed",
+  title: "Travel alerts — TravelMed",
   description:
-    "Real-time aggregated outbreak alerts from ECDC, WHO, and CDC. Updated every 6 hours.",
+    "Travel health alerts: current disease outbreaks and notices that could affect your trip, aggregated from WHO, ECDC, and CDC.",
 };
 
 const sourceMap: Record<string, OutbreakSource> = Object.fromEntries(
   OUTBREAK_SOURCES.map((s) => [s.id, s])
 );
 
-type Props = { searchParams: Promise<{ curate?: string }> };
+type Props = { searchParams: Promise<{ curate?: string; disease?: string; country?: string; source?: string }> };
+
+type DisplayAlert = OutbreakAlert & {
+  disease?: string;
+  pinned: boolean;
+  anchor: string;
+};
 
 export default async function OutbreaksPage({ searchParams }: Props) {
-  const { curate } = await searchParams;
+  const { curate, disease: fDisease, country: fCountry, source: fSource } = await searchParams;
   const curator = curate === "1"; // ?curate=1 → show ids + hidden alerts
 
   // Try to fetch live alerts; fall back to seed data if fetching fails.
@@ -60,14 +77,66 @@ export default async function OutbreaksPage({ searchParams }: Props) {
   const visible = curator ? sorted : sorted.filter((a) => !isHidden(a.id));
   const hiddenCount = sorted.filter((a) => isHidden(a.id)).length;
 
+  // Apply editorial curation (title/summary/pin) + tag a disease for filtering.
+  const display: DisplayAlert[] = visible.map((a) => {
+    const c = curationFor(a.id);
+    const title = c?.title ?? a.title;
+    return {
+      ...a,
+      title,
+      summary: c?.summary ?? a.summary,
+      disease: tagDisease(title),
+      pinned: c?.pinned ?? false,
+      anchor: `ob-${a.id}`,
+    };
+  });
+  // Pinned first, then newest.
+  display.sort(
+    (a, b) => Number(b.pinned) - Number(a.pinned) || new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+  );
+
+  // Filter options — from the full (unfiltered) set so choices never vanish.
+  const diseaseOptions = [...new Set(display.map((a) => a.disease).filter((d): d is string => !!d))].sort();
+  const countryMap = new Map<string, string>();
+  for (const a of display) for (const slug of a.countries ?? []) if (!countryMap.has(slug)) countryMap.set(slug, countryLabel(slug));
+  const countryOptions = [...countryMap.entries()].map(([slug, label]) => ({ slug, label })).sort((a, b) => a.label.localeCompare(b.label));
+  const sourceOptions = OUTBREAK_SOURCES.filter((s) => display.some((a) => a.sourceId === s.id)).map((s) => ({ id: s.id, label: s.name }));
+
+  // Apply active filters.
+  const filtered = display.filter((a) =>
+    (!fDisease || a.disease === fDisease) &&
+    (!fCountry || (a.countries ?? []).includes(fCountry)) &&
+    (!fSource || a.sourceId === fSource)
+  );
+
+  // Map markers — from the FILTERED set; positioned from curation.coords or the
+  // first tagged country; colored by source. Hidden alerts never appear.
+  const markers: MapMarker[] = [];
+  for (const a of filtered) {
+    if (isHidden(a.id)) continue;
+    const c = curationFor(a.id);
+    const slug = a.countries?.[0];
+    const meta = slug ? SUPPORTED_COUNTRIES[slug as keyof typeof SUPPORTED_COUNTRIES] : undefined;
+    const lat = c?.coords?.lat ?? (meta as { lat?: number } | undefined)?.lat;
+    const lng = c?.coords?.lng ?? (meta as { lng?: number } | undefined)?.lng;
+    if (lat == null || lng == null) continue;
+    markers.push({
+      lat,
+      lng,
+      color: sourceColor(a.sourceId),
+      title: a.title,
+      place: (a.countries ?? []).map(countryLabel).slice(0, 3).join(", "),
+      anchor: a.anchor,
+    });
+  }
+
   return (
     <main style={pageStyle}>
       <div style={containerStyle}>
-        <header style={{ marginBottom: "48px" }}>
-          <p className="t-label" style={kickerStyle}>Live alerts</p>
-          <h1 className="t-display" style={titleStyle}>Outbreak monitor</h1>
+        <header style={{ marginBottom: "32px" }}>
+          <h1 className="t-display" style={titleStyle}>Travel alerts</h1>
           <p className="t-body" style={subtitleStyle}>
-            Aggregated from ECDC, WHO, and CDC. Refreshed every 6 hours.
+            Current disease outbreaks and health notices that could affect your trip — from WHO, ECDC, and CDC, refreshed every 6 hours.
           </p>
         </header>
 
@@ -81,26 +150,48 @@ export default async function OutbreaksPage({ searchParams }: Props) {
           </div>
         )}
 
-        <div style={legendStyle}>
-          {OUTBREAK_SOURCES.map((s) => (
-            <span key={s.id} className="t-micro" style={{ ...legendItemStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 500 }}>
-              <SourceDot sourceId={s.id} />
-              {s.shortName}
-            </span>
-          ))}
-        </div>
-
-        {sorted.length === 0 ? (
-          <p className="t-body" style={{ color: "var(--c-text-3)" }}>
-            No alerts available. Check back soon.
-          </p>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {visible.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
-            ))}
+        {/* Dashboard: map (left) + scrollable alert panel (right) */}
+        <div className="ob-grid">
+          <div className="ob-map-col">
+            <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "14px" }}>
+              <OutbreakMap markers={markers} scrollContainerId="ob-list" />
+              <p className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal", margin: "8px 4px 0" }}>Tap a marker to jump to that alert in the panel →</p>
+            </div>
+            <div style={{ ...legendStyle, marginTop: "16px", marginBottom: 0, borderBottom: "none", paddingBottom: 0 }}>
+              {OUTBREAK_SOURCES.map((s) => (
+                <span key={s.id} className="t-micro" style={{ ...legendItemStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 500 }}>
+                  <SourceDot sourceId={s.id} />
+                  {s.shortName}
+                </span>
+              ))}
+            </div>
           </div>
-        )}
+
+          <div style={{ position: "relative" }}>
+            {/* Section label — floats above the panel on desktop, inline on mobile */}
+            <div className="ob-panel-label">
+              <h2 className="t-h2" style={{ margin: 0, color: "var(--c-text)" }}>Latest updates</h2>
+              <span className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{filtered.length} of {display.length}</span>
+            </div>
+
+            {/* The panel — top border aligns with the map card */}
+            <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "16px 18px" }}>
+              <OutbreakFilters diseases={diseaseOptions} countries={countryOptions} sources={sourceOptions} />
+
+              {filtered.length === 0 ? (
+                <p className="t-body" style={{ color: "var(--c-text-3)", padding: "12px 0" }}>
+                  No alerts match these filters.
+                </p>
+              ) : (
+                <div id="ob-list" className="ob-list-panel">
+                  {filtered.map((alert) => (
+                    <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
 
         <footer className="t-label" style={{ ...footerStyle, fontWeight: 400, letterSpacing: "normal" }}>
           <p style={{ margin: "0 0 8px" }}>
@@ -127,7 +218,7 @@ export default async function OutbreaksPage({ searchParams }: Props) {
   );
 }
 
-function AlertCard({ alert, curator = false, hidden = false }: { alert: OutbreakAlert; curator?: boolean; hidden?: boolean }) {
+function AlertCard({ alert, curator = false, hidden = false }: { alert: DisplayAlert; curator?: boolean; hidden?: boolean }) {
   const source = sourceMap[alert.sourceId];
   const date = new Date(alert.publishedAt);
   const dateLabel = date.toLocaleDateString("en-US", {
@@ -135,15 +226,17 @@ function AlertCard({ alert, curator = false, hidden = false }: { alert: Outbreak
     month: "short",
     day: "numeric",
   });
-
   return (
-    <article style={{ ...cardStyle, ...(hidden ? { opacity: 0.5, borderStyle: "dashed" } : {}) }}>
+    <article id={alert.anchor} style={{ ...cardStyle, scrollMarginTop: "80px", ...(hidden ? { opacity: 0.5, borderStyle: "dashed" } : {}) }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "8px" }}>
         {source && (
           <span className="t-micro" style={sourceBadgeStyle}>
             <SourceDot sourceId={source.id} />
             {source.shortName}
           </span>
+        )}
+        {alert.pinned && (
+          <span className="t-micro" style={{ padding: "2px 8px", borderRadius: "999px", background: "var(--c-accent-soft)", color: "var(--c-accent-strong)", border: "1px solid var(--c-accent-border)", letterSpacing: "normal", textTransform: "none", fontWeight: 700 }}>Pinned</span>
         )}
         <span className="t-micro" style={{ ...dateStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>{dateLabel}</span>
         {hidden && (
@@ -251,16 +344,12 @@ const curatorBannerStyle: React.CSSProperties = {
 
 const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
-  padding: "60px 24px 80px",
+  padding: "32px 24px 80px",
   background: "var(--c-bg)",
   color: "var(--c-text)",
   fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
 };
-const containerStyle: React.CSSProperties = { maxWidth: "880px", margin: "0 auto" };
-const kickerStyle: React.CSSProperties = {
-  color: "var(--c-accent)",
-  margin: "0 0 12px",
-};
+const containerStyle: React.CSSProperties = { maxWidth: "1480px", margin: "0 auto" };
 const titleStyle: React.CSSProperties = {
   color: "var(--c-text)",
   margin: "0 0 14px",

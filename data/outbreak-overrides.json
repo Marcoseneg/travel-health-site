@@ -1,8 +1,14 @@
 {
-  "_doc": "Editorial overrides for outbreak alerts, keyed by alert.id. Open /outbreaks?curate=1 to see each alert's id. Supported per entry: 'hidden' (true -> drop the alert from the page, e.g. a duplicate); country-tag fixes 'replace' (full override), 'add' (extra slugs), 'remove' (slugs to drop). Most alerts need no entry. Examples: { 'who-don-ebola-uganda-dup': { 'hidden': true } } or { 'cdc-yf-venezuela': { 'add': ['colombia'] } }",
+  "_doc": "Editorial overrides for outbreak alerts, keyed by alert.id. Open /outbreaks?curate=1 to see each alert's id. Supported per entry: 'hidden' (true -> drop the alert, e.g. a duplicate), 'title'/'summary' (plain-language rewrite), 'pinned' (sort to top), 'coords' ({lat,lng} map position); country-tag fixes 'replace'/'add'/'remove'. Most alerts need no entry. Examples: { 'who-don-ebola-uganda-dup': { 'hidden': true } } or { 'cdc-yf-venezuela': { 'add': ['colombia'] } }",
 
   "who-don-vlv3ih": { "hidden": true },
   "who-don-vbvhti": { "hidden": true },
   "who-don-v1vw4j": { "hidden": true },
-  "who-don-wftwle": { "hidden": true }
+  "who-don-wftwle": { "hidden": true },
+
+  "who-don-y3rir8": {
+    "pinned": true,
+    "title": "Ebola (Bundibugyo virus) — DR Congo & Uganda",
+    "summary": "An outbreak of Bundibugyo Ebola virus with cases across the DRC and Uganda. No licensed vaccine exists for this Ebola species, so control relies on surveillance, isolation, and contact tracing."
+  }
 }
