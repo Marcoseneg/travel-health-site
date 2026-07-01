@@ -66,20 +66,22 @@ export default function OutbreakMap({
     return () => { alive = false; };
   }, []);
 
-  const { dots, points, landPath } = useMemo(() => {
-    if (!geo) return { dots: [] as { x: number; y: number }[], points: [] as Point[], landPath: "" };
+  const { dots, countryPaths, points } = useMemo(() => {
+    if (!geo) return { dots: [] as { x: number; y: number }[], countryPaths: [] as string[], points: [] as Point[] };
     const features = geo.features.filter((f) => (f.properties?.NAME || f.properties?.ADMIN) !== "Antarctica");
     const fc = { type: "FeatureCollection", features } as unknown as GeoJson;
     const projection = geoNaturalEarth1().fitExtent([[3, 3], [W - 3, H - 3]], fc as never);
     const path = geoPath(projection);
 
-    // Combine all country outlines into one Path2D for fast point-in-path tests.
-    const combined = features.map((f) => path(f as never) || "").join(" ");
+    // One SVG path per country → filled land with visible borders.
+    const countryPaths = features.map((f) => path(f as never) || "").filter(Boolean);
+
+    // Land dots only for the decorative variant (sampled via point-in-path).
     const dots: { x: number; y: number }[] = [];
-    if (typeof document !== "undefined") {
+    if (decorative && typeof document !== "undefined") {
       const ctx = document.createElement("canvas").getContext("2d");
       if (ctx) {
-        const p2d = new Path2D(combined);
+        const p2d = new Path2D(countryPaths.join(" "));
         for (let x = STEP / 2; x < W; x += STEP) {
           for (let y = STEP / 2; y < H; y += STEP) {
             if (ctx.isPointInPath(p2d, x, y)) dots.push({ x, y });
@@ -96,20 +98,33 @@ export default function OutbreakMap({
       points.push({ ...m, x: pt[0], y: pt[1] });
     });
 
-    return { dots, points, landPath: combined };
-  }, [geo, markers]);
+    return { dots, countryPaths, points };
+  }, [geo, markers, decorative]);
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={decorative ? "Decorative world map" : "World map of outbreak locations"} style={{ display: "block", overflow: "visible" }}>
-        {/* Soft land silhouette so continents read as a map… */}
-        <path d={landPath} fill="var(--c-accent)" opacity={decorative ? 0.18 : 0.1} stroke="none" />
-        {/* …with a dot texture on top. */}
-        <g style={{ color: "var(--c-accent)" }}>
-          {dots.map((d, i) => (
-            <circle key={i} cx={d.x} cy={d.y} r={decorative ? 1.7 : 1.5} fill="currentColor" opacity={decorative ? 0.62 : 0.4} />
-          ))}
-        </g>
+        {decorative ? (
+          <>
+            {/* Soft land silhouette + dot texture (Disease Explorer hero). */}
+            <path d={countryPaths.join(" ")} fill="var(--c-accent)" opacity={0.18} stroke="none" />
+            <g style={{ color: "var(--c-accent)" }}>
+              {dots.map((d, i) => (
+                <circle key={i} cx={d.x} cy={d.y} r={1.7} fill="currentColor" opacity={0.62} />
+              ))}
+            </g>
+          </>
+        ) : (
+          <>
+            {/* Geographic map: ocean + filled countries with borders. */}
+            <rect x={0} y={0} width={W} height={H} rx={10} fill="var(--c-accent-soft)" />
+            <g>
+              {countryPaths.map((d, i) => (
+                <path key={i} d={d} fill="var(--c-surface)" stroke="var(--c-border-strong)" strokeWidth={0.5} strokeLinejoin="round" />
+              ))}
+            </g>
+          </>
+        )}
 
         {/* Outbreak markers */}
         {!decorative && points.map((p, i) => (

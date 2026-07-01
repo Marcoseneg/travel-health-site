@@ -25,9 +25,9 @@ import OutbreakMap, { type MapMarker } from "@/app/components/OutbreakMap";
 export const revalidate = 21600; // 6 hours
 
 export const metadata = {
-  title: "Outbreak monitor — TravelMed",
+  title: "Travel alerts — TravelMed",
   description:
-    "Real-time aggregated outbreak alerts from ECDC, WHO, and CDC. Updated every 6 hours.",
+    "Travel health alerts: current disease outbreaks and notices that could affect your trip, aggregated from WHO, ECDC, and CDC.",
 };
 
 const sourceMap: Record<string, OutbreakSource> = Object.fromEntries(
@@ -108,11 +108,10 @@ export default async function OutbreaksPage({ searchParams }: Props) {
   return (
     <main style={pageStyle}>
       <div style={containerStyle}>
-        <header style={{ marginBottom: "48px" }}>
-          <p className="t-label" style={kickerStyle}>Live alerts</p>
-          <h1 className="t-display" style={titleStyle}>Outbreak monitor</h1>
+        <header style={{ marginBottom: "32px" }}>
+          <h1 className="t-display" style={titleStyle}>Travel alerts</h1>
           <p className="t-body" style={subtitleStyle}>
-            Aggregated from ECDC, WHO, and CDC. Refreshed every 6 hours.
+            Current disease outbreaks and health notices that could affect your trip — from WHO, ECDC, and CDC, refreshed every 6 hours.
           </p>
         </header>
 
@@ -335,10 +334,6 @@ const pageStyle: React.CSSProperties = {
   fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",
 };
 const containerStyle: React.CSSProperties = { maxWidth: "1480px", margin: "0 auto" };
-const kickerStyle: React.CSSProperties = {
-  color: "var(--c-accent)",
-  margin: "0 0 12px",
-};
 const titleStyle: React.CSSProperties = {
   color: "var(--c-text)",
   margin: "0 0 14px",
