@@ -340,7 +340,7 @@ const curatorBannerStyle: React.CSSProperties = {
 
 const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
-  padding: "60px 24px 80px",
+  padding: "32px 24px 80px",
   background: "var(--c-bg)",
   color: "var(--c-text)",
   fontFamily: "'DM Sans', system-ui, -apple-system, sans-serif",

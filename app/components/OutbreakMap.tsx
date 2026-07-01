@@ -117,10 +117,10 @@ export default function OutbreakMap({
         ) : (
           <>
             {/* Geographic map: ocean + filled countries with borders. */}
-            <rect x={0} y={0} width={W} height={H} rx={10} fill="var(--c-accent-soft)" />
+            <rect x={0} y={0} width={W} height={H} rx={10} fill="var(--map-ocean)" />
             <g>
               {countryPaths.map((d, i) => (
-                <path key={i} d={d} fill="var(--c-surface)" stroke="var(--c-border-strong)" strokeWidth={0.5} strokeLinejoin="round" />
+                <path key={i} d={d} fill="var(--map-land)" stroke="var(--map-border)" strokeWidth={0.6} strokeLinejoin="round" />
               ))}
             </g>
           </>

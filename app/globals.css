@@ -53,6 +53,11 @@
   --c-accent-soft: #ecfeff;
   --c-accent-border: #a5f3fc;
 
+  /* World map (outbreaks) — ocean / land / borders */
+  --map-ocean: #cfe0ee;
+  --map-land: #f5f8fb;
+  --map-border: #a1b7c9;
+
   /* Semantic — high risk (red) / moderate (amber) / trust (green) / info (cyan) */
   --c-danger: #b91c1c;  --c-danger-soft: #fef2f2;  --c-danger-border: #fecaca;
   --c-warning: #b45309; --c-warning-soft: #fffbeb; --c-warning-border: #fde68a;
@@ -85,6 +90,10 @@
   --c-accent-bright: #38bdf8;
   --c-accent-soft: rgba(56, 189, 248, 0.10);
   --c-accent-border: rgba(56, 189, 248, 0.28);
+
+  --map-ocean: #0a1a26;
+  --map-land: #16242f;
+  --map-border: rgba(255, 255, 255, 0.13);
 
   --c-danger: #fca5a5;  --c-danger-soft: rgba(239, 68, 68, 0.14);  --c-danger-border: rgba(239, 68, 68, 0.30);
   --c-warning: #fbbf24; --c-warning-soft: rgba(245, 158, 11, 0.14); --c-warning-border: rgba(245, 158, 11, 0.28);
