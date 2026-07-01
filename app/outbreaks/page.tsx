@@ -167,7 +167,7 @@ export default async function OutbreaksPage({ searchParams }: Props) {
             </div>
           </div>
 
-          <div>
+          <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "16px 18px" }}>
             <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "12px" }}>
               <h2 className="t-h2" style={{ margin: 0, color: "var(--c-text)" }}>Latest updates</h2>
               <span className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{filtered.length} of {display.length}</span>
