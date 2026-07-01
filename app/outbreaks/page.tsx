@@ -18,6 +18,8 @@ import seedData from "@/data/outbreaks.json";
 import { OUTBREAK_SOURCES, type OutbreakAlert, type OutbreakSource } from "@/app/lib/outbreakSources";
 import { fetchAllOutbreaks } from "@/app/lib/outbreakFetcher";
 import { SUPPORTED_COUNTRIES } from "@/app/lib/travelData";
+import { isHidden } from "@/app/lib/outbreakCuration";
+import CopyId from "@/app/components/CopyId";
 
 export const revalidate = 21600; // 6 hours
 
@@ -31,7 +33,12 @@ const sourceMap: Record<string, OutbreakSource> = Object.fromEntries(
   OUTBREAK_SOURCES.map((s) => [s.id, s])
 );
 
-export default async function OutbreaksPage() {
+type Props = { searchParams: Promise<{ curate?: string }> };
+
+export default async function OutbreaksPage({ searchParams }: Props) {
+  const { curate } = await searchParams;
+  const curator = curate === "1"; // ?curate=1 → show ids + hidden alerts
+
   // Try to fetch live alerts; fall back to seed data if fetching fails.
   let alerts: OutbreakAlert[] = [];
   let usingFallback = false;
@@ -49,6 +56,9 @@ export default async function OutbreaksPage() {
   const sorted = [...alerts].sort(
     (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
   );
+  // Normal view drops curated-hidden alerts; curator view keeps them (dimmed).
+  const visible = curator ? sorted : sorted.filter((a) => !isHidden(a.id));
+  const hiddenCount = sorted.filter((a) => isHidden(a.id)).length;
 
   return (
     <main style={pageStyle}>
@@ -60,6 +70,16 @@ export default async function OutbreaksPage() {
             Aggregated from ECDC, WHO, and CDC. Refreshed every 6 hours.
           </p>
         </header>
+
+        {curator && (
+          <div style={curatorBannerStyle}>
+            <strong style={{ color: "var(--c-text)" }}>Curator view.</strong>{" "}
+            Each alert shows its <code>id</code> — copy it and add{" "}
+            <code>{'{ "<id>": { "hidden": true } }'}</code> to{" "}
+            <code>data/outbreak-overrides.json</code> to hide it (e.g. a duplicate).
+            {hiddenCount > 0 && ` ${hiddenCount} alert${hiddenCount === 1 ? "" : "s"} currently hidden (shown dimmed below).`}
+          </div>
+        )}
 
         <div style={legendStyle}>
           {OUTBREAK_SOURCES.map((s) => (
@@ -76,8 +96,8 @@ export default async function OutbreaksPage() {
           </p>
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-            {sorted.map((alert) => (
-              <AlertCard key={alert.id} alert={alert} />
+            {visible.map((alert) => (
+              <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
             ))}
           </div>
         )}
@@ -107,7 +127,7 @@ export default async function OutbreaksPage() {
   );
 }
 
-function AlertCard({ alert }: { alert: OutbreakAlert }) {
+function AlertCard({ alert, curator = false, hidden = false }: { alert: OutbreakAlert; curator?: boolean; hidden?: boolean }) {
   const source = sourceMap[alert.sourceId];
   const date = new Date(alert.publishedAt);
   const dateLabel = date.toLocaleDateString("en-US", {
@@ -117,7 +137,7 @@ function AlertCard({ alert }: { alert: OutbreakAlert }) {
   });
 
   return (
-    <article style={cardStyle}>
+    <article style={{ ...cardStyle, ...(hidden ? { opacity: 0.5, borderStyle: "dashed" } : {}) }}>
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "8px" }}>
         {source && (
           <span className="t-micro" style={sourceBadgeStyle}>
@@ -126,6 +146,10 @@ function AlertCard({ alert }: { alert: OutbreakAlert }) {
           </span>
         )}
         <span className="t-micro" style={{ ...dateStyle, letterSpacing: "normal", textTransform: "none", fontWeight: 400 }}>{dateLabel}</span>
+        {hidden && (
+          <span className="t-micro" style={{ padding: "2px 8px", borderRadius: "999px", background: "var(--c-danger-soft)", color: "var(--c-danger)", border: "1px solid var(--c-danger-border)", letterSpacing: "normal" }}>Hidden</span>
+        )}
+        {curator && <span style={{ marginLeft: "auto" }}><CopyId id={alert.id} /></span>}
       </div>
 
       <a href={alert.url} target="_blank" rel="noopener noreferrer" className="t-h3" style={titleLinkStyle}>
@@ -213,6 +237,17 @@ function ExternalArrow() {
     </svg>
   );
 }
+
+const curatorBannerStyle: React.CSSProperties = {
+  padding: "14px 18px",
+  marginBottom: "24px",
+  borderRadius: "var(--c-radius-md)",
+  background: "var(--c-accent-soft)",
+  border: "1px solid var(--c-accent-border)",
+  color: "var(--c-text-2)",
+  fontSize: "13px",
+  lineHeight: 1.6,
+};
 
 const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
