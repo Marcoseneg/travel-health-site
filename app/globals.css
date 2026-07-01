@@ -233,6 +233,16 @@ a {
   margin-bottom: 40px;
 }
 .ob-map-col { position: sticky; top: 16px; }
+.ob-panel-label {
+  position: absolute;
+  top: -30px;
+  left: 2px;
+  right: 2px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
 .ob-list-panel {
   position: relative;
   max-height: 74vh;
@@ -251,6 +261,7 @@ a {
   .ob-grid { grid-template-columns: 1fr; }
   .ob-map-col { position: static; }
   .ob-list-panel { max-height: none; overflow-y: visible; }
+  .ob-panel-label { position: static; margin: 8px 0 10px; }
 }
 
 /* ═══════════════════════════════════════════════════════════

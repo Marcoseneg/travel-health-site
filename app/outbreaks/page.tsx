@@ -167,25 +167,29 @@ export default async function OutbreaksPage({ searchParams }: Props) {
             </div>
           </div>
 
-          <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "16px 18px" }}>
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", gap: "12px", marginBottom: "12px" }}>
+          <div style={{ position: "relative" }}>
+            {/* Section label — floats above the panel on desktop, inline on mobile */}
+            <div className="ob-panel-label">
               <h2 className="t-h2" style={{ margin: 0, color: "var(--c-text)" }}>Latest updates</h2>
               <span className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{filtered.length} of {display.length}</span>
             </div>
 
-            <OutbreakFilters diseases={diseaseOptions} countries={countryOptions} sources={sourceOptions} />
+            {/* The panel — top border aligns with the map card */}
+            <div style={{ border: "1px solid var(--c-border)", borderRadius: "var(--c-radius-md)", background: "var(--c-surface)", padding: "16px 18px" }}>
+              <OutbreakFilters diseases={diseaseOptions} countries={countryOptions} sources={sourceOptions} />
 
-            {filtered.length === 0 ? (
-              <p className="t-body" style={{ color: "var(--c-text-3)", padding: "12px 0" }}>
-                No alerts match these filters.
-              </p>
-            ) : (
-              <div id="ob-list" className="ob-list-panel">
-                {filtered.map((alert) => (
-                  <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
-                ))}
-              </div>
-            )}
+              {filtered.length === 0 ? (
+                <p className="t-body" style={{ color: "var(--c-text-3)", padding: "12px 0" }}>
+                  No alerts match these filters.
+                </p>
+              ) : (
+                <div id="ob-list" className="ob-list-panel">
+                  {filtered.map((alert) => (
+                    <AlertCard key={alert.id} alert={alert} curator={curator} hidden={isHidden(alert.id)} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
