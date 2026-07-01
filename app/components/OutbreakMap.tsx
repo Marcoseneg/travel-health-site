@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { geoNaturalEarth1, geoPath } from "d3-geo";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -60,6 +60,50 @@ export default function OutbreakMap({
     setTimeout(() => el.classList.remove("ob-flash"), 1400);
   }
 
+  // ── Pan + zoom (markers variant) ──────────────────────────────────────────
+  const svgRef = useRef<SVGSVGElement | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [center, setCenter] = useState({ x: W / 2, y: H / 2 });
+  const drag = useRef({ active: false, x: 0, y: 0, moved: false });
+
+  const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+  const vw = W / zoom;
+  const vh = H / zoom;
+  const vx = clamp(center.x - vw / 2, 0, W - vw);
+  const vy = clamp(center.y - vh / 2, 0, H - vh);
+
+  function zoomBy(factor: number) {
+    setZoom((z) => {
+      const nz = clamp(z * factor, 1, 5);
+      if (nz === 1) setCenter({ x: W / 2, y: H / 2 });
+      return nz;
+    });
+  }
+  function onPointerDown(e: React.PointerEvent) {
+    if (zoom === 1) return; // nothing to pan at full extent
+    drag.current = { active: true, x: e.clientX, y: e.clientY, moved: false };
+  }
+  function onPointerMove(e: React.PointerEvent) {
+    if (!drag.current.active) return;
+    const rect = svgRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    const scale = vw / rect.width; // map units per screen pixel
+    if (Math.abs(e.clientX - drag.current.x) + Math.abs(e.clientY - drag.current.y) > 3) drag.current.moved = true;
+    const dx = (e.clientX - drag.current.x) * scale;
+    const dy = (e.clientY - drag.current.y) * scale;
+    drag.current.x = e.clientX;
+    drag.current.y = e.clientY;
+    setCenter((c) => ({ x: clamp(c.x - dx, vw / 2, W - vw / 2), y: clamp(c.y - dy, vh / 2, H - vh / 2) }));
+  }
+  function endDrag() { drag.current.active = false; }
+
+  const zoomBtnStyle: React.CSSProperties = {
+    width: "30px", height: "30px", display: "inline-flex", alignItems: "center", justifyContent: "center",
+    border: "1px solid var(--c-border)", background: "var(--c-surface)", color: "var(--c-text-2)",
+    borderRadius: "8px", cursor: "pointer", fontSize: "17px", fontWeight: 700, lineHeight: 1,
+    boxShadow: "0 2px 8px rgba(15,23,42,0.10)",
+  };
+
   useEffect(() => {
     let alive = true;
     fetch("/data/countries.geojson").then((r) => r.json()).then((d) => { if (alive) setGeo(d); }).catch(() => {});
@@ -103,7 +147,18 @@ export default function OutbreakMap({
 
   return (
     <div style={{ position: "relative", width: "100%" }}>
-      <svg viewBox={`0 0 ${W} ${H}`} width="100%" role="img" aria-label={decorative ? "Decorative world map" : "World map of outbreak locations"} style={{ display: "block", overflow: "visible" }}>
+      <svg
+        ref={svgRef}
+        viewBox={decorative ? `0 0 ${W} ${H}` : `${vx} ${vy} ${vw} ${vh}`}
+        width="100%"
+        role="img"
+        aria-label={decorative ? "Decorative world map" : "World map of outbreak locations"}
+        onPointerDown={decorative ? undefined : onPointerDown}
+        onPointerMove={decorative ? undefined : onPointerMove}
+        onPointerUp={decorative ? undefined : endDrag}
+        onPointerLeave={decorative ? undefined : endDrag}
+        style={{ display: "block", overflow: decorative ? "visible" : "hidden", borderRadius: decorative ? 0 : "10px", touchAction: !decorative && zoom > 1 ? "none" : "auto", cursor: !decorative && zoom > 1 ? "grab" : "default" }}
+      >
         {decorative ? (
           <>
             {/* Soft land silhouette + dot texture (Disease Explorer hero). */}
@@ -134,7 +189,7 @@ export default function OutbreakMap({
             style={{ cursor: p.anchor ? "pointer" : "default" }}
             onMouseEnter={() => setHover(p)}
             onMouseLeave={() => setHover(null)}
-            onClick={() => goToAnchor(p.anchor)}
+            onClick={() => { if (drag.current.moved) { drag.current.moved = false; return; } goToAnchor(p.anchor); }}
           >
             <circle r={18} fill="transparent" />
             <circle r={4} fill={p.color} stroke="var(--c-surface)" strokeWidth={1} />
@@ -146,15 +201,23 @@ export default function OutbreakMap({
         ))}
       </svg>
 
-      {/* Marker tooltip */}
+      {/* Marker tooltip (positioned in current viewBox space) */}
       {!decorative && hover && (
         <div style={{
-          position: "absolute", left: `${(hover.x / W) * 100}%`, top: `${(hover.y / H) * 100}%`,
+          position: "absolute", left: `${((hover.x - vx) / vw) * 100}%`, top: `${((hover.y - vy) / vh) * 100}%`,
           transform: "translate(12px, -120%)", background: "var(--c-surface)", border: "1px solid var(--c-border)",
           borderRadius: "10px", padding: "7px 11px", boxShadow: "0 10px 26px rgba(15,23,42,0.16)", pointerEvents: "none", whiteSpace: "nowrap", maxWidth: "260px", zIndex: 5,
         }}>
           <div style={{ fontSize: "12.5px", fontWeight: 700, color: "var(--c-text)", overflow: "hidden", textOverflow: "ellipsis" }}>{hover.title}</div>
           <div className="t-micro" style={{ color: "var(--c-text-3)", textTransform: "none", letterSpacing: "normal" }}>{hover.place}</div>
+        </div>
+      )}
+
+      {/* Zoom controls */}
+      {!decorative && (
+        <div style={{ position: "absolute", right: "10px", bottom: "10px", display: "flex", flexDirection: "column", gap: "6px", zIndex: 4 }}>
+          <button type="button" aria-label="Zoom in" onClick={() => zoomBy(1.6)} style={zoomBtnStyle}>+</button>
+          <button type="button" aria-label="Zoom out" onClick={() => zoomBy(1 / 1.6)} style={zoomBtnStyle}>−</button>
         </div>
       )}
     </div>
